@@ -1,0 +1,30 @@
+# Build artifacts
+/build/
+/out/
+/dist/
+/bin/
+/obj/
+/CMakeFiles/
+/CMakeCache.txt
+/cmake-build-*/
+cmake_install.cmake
+Makefile
+*.o
+*.obj
+*.exe
+*.dll
+*.wasm
+*.js
+
+# IDE and tooling
+.vscode/
+.idea/
+*.code-workspace
+
+# OS clutter
+.DS_Store
+Thumbs.db
+
+# Codex runtime state (keep prompts tracked)
+.codex/*
+!.codex/prompts/

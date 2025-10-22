@@ -1,50 +1,86 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report
+Version change: 0.0.0 → 1.0.0
+Modified principles:
+- PRINCIPLE_1_NAME → I. Binary Budget Supremacy
+- PRINCIPLE_2_NAME → II. Deterministic Memory Discipline
+- PRINCIPLE_3_NAME → III. Performance-Oriented Portability
+- PRINCIPLE_4_NAME → IV. Spec-Led Delivery
+- PRINCIPLE_5_NAME → V. Embedded Feature Isolation
+Added sections:
+- Platform & Build Constraints
+- Quality Gates & Runtime Guardrails
+Removed sections:
+- None
+Templates requiring updates:
+- ✅ .specify/templates/plan-template.md
+- ✅ .specify/templates/spec-template.md
+- ✅ .specify/templates/tasks-template.md
+Follow-up TODOs:
+- None
+-->
+
+# Speckit Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Binary Budget Supremacy
+- All release builds for Windows and WebAssembly MUST use clang-based toolchains with `-Oz` and link-time optimization enabled.
+- Every merge request MUST project `.wasm` and native binary deltas; increases above 2% require a mitigation plan approved before merge.
+- Each feature MUST keep its compiled contribution within the 30 KB code budget while helping the overall engine remain under 200 KB for WebAssembly targets.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+This principle keeps Speckit instantly loadable on bandwidth-constrained devices and preserves our primary competitive differentiator.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### II. Deterministic Memory Discipline
+- All runtime allocations MUST route through the `nt_alloc_*` interface so that allocators can be swapped and audited centrally.
+- Features MUST preallocate memory via fixed-size arenas or arrays; dynamic resizing (`realloc`, implicit container growth) is forbidden.
+- Total runtime memory consumption MUST stay within the 32 MB budget per application; waivers demand explicit instrumentation and rollback plans.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+Deterministic memory usage ensures predictable behavior across WebAssembly sandboxes and constrained desktop testbeds.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### III. Performance-Oriented Portability
+- Hot-path code MUST be benchmarked through the web and Windows microbench targets before release toggles ship.
+- Build configurations MUST preserve parity between debug and release workflows, and CI MUST track the microbench and size-report targets on every change.
+- Performance optimizations MUST not compromise binary size or memory budgets; any trade-offs require documented rationale in the accompanying spec.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+This principle guarantees that Speckit stays fast across both primary platforms without regressing our tight resource constraints.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### IV. Spec-Led Delivery
+- Every initiative begins with an approved specification capturing the C API surface, memory model, binary and RAM impact, and the CMake snippet that embeds engine sources into the target testbed.
+- Plan outputs MUST map directly to the specification, and no implementation work may merge without the spec, plan, and tasks explicitly linked.
+- Specifications MUST enumerate required instrumentation, CI checks, and acceptance criteria before any code is written.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+Spec-first delivery prevents accidental scope creep and keeps resource budgets enforceable before implementation starts.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### V. Embedded Feature Isolation
+- The engine ships as source embedded directly into consuming testbeds; producing standalone library artifacts is prohibited.
+- Headers and sources MUST live side by side per feature module, exposing only `nt_`-prefixed public entry points.
+- External dependencies MUST be header-only or single-file libraries with no hidden allocations, and every dependency is gated behind an explicit feature flag.
+
+Maintaining embedded, isolated features preserves portability and minimal footprint across build targets.
+
+## Platform & Build Constraints
+
+- Primary target: WebAssembly through Emscripten (Clang); secondary target: Windows builds via clang-cl for rapid iteration.
+- Graphics stack: WebGPU with a WebGL2 fallback; Windows builds integrate GLFW with OpenGL for windowing and input.
+- Supported build modes: `debug` and `release`, with release builds enforcing `-Oz` and LTO; CI profiles include `web-debug`, `web-release`, `win-debug`, and `win-release`.
+- Engine sources remain feature-oriented and embedded: each consuming game or test defines its own `CMakeLists.txt` enumerating required features and source files.
+- Math utilities rely on the embedded, header-only `cglm` package, enabled on demand.
+
+## Quality Gates & Runtime Guardrails
+
+- Logging uses a compile-time `NT_LOG_LEVEL`; debug builds may adjust verbosity at runtime via `nt_log_set_level()`, while release builds strip logging overhead.
+- CI runs CTest suites plus microbench and size-report targets; merges fail if `.wasm` text/data sections regress by more than 2% without an approved mitigation plan.
+- Instrumentation tasks MUST cover binary size, memory usage, and performance metrics; validation steps belong in specs and tasks before implementation starts.
+- Error handling relies on status codes or structs; assertions are restricted to debug builds, and the public API consistently uses the `nt_` prefix.
+- Any third-party addition MUST document memory and size impact, provide knobs to disable unused functionality, and satisfy Principle V’s isolation rules.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+- This constitution supersedes prior process docs; teams MUST cite relevant clauses within plans, specs, and task lists before work begins.
+- Amendments require a written RFC referencing impacted principles, an updated Sync Impact Report, and synchronized updates to dependent templates before merge.
+- Semantic versioning applies: MAJOR for removed or rewritten principles, MINOR for new principles or major guidance, PATCH for clarifications.
+- Compliance reviews: each PR links CI artifacts for size, memory, and performance; releases are blocked until constitutional gates pass or receive documented waivers.
+- Steering cadence: conduct constitution reviews at least quarterly and ahead of any platform expansion to validate budgets and governance health.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2025-10-22 | **Last Amended**: 2025-10-22

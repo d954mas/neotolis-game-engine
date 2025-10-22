@@ -3,7 +3,7 @@
 **Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
 **Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
 
-**Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
+**Note**: This template is filled in by the `/speckit.plan` command. See `.specify/scripts/bash/setup-plan.sh` for the execution workflow.
 
 ## Summary
 
@@ -17,21 +17,25 @@
   the iteration process.
 -->
 
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [single/web/mobile - determines source structure]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+**Language/Version**: C23 (clang-cl on Windows, emcc/Clang for WebAssembly)  
+**Primary Dependencies**: GLFW, WebGPU (with WebGL2 fallback), cglm (header-only), internal `nt_alloc_*` allocator  
+**Storage**: N/A unless feature explicitly adds persisted assets (document in spec)  
+**Testing**: CTest (unit, integration, microbench, size-report)  
+**Target Platform**: WebAssembly (primary), Windows desktop (secondary rapid iteration)
+**Project Type**: Embedded engine sources consumed by per-testbed CMake targets  
+**Performance Goals**: Maintain 60 FPS equivalent loops; enforce CI microbench targets across win/web builds  
+**Constraints**: `.wasm` ≤ 200 KB, per-feature code ≤ 30 KB, runtime RAM ≤ 32 MB, no hidden allocations  
+**Scale/Scope**: Feature-scoped increments; define impacted feature modules and expected consumers
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- [ ] **Binary Budget Supremacy**: Planned work quantifies expected binary deltas for WebAssembly and Windows; mitigations exist for >2% regressions.
+- [ ] **Deterministic Memory Discipline**: Memory usage is preallocated via arenas/fixed buffers and documented allocators; no hidden growth paths remain.
+- [ ] **Performance-Oriented Portability**: Microbench coverage, performance targets, and dual-platform validation steps are captured before implementation.
+- [ ] **Spec-Led Delivery**: An approved spec exists with C API, memory model, binary/RAM impact, and embedding CMake snippet; plan links to it.
+- [ ] **Embedded Feature Isolation**: Tasks map to feature modules with paired `.c/.h` files and keep the engine embedded in consuming testbeds.
 
 ## Project Structure
 
@@ -56,43 +60,45 @@ specs/[###-feature]/
 -->
 
 ```text
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
+engine/
+├── core/
+│   ├── nt_core.c
+│   └── nt_core.h
+├── features/
+│   ├── sprite_batch/
+│   │   ├── sprite_batch.c
+│   │   └── sprite_batch.h
+│   └── memory/
+│       ├── arena.c
+│       └── arena.h
+├── platform/
+│   ├── web/
+│   │   ├── web_gpu_backend.c
+│   │   └── web_gpu_backend.h
+│   └── win/
+│       ├── win_gpu_backend.c
+│       └── win_gpu_backend.h
+└── third_party/
+    └── cglm/  # header-only
 
-tests/
-├── contract/
-├── integration/
-└── unit/
+testbeds/
+├── sandbox/
+│   ├── CMakeLists.txt  # lists required engine sources
+│   └── main.c
+└── benchmarks/
+    ├── CMakeLists.txt
+    └── microbench_main.c
 
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
-
-frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+ci/
+├── toolchains/
+│   ├── emscripten.cmake
+│   └── clang-cl.cmake
+└── workflows/
+    ├── web-debug.yml
+    └── win-release.yml
 ```
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+**Structure Decision**: [Explain which modules are touched, list new/updated directories, and confirm headers/sources remain paired per feature]
 
 ## Complexity Tracking
 

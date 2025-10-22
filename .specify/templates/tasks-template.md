@@ -8,9 +8,13 @@ description: "Task list template for feature implementation"
 **Input**: Design documents from `/specs/[###-feature-name]/`
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
 
-**Tests**: The examples below include test tasks. Tests are OPTIONAL - only include them if explicitly requested in the feature specification.
+**Tests**: Define failing CTest targets (unit/integration/microbench/size) for every committed user story before implementation tasks begin. Only omit when plan.md documents an approved waiver.
+
+**Instrumentation**: Add explicit tasks to implement and verify observability commitments before marking a story complete.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
+
+**Budgets**: Include binary size, RAM, and performance verification tasks; flag any >2% regressions with mitigation notes.
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -20,10 +24,10 @@ description: "Task list template for feature implementation"
 
 ## Path Conventions
 
-- **Single project**: `src/`, `tests/` at repository root
-- **Web app**: `backend/src/`, `frontend/src/`
-- **Mobile**: `api/src/`, `ios/src/` or `android/src/`
-- Paths shown below assume single project - adjust based on plan.md structure
+- Engine sources live under `engine/` with paired `.c`/`.h` files per feature module
+- Testbeds embed engine sources via `testbeds/<name>/CMakeLists.txt`
+- Tests reside in `tests/unit/`, `tests/integration/`, `tests/microbench/`, and `tests/size/`
+- Tooling, scripts, and CI configurations live under `ci/` and `scripts/` directories
 
 <!-- 
   ============================================================================
@@ -46,11 +50,11 @@ description: "Task list template for feature implementation"
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-**Purpose**: Project initialization and basic structure
+**Purpose**: Project initialization and baseline toolchain hooks
 
-- [ ] T001 Create project structure per implementation plan
-- [ ] T002 Initialize [language] project with [framework] dependencies
-- [ ] T003 [P] Configure linting and formatting tools
+- [ ] T001 Create/extend engine feature directories (paired `.c`/`.h`) per implementation plan
+- [ ] T002 Update `testbeds/[target]/CMakeLists.txt` to embed new feature sources
+- [ ] T003 [P] Configure clang-format, clang-tidy, and size-report tooling for the feature
 
 ---
 
@@ -62,12 +66,11 @@ description: "Task list template for feature implementation"
 
 Examples of foundational tasks (adjust based on your project):
 
-- [ ] T004 Setup database schema and migrations framework
-- [ ] T005 [P] Implement authentication/authorization framework
-- [ ] T006 [P] Setup API routing and middleware structure
-- [ ] T007 Create base models/entities that all stories depend on
-- [ ] T008 Configure error handling and logging infrastructure
-- [ ] T009 Setup environment configuration management
+- [ ] T004 Implement or extend memory arenas in `engine/features/memory/arena.c` (document capacity)
+- [ ] T005 [P] Wire platform backends (WebGPU/WebGL2 or GLFW/OpenGL) needed by this feature
+- [ ] T006 [P] Add configuration toggles / feature flags in `engine/core/nt_core.h`
+- [ ] T007 Establish logging category and compile-time `NT_LOG_LEVEL` hooks
+- [ ] T008 Update CI profiles (`ci/workflows/*.yml`) to run new microbench or size targets if required
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -79,21 +82,22 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 1 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 1 (Required unless waiver approved) ⚠️
 
-> **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
+> **NOTE: Write these tests FIRST, ensure they FAIL before implementation. Record any waiver in plan.md Complexity Tracking.**
 
-- [ ] T010 [P] [US1] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T011 [P] [US1] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T010 [P] [US1] Add CTest unit target `tests/unit/test_[feature]_api.c`
+- [ ] T011 [P] [US1] Create integration test `tests/integration/test_[journey].c` covering the new feature path
+- [ ] T012 [US1] Register microbench target in `tests/microbench/CMakeLists.txt` and ensure it fails until implementation
 
 ### Implementation for User Story 1
 
-- [ ] T012 [P] [US1] Create [Entity1] model in src/models/[entity1].py
-- [ ] T013 [P] [US1] Create [Entity2] model in src/models/[entity2].py
-- [ ] T014 [US1] Implement [Service] in src/services/[service].py (depends on T012, T013)
-- [ ] T015 [US1] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T016 [US1] Add validation and error handling
-- [ ] T017 [US1] Add logging for user story 1 operations
+- [ ] T013 [P] [US1] Implement public API in `engine/features/[feature]/[feature].h`
+- [ ] T014 [US1] Implement core logic in `engine/features/[feature]/[feature].c`
+- [ ] T015 [US1] Integrate allocator usage via `nt_alloc_*` with documented buffer sizes
+- [ ] T016 [US1] Add logging at compile-time-controlled granularity
+- [ ] T017 [US1] Wire feature into consuming testbed `testbeds/[target]/main.c`
+- [ ] T018 [US1] Update size-report whitelist/thresholds if new assets are unavoidable
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -105,17 +109,20 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 2 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 2 (Required unless waiver approved) ⚠️
 
-- [ ] T018 [P] [US2] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T019 [P] [US2] Integration test for [user journey] in tests/integration/test_[name].py
+> **NOTE: Write these tests FIRST, ensure they FAIL before implementation. Record any waiver in plan.md Complexity Tracking.**
+
+- [ ] T019 [P] [US2] Contract test for secondary API in `tests/unit/test_[feature]_edge_cases.c`
+- [ ] T020 [P] [US2] Integration test for cross-feature flow in `tests/integration/test_[journey]_p2.c`
+- [ ] T021 [US2] Extend microbench coverage if execution path changes
 
 ### Implementation for User Story 2
 
-- [ ] T020 [P] [US2] Create [Entity] model in src/models/[entity].py
-- [ ] T021 [US2] Implement [Service] in src/services/[service].py
-- [ ] T022 [US2] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T023 [US2] Integrate with User Story 1 components (if needed)
+- [ ] T022 [P] [US2] Add supplemental headers/source pair with guarded feature flag
+- [ ] T023 [US2] Update `engine/core/nt_core.c` initializers to register the new behavior
+- [ ] T024 [US2] Validate allocator pressure and adjust arena documentation if required
+- [ ] T025 [US2] Capture size-report output and annotate expected deltas
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -127,16 +134,20 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 3 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 3 (Required unless waiver approved) ⚠️
 
-- [ ] T024 [P] [US3] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T025 [P] [US3] Integration test for [user journey] in tests/integration/test_[name].py
+> **NOTE: Write these tests FIRST, ensure they FAIL before implementation. Record any waiver in plan.md Complexity Tracking.**
+
+- [ ] T026 [P] [US3] Contract test for fallback path in `tests/unit/test_[feature]_fallback.c`
+- [ ] T027 [P] [US3] Integration test for error handling in `tests/integration/test_[journey]_errors.c`
+- [ ] T028 [US3] Add size/memory monitor to CTest dashboard if behavior impacts budgets
 
 ### Implementation for User Story 3
 
-- [ ] T026 [P] [US3] Create [Entity] model in src/models/[entity].py
-- [ ] T027 [US3] Implement [Service] in src/services/[service].py
-- [ ] T028 [US3] Implement [endpoint/feature] in src/[location]/[file].py
+- [ ] T029 [P] [US3] Implement fallback path in `engine/features/[feature]/[feature]_fallback.c`
+- [ ] T030 [US3] Surface errors via `nt_status` codes, update headers
+- [ ] T031 [US3] Verify logging toggles and runtime switches remain debug-only
+- [ ] T032 [US3] Update documentation in `docs/[feature]/` if applicable
 
 **Checkpoint**: All user stories should now be independently functional
 
@@ -150,12 +161,13 @@ Examples of foundational tasks (adjust based on your project):
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] TXXX [P] Documentation updates in docs/
-- [ ] TXXX Code cleanup and refactoring
-- [ ] TXXX Performance optimization across all stories
-- [ ] TXXX [P] Additional unit tests (if requested) in tests/unit/
-- [ ] TXXX Security hardening
-- [ ] TXXX Run quickstart.md validation
+- [ ] TXXX [P] Documentation updates in `docs/[feature]/`
+- [ ] TXXX Code cleanup and refactoring (keep binary delta within budget)
+- [ ] TXXX Performance optimization across all stories (update microbench baselines)
+- [ ] TXXX [P] Additional unit tests in `tests/unit/`
+- [ ] TXXX Security hardening / static analysis via clang-tidy
+- [ ] TXXX Run `quickstart.md` validation on target testbeds
+- [ ] TXXX Instrumentation verification across stories (size, memory, performance)
 
 ---
 
@@ -178,7 +190,7 @@ Examples of foundational tasks (adjust based on your project):
 
 ### Within Each User Story
 
-- Tests (if included) MUST be written and FAIL before implementation
+- Tests MUST be written and FAIL before implementation
 - Models before services
 - Services before endpoints
 - Core implementation before integration
@@ -198,13 +210,13 @@ Examples of foundational tasks (adjust based on your project):
 ## Parallel Example: User Story 1
 
 ```bash
-# Launch all tests for User Story 1 together (if tests requested):
-Task: "Contract test for [endpoint] in tests/contract/test_[name].py"
-Task: "Integration test for [user journey] in tests/integration/test_[name].py"
+# Launch all tests for User Story 1 together:
+ctest --tests-regex "^US1_.*"        # unit + integration targets in C
+ctest --tests-regex "^US1_MICRO.*"   # microbench + size-report targets
 
-# Launch all models for User Story 1 together:
-Task: "Create [Entity1] model in src/models/[entity1].py"
-Task: "Create [Entity2] model in src/models/[entity2].py"
+# Launch all modules for User Story 1 together:
+Task: "Implement API header in engine/features/[feature]/[feature].h"
+Task: "Implement core logic in engine/features/[feature]/[feature].c"
 ```
 
 ---
@@ -246,6 +258,7 @@ With multiple developers:
 - [Story] label maps task to specific user story for traceability
 - Each user story should be independently completable and testable
 - Verify tests fail before implementing
+- Document instrumentation commitments and validation steps alongside tasks
 - Commit after each task or logical group
 - Stop at any checkpoint to validate story independently
 - Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence
