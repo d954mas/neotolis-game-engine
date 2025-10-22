@@ -5,20 +5,18 @@ project(nt_engine
     LANGUAGES C
 )
 
-if(CMAKE_C_COMPILER_ID STREQUAL "MSVC"
-   OR (CMAKE_C_COMPILER_ID STREQUAL "Clang" AND CMAKE_C_SIMULATE_ID STREQUAL "MSVC"))
-    set(CMAKE_C_STANDARD 17)
-else()
-    set(CMAKE_C_STANDARD 23)
-endif()
+# Common language settings
+set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
+
+# Tooling
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
-endif()
+# Print active build type (handy when using Presets)
+message(STATUS "Configuring ${CMAKE_PROJECT_NAME} in ${CMAKE_BUILD_TYPE} mode")
 
+# Subprojects
 add_subdirectory(engine)
 add_subdirectory(testbeds/sandbox)
 add_subdirectory(tests)
