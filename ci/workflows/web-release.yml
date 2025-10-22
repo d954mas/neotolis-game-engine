@@ -1,0 +1,41 @@
+name: web-release
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * *'
+
+jobs:
+  web-release-build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        preset: [web-release]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 3.1.57
+      - name: Cache build directory
+        uses: actions/cache@v4
+        with:
+          path: build/${{ matrix.preset }}
+          key: ${{ runner.os }}-${{ matrix.preset }}-${{ github.sha }}
+      - name: Configure
+        run: cmake --preset ${{ matrix.preset }}
+      - name: Build
+        run: cmake --build --preset ${{ matrix.preset }}
+      - name: Test
+        run: ctest --preset ${{ matrix.preset }}
+      - name: Check size regression threshold
+        run: |
+          python3 - <<'PY'
+          print('Size regression check placeholder (<2%)')
+          PY
+      - name: Upload size-report artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.preset }}-reports
+          path: build/${{ matrix.preset }}/tests/size

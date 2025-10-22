@@ -1,0 +1,39 @@
+name: win-release
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'
+
+jobs:
+  win-release-build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        preset: [win-release]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache build directory
+        uses: actions/cache@v4
+        with:
+          path: build\${{ matrix.preset }}
+          key: ${{ runner.os }}-${{ matrix.preset }}-${{ github.sha }}
+      - name: Configure
+        shell: pwsh
+        run: cmake --preset ${{ matrix.preset }}
+      - name: Build
+        shell: pwsh
+        run: cmake --build --preset ${{ matrix.preset }}
+      - name: Test
+        shell: pwsh
+        run: ctest --preset ${{ matrix.preset }}
+      - name: Check size regression threshold
+        shell: pwsh
+        run: |
+          Write-Output "Size regression check placeholder (<2%)"
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.preset }}-reports
+          path: build/${{ matrix.preset }}/tests

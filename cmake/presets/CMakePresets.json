@@ -1,0 +1,96 @@
+{
+  "version": 5,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 27,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "web-debug",
+      "displayName": "WebAssembly Debug",
+      "generator": "Ninja",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/emscripten.cmake",
+      "binaryDir": "${sourceDir}/build/web-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "web-release",
+      "displayName": "WebAssembly Release",
+      "inherits": "web-debug",
+      "binaryDir": "${sourceDir}/build/web-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "win-debug",
+      "displayName": "Windows Debug",
+      "generator": "Ninja",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/clang-cl.cmake",
+      "binaryDir": "${sourceDir}/build/win-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "win-release",
+      "displayName": "Windows Release",
+      "inherits": "win-debug",
+      "binaryDir": "${sourceDir}/build/win-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "web-debug",
+      "configurePreset": "web-debug"
+    },
+    {
+      "name": "web-release",
+      "configurePreset": "web-release"
+    },
+    {
+      "name": "win-debug",
+      "configurePreset": "win-debug"
+    },
+    {
+      "name": "win-release",
+      "configurePreset": "win-release"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "web-debug",
+      "configurePreset": "web-debug",
+      "output": {
+        "showOnlyFailing": true
+      }
+    },
+    {
+      "name": "web-release",
+      "configurePreset": "web-release",
+      "output": {
+        "showOnlyFailing": true
+      }
+    },
+    {
+      "name": "win-debug",
+      "configurePreset": "win-debug",
+      "output": {
+        "showOnlyFailing": true
+      }
+    },
+    {
+      "name": "win-release",
+      "configurePreset": "win-release",
+      "output": {
+        "showOnlyFailing": true
+      }
+    }
+  ]
+}
