@@ -1,86 +1,76 @@
 {
   "version": 5,
-  "cmakeMinimumRequired": {
-    "major": 3,
-    "minor": 27,
-    "patch": 0
-  },
+  "cmakeMinimumRequired": { "major": 3, "minor": 27, "patch": 0 },
+
   "configurePresets": [
+    {
+      "name": "base-web",
+      "hidden": true,
+      "generator": "Ninja",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/emscripten.cmake",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true
+      }
+    },
+    {
+      "name": "base-win",
+      "hidden": true,
+      "generator": "Ninja",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/clang-cl.cmake",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true
+      },
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
+    },
+
     {
       "name": "web-debug",
       "displayName": "WebAssembly Debug",
-      "generator": "Ninja",
-      "toolchainFile": "${sourceDir}/cmake/toolchains/emscripten.cmake",
-      "binaryDir": "${sourceDir}/build/web-debug",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
-      }
+      "inherits": "base-web",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
     },
     {
       "name": "web-release",
       "displayName": "WebAssembly Release",
-      "inherits": "web-debug",
-      "binaryDir": "${sourceDir}/build/web-release",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
-      }
+      "inherits": "base-web",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
     },
+
     {
       "name": "win-debug",
       "displayName": "Windows Debug",
-      "generator": "Ninja",
-      "toolchainFile": "${sourceDir}/cmake/toolchains/clang-cl.cmake",
-      "binaryDir": "${sourceDir}/build/win-debug",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_C_STANDARD": "17"
-      }
+      "inherits": "base-win",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
     },
     {
       "name": "win-release",
       "displayName": "Windows Release",
-      "inherits": "win-debug",
-      "binaryDir": "${sourceDir}/build/win-release",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_C_STANDARD": "17"
-      }
+      "inherits": "base-win",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
     }
   ],
+
   "buildPresets": [
-    {
-      "name": "web-debug",
-      "configurePreset": "web-debug"
-    },
-    {
-      "name": "web-release",
-      "configurePreset": "web-release"
-    },
-    {
-      "name": "win-debug",
-      "configurePreset": "win-debug"
-    },
-    {
-      "name": "win-release",
-      "configurePreset": "win-release"
-    }
+    { "name": "web-debug",   "configurePreset": "web-debug",   "jobs": 8 },
+    { "name": "web-release", "configurePreset": "web-release", "jobs": 12 },
+    { "name": "win-debug",   "configurePreset": "win-debug",   "jobs": 8 },
+    { "name": "win-release", "configurePreset": "win-release", "jobs": 12 }
   ],
+
   "testPresets": [
     {
-      "name": "web-debug",
-      "configurePreset": "web-debug"
+      "name": "base-test",
+      "hidden": true,
+      "output": { "outputOnFailure": true },
+      "execution": { "noTestsAction": "ignore", "stopOnFailure": true, "jobs": 8, "timeout": 120 }
     },
-    {
-      "name": "web-release",
-      "configurePreset": "web-release"
-    },
-    {
-      "name": "win-debug",
-      "configurePreset": "win-debug"
-    },
-    {
-      "name": "win-release",
-      "configurePreset": "win-release"
-    }
+    { "name": "web-debug-tests",   "inherits": "base-test", "configurePreset": "web-debug" },
+    { "name": "web-release-tests", "inherits": "base-test", "configurePreset": "web-release",
+      "execution": { "jobs": 16, "timeout": 60, "noTestsAction": "ignore" } },
+    { "name": "win-debug-tests",   "inherits": "base-test", "configurePreset": "win-debug" },
+    { "name": "win-release-tests", "inherits": "base-test", "configurePreset": "win-release",
+      "execution": { "jobs": 16, "timeout": 60, "noTestsAction": "ignore" } }
   ]
 }
