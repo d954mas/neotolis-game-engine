@@ -1,30 +1,40 @@
+# cmake/toolchains/clang-cl.cmake
+# Minimal toolchain for clang-cl + lld-link, with mandatory manifest tool.
+
 set(CMAKE_SYSTEM_NAME Windows)
 set(CMAKE_SYSTEM_PROCESSOR x86_64)
 
-find_program(CLANG_CL_EXECUTABLE clang-cl HINTS "$ENV{LLVM_HOME}/bin")
-if(NOT CLANG_CL_EXECUTABLE)
-    message(FATAL_ERROR "clang-cl not found. Install LLVM 17 and set LLVM_HOME or ensure clang-cl is on PATH.")
+# --- compilers ---
+find_program(CLANG_CL NAMES clang-cl
+             HINTS "$ENV{LLVM_HOME}/bin" "C:/Program Files/LLVM/bin"
+             ENV PATH REQUIRED)
+set(CMAKE_C_COMPILER   "${CLANG_CL}")
+set(CMAKE_CXX_COMPILER "${CLANG_CL}")
+
+# --- linker ---
+find_program(LLD_LINK NAMES lld-link
+             HINTS "$ENV{LLVM_HOME}/bin" "C:/Program Files/LLVM/bin"
+             ENV PATH REQUIRED)
+set(CMAKE_LINKER "${LLD_LINK}")
+
+# --- resource compiler (optional) ---
+find_program(LLVM_RC NAMES llvm-rc rc
+             HINTS "$ENV{LLVM_HOME}/bin" "C:/Program Files/LLVM/bin"
+             ENV PATH)
+if(LLVM_RC)
+  set(CMAKE_RC_COMPILER "${LLVM_RC}")
 endif()
 
-set(CMAKE_C_COMPILER "${CLANG_CL_EXECUTABLE}")
-set(CMAKE_C_FLAGS_INIT "/std:c17 /Zi /W4 /WX")
-
-if(NOT DEFINED CMAKE_MT)
-    find_program(MT_EXECUTABLE mt)
-    if(MT_EXECUTABLE)
-        set(CMAKE_MT "${MT_EXECUTABLE}" CACHE FILEPATH "Manifest tool" FORCE)
-    else()
-        message(WARNING "Manifest tool 'mt.exe' not found; Windows manifests will be skipped.")
-        set(CMAKE_MT "" CACHE FILEPATH "Manifest tool" FORCE)
-        set(CMAKE_MANIFEST_TOOL "" CACHE FILEPATH "Manifest tool" FORCE)
-    endif()
+# --- manifest tool (required) ---
+find_program(CMAKE_MT NAMES llvm-mt mt
+             HINTS "$ENV{LLVM_HOME}/bin" "C:/Program Files/LLVM/bin"
+             ENV PATH)
+if(NOT CMAKE_MT)
+  message(FATAL_ERROR "Manifest tool (llvm-mt/mt) not found. Install LLVM or Windows SDK and ensure it is in PATH.")
 endif()
+set(CMAKE_MANIFEST_TOOL "${CMAKE_MT}" CACHE FILEPATH "Manifest tool" FORCE)
+message(STATUS "Using manifest tool: ${CMAKE_MT}")
 
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    set(CMAKE_C_FLAGS_RELEASE "/O2 /GL /Gw /DNDEBUG")
-    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/LTCG /OPT:REF /OPT:ICF")
-else()
-    set(CMAKE_C_FLAGS_DEBUG "/Od /RTC1 /MDd")
-endif()
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/sandbox")
+# NOTE:
+# No global warnings, optimizations, or standards here.
+# Handle them per-target or in CMakePresets.
