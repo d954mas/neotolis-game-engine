@@ -32,7 +32,8 @@
       "toolchainFile": "${sourceDir}/cmake/toolchains/clang-cl.cmake",
       "binaryDir": "${sourceDir}/build/win-debug",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_STANDARD": "17"
       }
     },
     {
@@ -41,7 +42,8 @@
       "inherits": "win-debug",
       "binaryDir": "${sourceDir}/build/win-release",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_STANDARD": "17"
       }
     }
   ],
@@ -66,31 +68,19 @@
   "testPresets": [
     {
       "name": "web-debug",
-      "configurePreset": "web-debug",
-      "output": {
-        "showOnlyFailing": true
-      }
+      "configurePreset": "web-debug"
     },
     {
       "name": "web-release",
-      "configurePreset": "web-release",
-      "output": {
-        "showOnlyFailing": true
-      }
+      "configurePreset": "web-release"
     },
     {
       "name": "win-debug",
-      "configurePreset": "win-debug",
-      "output": {
-        "showOnlyFailing": true
-      }
+      "configurePreset": "win-debug"
     },
     {
       "name": "win-release",
-      "configurePreset": "win-release",
-      "output": {
-        "showOnlyFailing": true
-      }
+      "configurePreset": "win-release"
     }
   ]
 }

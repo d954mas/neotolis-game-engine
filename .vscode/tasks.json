@@ -1,0 +1,162 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Configure web-debug",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--preset",
+                "web-debug",
+                "--fresh"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build web-debug",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "--preset",
+                "web-debug"
+            ],
+            "group": "build",
+            "dependsOn": "Configure web-debug",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Run sandbox (web-debug)",
+            "type": "shell",
+            "command": "emrun",
+            "args": [
+                "--serve_root",
+                "${workspaceFolder}/build/web-debug/sandbox",
+                "--no_browser",
+                "${workspaceFolder}/build/web-debug/sandbox/nt_sandbox.html"
+            ],
+            "presentation": {
+                "clear": true,
+                "reveal": "always"
+            },
+            "dependsOn": "Build web-debug",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run tests (web-debug)",
+            "type": "shell",
+            "command": "ctest",
+            "args": [
+                "--preset",
+                "web-debug",
+                "--output-on-failure"
+            ],
+            "group": "test",
+            "dependsOn": "Build web-debug",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run size report (web-debug)",
+            "type": "shell",
+            "command": "ctest",
+            "args": [
+                "--preset",
+                "web-debug",
+                "--output-on-failure",
+                "-R",
+                "US3_size_report"
+            ],
+            "group": "test",
+            "dependsOn": "Build web-debug",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run microbench stub (web-debug)",
+            "type": "shell",
+            "command": "ctest",
+            "args": [
+                "--preset",
+                "web-debug",
+                "--output-on-failure",
+                "-R",
+                "US3_microbench_stub"
+            ],
+            "group": "test",
+            "dependsOn": "Build web-debug",
+            "problemMatcher": []
+        },
+        {
+            "label": "Configure win-debug",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--preset",
+                "win-debug",
+                "--fresh"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build win-debug",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "--preset",
+                "win-debug"
+            ],
+            "group": "build",
+            "dependsOn": "Configure win-debug",
+            "problemMatcher": [
+                "$msCompile"
+            ]
+        },
+        {
+            "label": "Run tests (win-debug)",
+            "type": "shell",
+            "command": "ctest",
+            "args": [
+                "--preset",
+                "win-debug",
+                "--output-on-failure"
+            ],
+            "group": "test",
+            "dependsOn": "Build win-debug",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run size report (win-debug)",
+            "type": "shell",
+            "command": "ctest",
+            "args": [
+                "--preset",
+                "win-debug",
+                "--output-on-failure",
+                "-R",
+                "US3_size_report"
+            ],
+            "group": "test",
+            "dependsOn": "Build win-debug",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run microbench stub (win-debug)",
+            "type": "shell",
+            "command": "ctest",
+            "args": [
+                "--preset",
+                "win-debug",
+                "--output-on-failure",
+                "-R",
+                "US3_microbench_stub"
+            ],
+            "group": "test",
+            "dependsOn": "Build win-debug",
+            "problemMatcher": []
+        }
+    ]
+}

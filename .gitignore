@@ -17,9 +17,11 @@ Makefile
 *.js
 
 # IDE and tooling
-.vscode/
 .idea/
 *.code-workspace
+!.vscode/
+.vscode/*.cache
+.vscode/*.log
 
 # OS clutter
 .DS_Store
