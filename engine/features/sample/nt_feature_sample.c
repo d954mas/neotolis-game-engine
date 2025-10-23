@@ -3,13 +3,13 @@
 
 static int g_feature_initialized = 0;
 
-nt_result nt_feature_sample_init() {
+nt_result nt_feature_sample_init(void) {
     assert(g_feature_initialized == 0);
     g_feature_initialized = 1;
     return NT_RESULT_OK;
 }
 
-void nt_feature_sample_shutdown() {
+void nt_feature_sample_shutdown(void) {
     assert(g_feature_initialized == 1);
     g_feature_initialized = 0;
 }

@@ -8,7 +8,7 @@ typedef enum {
     NT_RESULT_ERROR = 1
 } nt_result;
 
-nt_result nt_engine_init();
-void nt_engine_shutdown();
+nt_result nt_engine_init(void);
+void nt_engine_shutdown(void);
 
 #endif /* NT_ENGINE_H */
