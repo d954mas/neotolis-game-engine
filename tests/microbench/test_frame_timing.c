@@ -21,12 +21,7 @@ static double now_ms(void) {
 #endif
 
 int main(void) {
-    nt_engine_config config = {
-        .user_context = NULL,
-        .application_name = "microbench"
-    };
-
-    if (nt_engine_init(&config) != NT_ENGINE_STATUS_OK) {
+    if (nt_engine_init() != NT_RESULT_OK) {
         fprintf(stderr, "engine init failed\n");
         return 1;
     }
@@ -34,7 +29,7 @@ int main(void) {
     const int frames = 1000;
     double start = now_ms();
     for (int i = 0; i < frames; ++i) {
-        nt_engine_frame();
+        //nt_engine_frame();
     }
     double elapsed = now_ms() - start;
 

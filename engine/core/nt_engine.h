@@ -9,6 +9,6 @@ typedef enum {
 } nt_result;
 
 nt_result nt_engine_init();
-void nt_engine_shutdown(void);
+void nt_engine_shutdown();
 
 #endif /* NT_ENGINE_H */

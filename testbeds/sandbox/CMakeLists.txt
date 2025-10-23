@@ -16,7 +16,7 @@ target_sources(nt_sandbox
 
 target_include_directories(nt_sandbox
     PRIVATE
-        ${CMAKE_SOURCE_DIR}/engine
+        ${CMAKE_SOURCE_DIR}
 )
 
 # Use consistent compile flags for size-sensitive builds

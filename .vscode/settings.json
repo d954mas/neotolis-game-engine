@@ -8,6 +8,7 @@
         "stddef.h": "c",
         "corecrt.h": "c",
         "nt_feature_sample.h": "c",
-        "nt_engine.h": "c"
+        "nt_engine.h": "c",
+        "windows.h": "c"
     }
 }

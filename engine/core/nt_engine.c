@@ -1,5 +1,5 @@
 #include "nt_engine.h"
-
+#include <assert.h>
 static int g_engine_initialized = 0;
 
 nt_result nt_engine_init() {
@@ -8,7 +8,7 @@ nt_result nt_engine_init() {
     return NT_RESULT_OK;
 }
 
-void nt_engine_shutdown(void) {
+void nt_engine_shutdown() {
     assert(g_engine_initialized == 1);
     g_engine_initialized = 0;
 }

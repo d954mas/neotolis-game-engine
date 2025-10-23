@@ -10,7 +10,7 @@ target_sources(test_microbench_stub PRIVATE ${NT_ENGINE_SOURCES})
 
 target_include_directories(test_microbench_stub
     PRIVATE
-        ${CMAKE_SOURCE_DIR}/engine
+        ${CMAKE_SOURCE_DIR}
 )
 
 add_test(NAME US3_microbench_stub COMMAND test_microbench_stub)
