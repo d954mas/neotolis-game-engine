@@ -8,7 +8,7 @@ endif()
 
 target_sources(test_engine_lifecycle PRIVATE ${NT_ENGINE_SOURCES})
 
-target_include_directories(nt_sandbox
+target_include_directories(test_engine_lifecycle
     PRIVATE
         ${CMAKE_SOURCE_DIR}
 )
