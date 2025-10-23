@@ -10,20 +10,44 @@
             "preLaunchTask": "Build win-debug"
         },
         {
-            "name": "Run Sandbox (Web Debug via emrun)",
-            "type": "cppdbg",
+            "name": "Run Sandbox (Windows Release)",
+            "type": "cppvsdbg",
             "request": "launch",
-            "program": "emrun",
+            "program": "${workspaceFolder}\\build\\win-release\\testbeds\\sandbox\\nt_sandbox.exe",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build win-release"
+        },
+        {
+            "name": "Run Sandbox (Web Debug)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
             "args": [
-                "--serve_root",
-                "${workspaceFolder}/build/web-debug/testbeds/sandbox",
-                "--no_browser",
-                "${workspaceFolder}/build/web-debug/testbeds/sandbox/nt_sandbox.html"
+                "-NoLogo",
+                "-NoProfile",
+                "-Command",
+                "Start-Process",
+                "\"${workspaceFolder}\\build\\web-debug\\sandbox\\nt_sandbox.html\""
             ],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
-            "MIMode": "gdb",
             "preLaunchTask": "Build web-debug"
+        },
+        {
+            "name": "Run Sandbox (Web Release)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+            "args": [
+                "-NoLogo",
+                "-NoProfile",
+                "-Command",
+                "Start-Process",
+                "\"${workspaceFolder}\\build\\web-release\\sandbox\\nt_sandbox.html\""
+            ],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "preLaunchTask": "Build web-release"
         }
     ]
 }

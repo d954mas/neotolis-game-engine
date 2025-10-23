@@ -14,6 +14,18 @@
             "problemMatcher": []
         },
         {
+            "label": "Configure web-release",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--preset",
+                "web-release",
+                "--fresh"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
             "label": "Build web-debug",
             "type": "shell",
             "command": "cmake",
@@ -29,20 +41,52 @@
             ]
         },
         {
+            "label": "Build web-release",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "--preset",
+                "web-release"
+            ],
+            "group": "build",
+            "dependsOn": "Configure web-release",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
             "label": "Run sandbox (web-debug)",
             "type": "shell",
-            "command": "emrun",
+            "command": "powershell",
             "args": [
-                "--serve_root",
-                "${workspaceFolder}/build/web-debug/sandbox",
-                "--no_browser",
-                "${workspaceFolder}/build/web-debug/sandbox/nt_sandbox.html"
+                "-NoLogo",
+                "-NoProfile",
+                "-Command",
+                "Start-Process \"${workspaceFolder}/build/web-debug/sandbox/nt_sandbox.html\""
             ],
             "presentation": {
                 "clear": true,
                 "reveal": "always"
             },
             "dependsOn": "Build web-debug",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run sandbox (web-release)",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-NoLogo",
+                "-NoProfile",
+                "-Command",
+                "Start-Process \"${workspaceFolder}/build/web-release/sandbox/nt_sandbox.html\""
+            ],
+            "presentation": {
+                "clear": true,
+                "reveal": "always"
+            },
+            "dependsOn": "Build web-release",
             "problemMatcher": []
         },
         {
@@ -101,6 +145,18 @@
             "problemMatcher": []
         },
         {
+            "label": "Configure win-release",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--preset",
+                "win-release",
+                "--fresh"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
             "label": "Build win-debug",
             "type": "shell",
             "command": "cmake",
@@ -111,6 +167,21 @@
             ],
             "group": "build",
             "dependsOn": "Configure win-debug",
+            "problemMatcher": [
+                "$msCompile"
+            ]
+        },
+        {
+            "label": "Build win-release",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "--preset",
+                "win-release"
+            ],
+            "group": "build",
+            "dependsOn": "Configure win-release",
             "problemMatcher": [
                 "$msCompile"
             ]
