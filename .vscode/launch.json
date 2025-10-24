@@ -1,53 +1,42 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Run Sandbox (Windows Debug)",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}\\build\\win-debug\\testbeds\\sandbox\\nt_sandbox.exe",
-            "cwd": "${workspaceFolder}",
-            "preLaunchTask": "Build win-debug"
-        },
-        {
-            "name": "Run Sandbox (Windows Release)",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}\\build\\win-release\\testbeds\\sandbox\\nt_sandbox.exe",
-            "cwd": "${workspaceFolder}",
-            "preLaunchTask": "Build win-release"
-        },
-        {
-            "name": "Run Sandbox (Web Debug)",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
-            "args": [
-                "-NoLogo",
-                "-NoProfile",
-                "-Command",
-                "Start-Process",
-                "\"${workspaceFolder}\\build\\web-debug\\sandbox\\index.html\""
-            ],
-            "cwd": "${workspaceFolder}",
-            "stopAtEntry": false,
-            "preLaunchTask": "Build web-debug"
-        },
-        {
-            "name": "Run Sandbox (Web Release)",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
-            "args": [
-                "-NoLogo",
-                "-NoProfile",
-                "-Command",
-                "Start-Process",
-                "\"${workspaceFolder}\\build\\web-release\\sandbox\\index.html\""
-            ],
-            "cwd": "${workspaceFolder}",
-            "stopAtEntry": false,
-            "preLaunchTask": "Build web-release"
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Sandbox (Windows Debug)",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}\\build\\win-debug\\testbeds\\sandbox\\nt_sandbox.exe",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "Build win-debug"
+    },
+    {
+      "name": "Run Sandbox (Windows Release)",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}\\build\\win-release\\testbeds\\sandbox\\nt_sandbox.exe",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "Build win-release"
+    },
+
+     {
+      "name": "Run Sandbox (web-debug)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8000",
+      "webRoot": "${workspaceFolder}/build/web-debug/sandbox",
+      "preLaunchTask": "Run sandbox (web-debug)",
+      "sourceMaps": true,
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Run Sandbox (web-release)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8001",
+      "webRoot": "${workspaceFolder}/build/web-release/sandbox",
+      "preLaunchTask": "Run sandbox (web-release)",
+      "sourceMaps": true,
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ]
 }

@@ -62,8 +62,14 @@
             "args": [
                 "-NoLogo",
                 "-NoProfile",
-                "-Command",
-                "Start-Process \"${workspaceFolder}/build/web-debug/sandbox/index.html\""
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "\"${workspaceFolder}\\scripts\\serve-sandbox.ps1\"",
+                "-Port",
+                "8001",
+                "-Root",
+                "\"${workspaceFolder}\\build\\web-debug\\sandbox\""
             ],
             "presentation": {
                 "clear": true,
@@ -79,14 +85,27 @@
             "args": [
                 "-NoLogo",
                 "-NoProfile",
-                "-Command",
-                "Start-Process \"${workspaceFolder}/build/web-release/sandbox/index.html\""
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "\"${workspaceFolder}\\scripts\\serve-sandbox.ps1\"",
+                "-Port",
+                "8001",
+                "-Root",
+                "\"${workspaceFolder}\\build\\web-release\\sandbox\""
             ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
             "presentation": {
                 "clear": true,
-                "reveal": "always"
+                "reveal": "always",
+                "panel": "dedicated", // отдельный терминал для этой задачи
+                "group": "web-servers" // группа терминалов под веб-сервера
             },
             "dependsOn": "Build web-release",
+            "dependsOrder": "sequence", // сперва сборка, потом сервер
+            "isBackground": false,
             "problemMatcher": []
         },
         {
