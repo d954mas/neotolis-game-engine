@@ -3,7 +3,7 @@
   "cmakeMinimumRequired": { "major": 3, "minor": 27, "patch": 0 },
 
   "configurePresets": [
-    {
+     {
       "name": "base-web",
       "hidden": true,
       "generator": "Ninja",
@@ -27,17 +27,23 @@
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
     },
 
-    {
+   {
       "name": "web-debug",
       "displayName": "WebAssembly Debug",
       "inherits": "base-web",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "WEB_SOURCE_MAP_BASE": "http://localhost:8000/"
+      }
     },
     {
       "name": "web-release",
       "displayName": "WebAssembly Release",
       "inherits": "base-web",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "WEB_SOURCE_MAP_BASE": "http://localhost:8001/"
+      }
     },
 
     {
