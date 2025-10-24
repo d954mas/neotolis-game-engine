@@ -10,7 +10,8 @@
       "toolchainFile": "${sourceDir}/cmake/toolchains/emscripten.cmake",
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
-        "CMAKE_EXPORT_COMPILE_COMMANDS": true
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "CMAKE_TARGET_PLATFORM": "wasm"
       }
     },
     {
@@ -20,7 +21,8 @@
       "toolchainFile": "${sourceDir}/cmake/toolchains/clang-cl.cmake",
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
-        "CMAKE_EXPORT_COMPILE_COMMANDS": true
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "CMAKE_TARGET_PLATFORM": "windows"
       },
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
     },

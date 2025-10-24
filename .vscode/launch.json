@@ -27,7 +27,7 @@
                 "-NoProfile",
                 "-Command",
                 "Start-Process",
-                "\"${workspaceFolder}\\build\\web-debug\\sandbox\\nt_sandbox.html\""
+                "\"${workspaceFolder}\\build\\web-debug\\sandbox\\index.html\""
             ],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
@@ -43,7 +43,7 @@
                 "-NoProfile",
                 "-Command",
                 "Start-Process",
-                "\"${workspaceFolder}\\build\\web-release\\sandbox\\nt_sandbox.html\""
+                "\"${workspaceFolder}\\build\\web-release\\sandbox\\index.html\""
             ],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,

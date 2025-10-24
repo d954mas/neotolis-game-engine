@@ -63,7 +63,7 @@
                 "-NoLogo",
                 "-NoProfile",
                 "-Command",
-                "Start-Process \"${workspaceFolder}/build/web-debug/sandbox/nt_sandbox.html\""
+                "Start-Process \"${workspaceFolder}/build/web-debug/sandbox/index.html\""
             ],
             "presentation": {
                 "clear": true,
@@ -80,7 +80,7 @@
                 "-NoLogo",
                 "-NoProfile",
                 "-Command",
-                "Start-Process \"${workspaceFolder}/build/web-release/sandbox/nt_sandbox.html\""
+                "Start-Process \"${workspaceFolder}/build/web-release/sandbox/index.html\""
             ],
             "presentation": {
                 "clear": true,
