@@ -1,13 +1,13 @@
 param(
   [int]$Port = 8000,
-  [string]$Root
+  [string]$Root,
+  [switch]$NoWait
 )
 
 $ErrorActionPreference = 'Stop'
 
 # Диагностика: убедимся, что исполняется именно этот файл
-Write-Host "SERVE-SANDBOX.PS1 ACTIVE $(Get-Date -Format o)"
-Write-Host "SCRIPT PATH: $PSCommandPath"
+Write-Host "SERVE-SANDBOX.PS1 ACTIVE"
 Write-Host "PORT: $Port"
 Write-Host "ROOT: $Root"
 
@@ -38,8 +38,10 @@ Start-Sleep -Seconds 1
 
 # ВАЖНО: открываем URL, а не локальный файл
 $url = "http://localhost:$Port/"
-Write-Host "OPENING URL: $url"
-Start-Process $url
-
 Write-Host "SERVER READY $url (PID $($server.Id))"
+
+if ($NoWait) {
+  exit 0
+}
+
 try { Wait-Process -Id $server.Id } finally { Remove-Item $pidFile -ErrorAction SilentlyContinue }

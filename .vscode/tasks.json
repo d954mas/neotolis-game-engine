@@ -65,20 +65,21 @@
                 "-ExecutionPolicy",
                 "Bypass",
                 "-File",
-                "\"${workspaceFolder}\\scripts\\serve-sandbox.ps1\"",
+                "${workspaceFolder}\\scripts\\serve-sandbox.ps1",
                 "-Port",
                 "8001",
                 "-Root",
-                "\"${workspaceFolder}\\build\\web-debug\\sandbox\""
+                "${workspaceFolder}\\build\\web-debug\\sandbox",
+                "-NoWait"
             ],
-            "presentation": {
-                "clear": true,
-                "reveal": "always"
+            "options": {
+                "cwd": "${workspaceFolder}"
             },
             "dependsOn": "Build web-debug",
+            "dependsOrder": "sequence",
             "problemMatcher": []
         },
-        {
+          {
             "label": "Run sandbox (web-release)",
             "type": "shell",
             "command": "powershell",
@@ -88,26 +89,21 @@
                 "-ExecutionPolicy",
                 "Bypass",
                 "-File",
-                "\"${workspaceFolder}\\scripts\\serve-sandbox.ps1\"",
+                "${workspaceFolder}\\scripts\\serve-sandbox.ps1",
                 "-Port",
                 "8001",
                 "-Root",
-                "\"${workspaceFolder}\\build\\web-release\\sandbox\""
+                "${workspaceFolder}\\build\\web-release\\sandbox",
+                "-NoWait"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
-            "presentation": {
-                "clear": true,
-                "reveal": "always",
-                "panel": "dedicated", // отдельный терминал для этой задачи
-                "group": "web-servers" // группа терминалов под веб-сервера
-            },
             "dependsOn": "Build web-release",
-            "dependsOrder": "sequence", // сперва сборка, потом сервер
-            "isBackground": false,
+            "dependsOrder": "sequence",
             "problemMatcher": []
         },
+
         {
             "label": "Run tests (web-debug)",
             "type": "shell",

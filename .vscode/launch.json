@@ -22,7 +22,7 @@
       "name": "Run Sandbox (web-debug)",
       "type": "chrome",
       "request": "launch",
-      "url": "http://localhost:8000",
+      "url": "http://localhost:8001",
       "webRoot": "${workspaceFolder}/build/web-debug/sandbox",
       "preLaunchTask": "Run sandbox (web-debug)",
       "sourceMaps": true,
