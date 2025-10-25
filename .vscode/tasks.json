@@ -7,8 +7,7 @@
             "command": "cmake",
             "args": [
                 "--preset",
-                "web-debug",
-                "--fresh"
+                "web-debug"
             ],
             "group": "build",
             "problemMatcher": []
@@ -19,8 +18,7 @@
             "command": "cmake",
             "args": [
                 "--preset",
-                "web-release",
-                "--fresh"
+                "web-release"
             ],
             "group": "build",
             "problemMatcher": []
@@ -104,57 +102,14 @@
             "problemMatcher": []
         },
 
-        {
-            "label": "Run tests (web-debug)",
-            "type": "shell",
-            "command": "ctest",
-            "args": [
-                "--preset",
-                "web-debug",
-                "--output-on-failure"
-            ],
-            "group": "test",
-            "dependsOn": "Build web-debug",
-            "problemMatcher": []
-        },
-        {
-            "label": "Run size report (web-debug)",
-            "type": "shell",
-            "command": "ctest",
-            "args": [
-                "--preset",
-                "web-debug",
-                "--output-on-failure",
-                "-R",
-                "US3_size_report"
-            ],
-            "group": "test",
-            "dependsOn": "Build web-debug",
-            "problemMatcher": []
-        },
-        {
-            "label": "Run microbench stub (web-debug)",
-            "type": "shell",
-            "command": "ctest",
-            "args": [
-                "--preset",
-                "web-debug",
-                "--output-on-failure",
-                "-R",
-                "US3_microbench_stub"
-            ],
-            "group": "test",
-            "dependsOn": "Build web-debug",
-            "problemMatcher": []
-        },
+
         {
             "label": "Configure win-debug",
             "type": "shell",
             "command": "cmake",
             "args": [
                 "--preset",
-                "win-debug",
-                "--fresh"
+                "win-debug"
             ],
             "group": "build",
             "problemMatcher": []
@@ -165,8 +120,7 @@
             "command": "cmake",
             "args": [
                 "--preset",
-                "win-release",
-                "--fresh"
+                "win-release"
             ],
             "group": "build",
             "problemMatcher": []
@@ -201,48 +155,5 @@
                 "$msCompile"
             ]
         },
-        {
-            "label": "Run tests (win-debug)",
-            "type": "shell",
-            "command": "ctest",
-            "args": [
-                "--preset",
-                "win-debug",
-                "--output-on-failure"
-            ],
-            "group": "test",
-            "dependsOn": "Build win-debug",
-            "problemMatcher": []
-        },
-        {
-            "label": "Run size report (win-debug)",
-            "type": "shell",
-            "command": "ctest",
-            "args": [
-                "--preset",
-                "win-debug",
-                "--output-on-failure",
-                "-R",
-                "US3_size_report"
-            ],
-            "group": "test",
-            "dependsOn": "Build win-debug",
-            "problemMatcher": []
-        },
-        {
-            "label": "Run microbench stub (win-debug)",
-            "type": "shell",
-            "command": "ctest",
-            "args": [
-                "--preset",
-                "win-debug",
-                "--output-on-failure",
-                "-R",
-                "US3_microbench_stub"
-            ],
-            "group": "test",
-            "dependsOn": "Build win-debug",
-            "problemMatcher": []
-        }
     ]
 }
