@@ -155,5 +155,35 @@
                 "$msCompile"
             ]
         },
+        {
+            "label": "Generate sandbox size report",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-NoLogo",
+                "-NoProfile",
+                "-Command",
+                "& { cmake --preset ${input:ntSizeReportPreset} -DNT_SANDBOX_ENABLE_SIZE_REPORT=ON; cmake --build --preset ${input:ntSizeReportPreset} --target nt_sandbox_size_report }"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        }
+    ]
+    ,
+    "inputs": [
+        {
+            "id": "ntSizeReportPreset",
+            "description": "CMake preset to use for the sandbox size report",
+            "type": "pickString",
+            "options": [
+                "web-debug",
+                "web-release",
+                "win-debug",
+                "win-release"
+            ],
+            "default": "web-debug"
+        }
     ]
 }
