@@ -37,6 +37,24 @@
       "preLaunchTask": "Run sandbox (web-release)",
       "sourceMaps": true,
       "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Clean build directory",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "powershell.exe",
+      "args": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "if (Test-Path '${workspaceFolder}\\build') { Remove-Item -Path '${workspaceFolder}\\build' -Recurse -Force }; New-Item -ItemType Directory -Path '${workspaceFolder}\\build' | Out-Null"
+      ],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
     }
   ]
 }
+
