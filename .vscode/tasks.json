@@ -69,7 +69,7 @@
                 "-Port",
                 "8001",
                 "-Root",
-                "${workspaceFolder}\\build\\web-debug\\sandbox",
+                "${workspaceFolder}\\output\\sandbox\\wasm\\debug",
                 "-NoWait"
             ],
             "options": {
@@ -93,7 +93,7 @@
                 "-Port",
                 "8001",
                 "-Root",
-                "${workspaceFolder}\\build\\web-release\\sandbox",
+                "${workspaceFolder}\\output\\sandbox\\wasm\\release",
                 "-NoWait"
             ],
             "options": {

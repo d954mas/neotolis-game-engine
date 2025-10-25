@@ -5,6 +5,11 @@ project(nt_engine
     LANGUAGES C
 )
 
+# Destination for packaged artifacts
+set(NT_OUTPUT_ROOT "${CMAKE_SOURCE_DIR}/output" CACHE PATH "Root folder for exported build artifacts")
+
+include(cmake/NTArtifacts.cmake)
+
 # Common language settings
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)

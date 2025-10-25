@@ -5,7 +5,7 @@
       "name": "Run Sandbox (Windows Debug)",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}\\build\\win-debug\\testbeds\\sandbox\\nt_sandbox.exe",
+      "program": "${workspaceFolder}\\output\\sandbox\\windows\\debug\\engine.exe",
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "Build win-debug"
     },
@@ -13,7 +13,7 @@
       "name": "Run Sandbox (Windows Release)",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}\\build\\win-release\\testbeds\\sandbox\\nt_sandbox.exe",
+      "program": "${workspaceFolder}\\output\\sandbox\\windows\\release\\engine.exe",
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "Build win-release"
     },
@@ -23,7 +23,7 @@
       "type": "chrome",
       "request": "launch",
       "url": "http://localhost:8001",
-      "webRoot": "${workspaceFolder}/build/web-debug/sandbox",
+      "webRoot": "${workspaceFolder}/output/sandbox/wasm/debug",
       "preLaunchTask": "Run sandbox (web-debug)",
       "sourceMaps": true,
       "skipFiles": ["<node_internals>/**"]
@@ -33,7 +33,7 @@
       "type": "chrome",
       "request": "launch",
       "url": "http://localhost:8001",
-      "webRoot": "${workspaceFolder}/build/web-release/sandbox",
+      "webRoot": "${workspaceFolder}/output/sandbox/wasm/release",
       "preLaunchTask": "Run sandbox (web-release)",
       "sourceMaps": true,
       "skipFiles": ["<node_internals>/**"]

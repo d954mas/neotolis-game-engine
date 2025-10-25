@@ -25,3 +25,9 @@ if(CMAKE_C_COMPILER_ID MATCHES "Clang")
 else()
     target_compile_options(nt_sandbox PRIVATE /W4 /WX)
 endif()
+
+# Export packaged artifacts for downstream consumers
+nt_configure_packaged_output(
+    TARGET nt_sandbox
+    APP_NAME sandbox
+)
