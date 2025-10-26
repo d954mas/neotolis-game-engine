@@ -17,6 +17,19 @@
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "Build win-release"
     },
+    {
+      "name": "Run Tests (Windows Debug)",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "ctest",
+      "args": [
+        "--preset",
+        "win-debug-tests"
+      ],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "Build win-debug-tests",
+      "console": "integratedTerminal"
+    },
 
      {
       "name": "Run Sandbox (web-debug)",

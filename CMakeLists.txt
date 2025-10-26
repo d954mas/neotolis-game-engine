@@ -31,7 +31,21 @@ endif()
 # Print active build type (handy when using Presets)
 message(STATUS "Configuring ${CMAKE_PROJECT_NAME} in ${CMAKE_BUILD_TYPE} mode (${CMAKE_TARGET_PLATFORM})")
 
+# Project toggles
+option(NT_PROJECT_SANDBOX "Build the sandbox testbed project" ON)
+option(NT_ENABLE_TESTS "Build nt_engine tests" OFF)
+
 # Subprojects
 add_subdirectory(engine)
-add_subdirectory(testbeds/sandbox)
-add_subdirectory(tests)
+
+if(NT_PROJECT_SANDBOX)
+    add_subdirectory(testbeds/sandbox)
+else()
+    message(STATUS "Sandbox testbed is disabled. Enable with -DNT_PROJECT_SANDBOX=ON.")
+endif()
+
+if(NT_ENABLE_TESTS)
+    add_subdirectory(tests)
+else()
+    message(STATUS "Tests are disabled. Configure with -DNT_ENABLE_TESTS=ON or use a *-tests preset to enable them.")
+endif()

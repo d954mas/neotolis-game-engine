@@ -52,6 +52,7 @@ function(nt_configure_packaged_output)
             COMMENT "Packaging Windows executable for ${_nt_target} -> ${_nt_windows_binary}"
         )
     elseif(CMAKE_TARGET_PLATFORM STREQUAL "wasm")
+        set(_nt_wasm_glue "$<TARGET_FILE_DIR:${_nt_target}>/${_nt_output_name}.js")
         set(_nt_wasm_file "$<TARGET_FILE_DIR:${_nt_target}>/${_nt_output_name}.wasm")
         set(_nt_wasm_map "$<TARGET_FILE_DIR:${_nt_target}>/${_nt_output_name}.wasm.map")
         if(NOT DEFINED NT_WASM_EMIT_SOURCE_MAPS)
@@ -62,15 +63,18 @@ function(nt_configure_packaged_output)
                 "$<TARGET_FILE:${_nt_target}>"
                 "${_nt_binary_dir}/index.html"
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${_nt_wasm_glue}"
+                "${_nt_binary_dir}/${_nt_output_name}.js"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 "${_nt_wasm_file}"
-                "${_nt_binary_dir}/engine.wasm"
+                "${_nt_binary_dir}/${_nt_output_name}.wasm"
             COMMENT "Packaging WebAssembly bundle for ${_nt_target}"
         )
         if(NT_WASM_EMIT_SOURCE_MAPS)
             add_custom_command(TARGET ${_nt_target} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_if_different
                     "${_nt_wasm_map}"
-                    "${_nt_binary_dir}/engine.wasm.map"
+                    "${_nt_binary_dir}/${_nt_output_name}.wasm.map"
                 COMMENT "Copying WebAssembly source map for ${_nt_target}"
             )
         endif()
