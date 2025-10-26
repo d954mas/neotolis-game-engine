@@ -187,7 +187,8 @@
             "command": "ctest",
             "args": [
                 "--preset",
-                "win-debug-tests"
+                "win-debug-tests",
+
             ],
             "group": {
                 "kind": "test",

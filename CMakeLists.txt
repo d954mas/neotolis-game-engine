@@ -45,6 +45,7 @@ else()
 endif()
 
 if(NT_ENABLE_TESTS)
+    include(CTest)
     add_subdirectory(tests)
 else()
     message(STATUS "Tests are disabled. Configure with -DNT_ENABLE_TESTS=ON or use a *-tests preset to enable them.")
