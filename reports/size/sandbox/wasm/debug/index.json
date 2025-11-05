@@ -1,33 +1,33 @@
 {
-  "generated_at": "2025-11-05T13:54:41.484094+00:00",
+  "generated_at": "2025-11-05T14:13:45.898902+00:00",
   "folder": "sandbox/wasm/debug",
   "report_path": "sandbox/wasm/debug/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:c087e00f33d70068a247b4b3b4a74eb2d0208509",
-      "git_sha": "c087e00f33d70068a247b4b3b4a74eb2d0208509",
-      "git_message": "size report",
+      "id": "head:master:6d763160890119ff70c6825ca0304c128d7c1dc0",
+      "git_sha": "6d763160890119ff70c6825ca0304c128d7c1dc0",
+      "git_message": "fixed update py",
       "branch": "master",
-      "subject": "size report",
-      "date": "2025-11-05T14:10:32.475314+00:00",
-      "label": "HEAD-master-size report-c087e00",
+      "subject": "fixed update py",
+      "date": "2025-11-05T14:13:46.319620+00:00",
+      "label": "HEAD-master-fixed update py-6d76316",
       "artifacts": [
         {
           "file_name": "index.html",
-          "size_bytes": 22069
+          "size_bytes": 22270
         },
         {
           "file_name": "nt_sandbox.js",
-          "size_bytes": 48941
+          "size_bytes": 50372
         },
         {
           "file_name": "nt_sandbox.wasm",
-          "size_bytes": 1203785
+          "size_bytes": 1206556
         },
         {
           "file_name": "nt_sandbox.wasm.map",
-          "size_bytes": 88176
+          "size_bytes": 87675
         }
       ]
     },

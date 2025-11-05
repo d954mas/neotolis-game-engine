@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-11-05T14:10:32.475314+00:00",
+  "generated_at": "2025-11-05T14:13:46.319620+00:00",
   "folder": "sandbox/windows/release",
   "report_path": "sandbox/windows/release/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:08cf815bfec3c5eac68f696f6dd777d504f6f8ea",
-      "git_sha": "08cf815bfec3c5eac68f696f6dd777d504f6f8ea",
-      "git_message": "build wasm on windows",
+      "id": "head:master:6d763160890119ff70c6825ca0304c128d7c1dc0",
+      "git_sha": "6d763160890119ff70c6825ca0304c128d7c1dc0",
+      "git_message": "fixed update py",
       "branch": "master",
-      "subject": "build wasm on windows",
-      "date": "2025-11-05T14:10:32.475314+00:00",
-      "label": "HEAD-master-build wasm on windows-08cf815",
+      "subject": "fixed update py",
+      "date": "2025-11-05T14:13:46.319620+00:00",
+      "label": "HEAD-master-fixed update py-6d76316",
       "artifacts": [
         {
           "file_name": "engine.exe",

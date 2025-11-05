@@ -1,9 +1,9 @@
 git_sha,git_message,file_name,size_bytes
-c087e00f33d70068a247b4b3b4a74eb2d0208509,master,HEAD,
-,,index.html,22069
-,,nt_sandbox.js,48941
-,,nt_sandbox.wasm,1203785
-,,nt_sandbox.wasm.map,88176
+6d763160890119ff70c6825ca0304c128d7c1dc0,master,HEAD,
+,,index.html,22270
+,,nt_sandbox.js,50372
+,,nt_sandbox.wasm,1206556
+,,nt_sandbox.wasm.map,87675
 3876a4cccdd02a2b4d7a3952de7cc4e37396f960,003-add-size-reports,BRANCH,
 ,,index.html,22190
 ,,nt_sandbox.js,65533
