@@ -1,16 +1,16 @@
 {
-  "generated_at": "2025-11-05T11:57:49.452165+00:00",
+  "generated_at": "2025-11-05T12:32:11.475086+00:00",
   "folder": "sandbox/wasm/debug",
   "report_path": "sandbox/wasm/debug/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:24e25478ff34de03c5f364d84be0d76c32893b18",
-      "git_sha": "24e25478ff34de03c5f364d84be0d76c32893b18",
-      "git_message": "fixed report",
+      "id": "head:003-add-size-reports:e78ba00238ece7ac4a79a11db871c30d76b23b44",
+      "git_sha": "e78ba00238ece7ac4a79a11db871c30d76b23b44",
+      "git_message": "keep branch history",
       "branch": "003-add-size-reports",
-      "subject": "fixed report",
-      "label": "HEAD-003-add-size-reports-fixed report-24e2547",
+      "subject": "keep branch history",
+      "label": "HEAD-003-add-size-reports-keep branch history-e78ba00",
       "artifacts": [
         {
           "file_name": "index.html",
@@ -32,12 +32,12 @@
     },
     {
       "kind": "branch",
-      "id": "branch:24e25478ff34de03c5f364d84be0d76c32893b18",
-      "git_sha": "24e25478ff34de03c5f364d84be0d76c32893b18",
-      "git_message": "fixed report",
+      "id": "branch:003-add-size-reports:e78ba00238ece7ac4a79a11db871c30d76b23b44",
+      "git_sha": "e78ba00238ece7ac4a79a11db871c30d76b23b44",
+      "git_message": "keep branch history",
       "branch": "003-add-size-reports",
-      "subject": "fixed report",
-      "label": "003-add-size-reports-fixed report-24e2547",
+      "subject": "keep branch history",
+      "label": "003-add-size-reports-keep branch history-e78ba00",
       "artifacts": [
         {
           "file_name": "index.html",

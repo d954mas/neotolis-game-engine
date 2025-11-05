@@ -39,7 +39,7 @@ class Artifact:
 
 @dataclass
 class SnapshotEntry:
-    kind: str  # "master", "head", or "history"
+    kind: str  # "head" or "branch"
     sha: str
     message: str
     artifacts: List[Artifact]
@@ -49,18 +49,6 @@ class SnapshotEntry:
 
 class SizeReportError(RuntimeError):
     """Raised when the size-report workflow encounters a blocking issue."""
-
-
-def clone_entry(entry: SnapshotEntry, *, kind: str | None = None) -> SnapshotEntry:
-    """Return a deep copy of a snapshot entry, optionally overriding the kind."""
-    return SnapshotEntry(
-        kind=kind or entry.kind,
-        sha=entry.sha,
-        message=entry.message,
-        artifacts=[Artifact(file_name=a.file_name, size_bytes=a.size_bytes) for a in entry.artifacts],
-        branch=entry.branch,
-        subject=entry.subject,
-    )
 
 
 def is_hex_sha(candidate: str) -> bool:
@@ -283,9 +271,7 @@ def write_report_entries(report_path: Path, entries: List[SnapshotEntry]) -> Non
                 )
 
 
-def update_head_snapshot(
-    input_folder: Path, output_folder: Path, repo_root: Path, accept_master: str | None = None
-) -> GitMetadata:
+def update_head_snapshot(input_folder: Path, output_folder: Path, repo_root: Path) -> GitMetadata:
     if not input_folder.exists() or not input_folder.is_dir():
         raise SizeReportError(f"Input folder '{input_folder}' does not exist or is not a directory")
     output_folder.mkdir(parents=True, exist_ok=True)
@@ -299,24 +285,32 @@ def update_head_snapshot(
         existing_entries = read_report_entries(report_path)
     else:
         existing_entries = []
-    master_entry: SnapshotEntry | None = None
-    history_entries: List[SnapshotEntry] = []
 
+    branch_entries: List[SnapshotEntry] = []
+    seen_branch_keys: set[tuple[str, str]] = set()
     for entry in existing_entries:
-        if entry.kind == "master":
-            entry_copy = clone_entry(entry, kind="master")
-            if master_entry is None and entry.sha not in (None, "", PLACEHOLDER_SHA):
-                master_entry = entry_copy
-            else:
-                history_entries.append(clone_entry(entry, kind="history"))
-        elif entry.kind == "branch":
-            history_entries.append(clone_entry(entry, kind="history"))
-        elif entry.kind == "history":
-            history_entries.append(clone_entry(entry))
-        elif entry.kind == "head":
+        if entry.kind != "branch":
             continue
-        else:
-            history_entries.append(clone_entry(entry, kind="history"))
+        branch_name_entry = entry.branch or entry.message or ""
+        sha_entry = entry.sha or ""
+        if not branch_name_entry or not sha_entry or sha_entry == PLACEHOLDER_SHA:
+            continue
+        key = (branch_name_entry, sha_entry)
+        if key in seen_branch_keys:
+            continue
+        seen_branch_keys.add(key)
+        branch_entries.append(
+            SnapshotEntry(
+                kind="branch",
+                sha=sha_entry,
+                message=entry.message,
+                artifacts=[
+                    Artifact(file_name=a.file_name, size_bytes=a.size_bytes) for a in entry.artifacts
+                ],
+                branch=branch_name_entry,
+                subject=entry.subject,
+            )
+        )
 
     head_meta = current_head_metadata(repo_root)
     branch_name = head_meta.branch
@@ -345,43 +339,15 @@ def update_head_snapshot(
             subject=head_meta.subject,
         )
 
-    previous_master_entry = master_entry
-    if accept_master:
-        master_meta = metadata_for_ref(repo_root, accept_master)
-        master_entry = SnapshotEntry(
-            kind="master",
-            sha=master_meta.sha,
-            message=master_meta.subject,
-            artifacts=[Artifact(file_name=a.file_name, size_bytes=a.size_bytes) for a in head_artifacts],
-            subject=master_meta.subject,
-        )
-    if previous_master_entry is not None and previous_master_entry is not master_entry:
-        if previous_master_entry.sha not in (None, "", PLACEHOLDER_SHA) or previous_master_entry.artifacts:
-            history_entries.insert(0, clone_entry(previous_master_entry, kind="history"))
-
-    if master_entry is not None and master_entry.sha == head_entry.sha:
-        master_map = {artifact.file_name: artifact.size_bytes for artifact in master_entry.artifacts}
-        head_map = {artifact.file_name: artifact.size_bytes for artifact in head_entry.artifacts}
-        if master_map == head_map:
-            master_entry = None
-
     entries_to_write: List[SnapshotEntry] = []
-    if master_entry is not None:
-        entries_to_write.append(master_entry)
     entries_to_write.append(head_entry)
+    branch_keys = {(entry.branch or "", entry.sha or "") for entry in branch_entries}
     if branch_entry is not None:
-        entries_to_write.append(branch_entry)
-    deduped_history: List[SnapshotEntry] = []
-    seen_history_keys: set[tuple[str, str, str | None]] = set()
-    for history_entry in history_entries:
-        if history_entry.sha in (None, "", PLACEHOLDER_SHA) and not history_entry.artifacts:
-            continue
-        key = (history_entry.kind, history_entry.sha, history_entry.branch)
-        if key in seen_history_keys:
-            continue
-        seen_history_keys.add(key)
-        deduped_history.append(history_entry)
-    entries_to_write.extend(deduped_history)
+        key = (branch_entry.branch or "", branch_entry.sha or "")
+        if key not in branch_keys:
+            branch_entries.insert(0, branch_entry)
+            branch_keys.add(key)
+    entries_to_write.extend(branch_entries)
     write_report_entries(report_path, entries_to_write)
     return head_meta
 
@@ -453,10 +419,11 @@ def regenerate_manifest(
 
         commits_payload = []
         for entry in entries:
+            branch_fragment = entry.branch or "NO_BRANCH"
             commits_payload.append(
                 {
                     "kind": entry.kind,
-                    "id": f"{entry.kind}:{entry.sha or PLACEHOLDER_SHA}",
+                    "id": f"{entry.kind}:{branch_fragment}:{entry.sha or PLACEHOLDER_SHA}",
                     "git_sha": entry.sha or PLACEHOLDER_SHA,
                     "git_message": entry.subject or entry.message or PLACEHOLDER_MESSAGE,
                     "branch": entry.branch,
@@ -622,11 +589,6 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
         required=True,
         help="Directory under reports/size where report.txt resides (absolute or relative to reports/size).",
     )
-    parser.add_argument(
-        "--accept-master",
-        dest="accept_master",
-        help="When provided, promote the measured HEAD snapshot to MASTER using the supplied Git ref.",
-    )
     return parser.parse_args(argv)
 
 
@@ -658,7 +620,6 @@ def main(argv: List[str] | None = None) -> int:
             input_path,
             output_path,
             repo_root,
-            accept_master=args.accept_master,
         )
         manifest = regenerate_manifest(root, repo_root, output_label)
         print(
