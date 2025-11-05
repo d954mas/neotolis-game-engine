@@ -90,8 +90,9 @@ def worktree_has_changes_outside_reports(repo_root: Path) -> bool:
         line = raw_line.strip()
         if not line:
             continue
-        path_fragment = line[3:] if len(line) > 3 else ""
+        path_fragment = line[2:] if len(line) > 2 else ""
         path_fragment = path_fragment.strip()
+      #  print(f"path_fragment: {path_fragment}")
         if " -> " in path_fragment:
             path_fragment = path_fragment.split(" -> ", 1)[1].strip()
         if path_fragment.startswith('"') and path_fragment.endswith('"'):
