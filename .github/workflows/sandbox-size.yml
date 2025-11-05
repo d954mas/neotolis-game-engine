@@ -89,11 +89,13 @@ jobs:
         with:
           name: sandbox-wasm
           path: artifact-inputs/wasm
+          merge-multiple: true
       - name: Download windows artifacts
         uses: actions/download-artifact@v4
         with:
           name: sandbox-windows
           path: artifact-inputs/windows
+          merge-multiple: true
       - name: Arrange artifact directories
         run: |
           set -euo pipefail
