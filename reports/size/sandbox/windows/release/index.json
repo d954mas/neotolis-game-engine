@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-11-05T13:37:47.043337+00:00",
+  "generated_at": "2025-11-05T13:48:19.416915+00:00",
   "folder": "sandbox/windows/release",
   "report_path": "sandbox/windows/release/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:5c5319f0d10ce27d4d7f7c7eb5f3322754c2f60c",
-      "git_sha": "5c5319f0d10ce27d4d7f7c7eb5f3322754c2f60c",
-      "git_message": "sandbox-size",
+      "id": "head:master:e318eecd8c37be5effa2046d07b2ea55c95daa73",
+      "git_sha": "e318eecd8c37be5effa2046d07b2ea55c95daa73",
+      "git_message": "sandbox size report",
       "branch": "master",
-      "subject": "sandbox-size",
-      "date": "2025-11-05T13:43:50.812324+00:00",
-      "label": "HEAD-master-sandbox-size-5c5319f",
+      "subject": "sandbox size report",
+      "date": "2025-11-05T13:48:19.416915+00:00",
+      "label": "HEAD-master-sandbox size report-e318eec",
       "artifacts": [
         {
           "file_name": "cmake_install.cmake",
