@@ -36,7 +36,32 @@
             "dependsOn": "Configure web-debug",
             "problemMatcher": [
                 "$gcc"
-            ]
+            ],
+            "windows": {
+                "command": "powershell",
+                "args": [
+                    "-NoLogo",
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-Command",
+                    "& { cmake --build --preset web-debug; Start-Process -FilePath python -ArgumentList 'reports/size/update.py','--folder','sandbox/wasm/debug' -WindowStyle Hidden }"
+                ]
+            },
+            "linux": {
+                "command": "/bin/bash",
+                "args": [
+                    "-lc",
+                    "set -e; cmake --build --preset web-debug; (python3 reports/size/update.py --folder sandbox/wasm/debug >/tmp/web_debug_size.log 2>&1 &)"
+                ]
+            },
+            "osx": {
+                "command": "/bin/bash",
+                "args": [
+                    "-lc",
+                    "set -e; cmake --build --preset web-debug; (python3 reports/size/update.py --folder sandbox/wasm/debug >/tmp/web_debug_size.log 2>&1 &)"
+                ]
+            }
         },
         {
             "label": "Build web-release",
@@ -51,7 +76,32 @@
             "dependsOn": "Configure web-release",
             "problemMatcher": [
                 "$gcc"
-            ]
+            ],
+            "windows": {
+                "command": "powershell",
+                "args": [
+                    "-NoLogo",
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-Command",
+                    "& { cmake --build --preset web-release; Start-Process -FilePath python -ArgumentList 'reports/size/update.py','--folder','sandbox/wasm/release' -WindowStyle Hidden }"
+                ]
+            },
+            "linux": {
+                "command": "/bin/bash",
+                "args": [
+                    "-lc",
+                    "set -e; cmake --build --preset web-release; (python3 reports/size/update.py --folder sandbox/wasm/release >/tmp/web_release_size.log 2>&1 &)"
+                ]
+            },
+            "osx": {
+                "command": "/bin/bash",
+                "args": [
+                    "-lc",
+                    "set -e; cmake --build --preset web-release; (python3 reports/size/update.py --folder sandbox/wasm/release >/tmp/web_release_size.log 2>&1 &)"
+                ]
+            }
         },
         {
             "label": "Run sandbox (web-debug)",
@@ -138,7 +188,18 @@
             "dependsOn": "Configure win-debug",
             "problemMatcher": [
                 "$msCompile"
-            ]
+            ],
+            "windows": {
+                "command": "powershell",
+                "args": [
+                    "-NoLogo",
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-Command",
+                    "& { cmake --build --preset win-debug; Start-Process -FilePath python -ArgumentList 'reports/size/update.py','--folder','sandbox/wasm/debug' -WindowStyle Hidden }"
+                ]
+            }
         },
         {
             "label": "Build win-release",
@@ -153,7 +214,18 @@
             "dependsOn": "Configure win-release",
             "problemMatcher": [
                 "$msCompile"
-            ]
+            ],
+            "windows": {
+                "command": "powershell",
+                "args": [
+                    "-NoLogo",
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-Command",
+                    "& { cmake --build --preset win-release; Start-Process -FilePath python -ArgumentList 'reports/size/update.py','--folder','sandbox/wasm/release' -WindowStyle Hidden }"
+                ]
+            }
         },
         {
             "label": "Configure win-debug-tests",
@@ -196,6 +268,78 @@
             },
             "dependsOn": "Build win-debug-tests",
             "problemMatcher": []
+        },
+        {
+            "label": "Trigger size report (sandbox/wasm/debug)",
+            "type": "shell",
+            "command": "python3",
+            "args": [
+                "reports/size/update.py",
+                "--folder",
+                "sandbox/wasm/debug"
+            ],
+            "problemMatcher": [],
+            "windows": {
+                "command": "powershell",
+                "args": [
+                    "-NoLogo",
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-Command",
+                    "& { Start-Process -FilePath python -ArgumentList 'reports/size/update.py','--folder','sandbox/wasm/debug' -WindowStyle Hidden }"
+                ]
+            },
+            "linux": {
+                "command": "/bin/bash",
+                "args": [
+                    "-lc",
+                    "(python3 reports/size/update.py --folder sandbox/wasm/debug >/tmp/web_debug_size_post.log 2>&1 &)"
+                ]
+            },
+            "osx": {
+                "command": "/bin/bash",
+                "args": [
+                    "-lc",
+                    "(python3 reports/size/update.py --folder sandbox/wasm/debug >/tmp/web_debug_size_post.log 2>&1 &)"
+                ]
+            }
+        },
+        {
+            "label": "Trigger size report (sandbox/wasm/release)",
+            "type": "shell",
+            "command": "python3",
+            "args": [
+                "reports/size/update.py",
+                "--folder",
+                "sandbox/wasm/release"
+            ],
+            "problemMatcher": [],
+            "windows": {
+                "command": "powershell",
+                "args": [
+                    "-NoLogo",
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-Command",
+                    "& { Start-Process -FilePath python -ArgumentList 'reports/size/update.py','--folder','sandbox/wasm/release' -WindowStyle Hidden }"
+                ]
+            },
+            "linux": {
+                "command": "/bin/bash",
+                "args": [
+                    "-lc",
+                    "(python3 reports/size/update.py --folder sandbox/wasm/release >/tmp/web_release_size_post.log 2>&1 &)"
+                ]
+            },
+            "osx": {
+                "command": "/bin/bash",
+                "args": [
+                    "-lc",
+                    "(python3 reports/size/update.py --folder sandbox/wasm/release >/tmp/web_release_size_post.log 2>&1 &)"
+                ]
+            }
         },
         {
             "label": "Generate sandbox size report",

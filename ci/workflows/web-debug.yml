@@ -28,11 +28,23 @@ jobs:
         run: cmake --build --preset ${{ matrix.preset }}
       - name: Test
         run: ctest --preset ${{ matrix.preset }}
-      - name: Check size regression threshold
+      - name: Generate size reports (parallel)
         run: |
-          python3 - <<'PY'
-          print('Size regression check placeholder (<2%)')
-          PY
+          set -euo pipefail
+          folders=(sandbox/wasm/debug sandbox/wasm/release)
+          declare -a pids=()
+          for folder in "${folders[@]}"; do
+            echo "Running size report for ${folder}"
+            python3 reports/size/update.py --folder "${folder}" &
+            pids+=($!)
+          done
+          status=0
+          for pid in "${pids[@]}"; do
+            if ! wait "${pid}"; then
+              status=1
+            fi
+          done
+          exit "${status}"
       - name: Upload size and microbench artifacts
         if: always()
         uses: actions/upload-artifact@v4

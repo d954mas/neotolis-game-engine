@@ -22,5 +22,5 @@
    - Document the baseline change in `reports/size/README.md` per runbook guidance.
 
 6. **CI integration**
-   - GitHub Actions workflow `ci/workflows/size-report.yml` runs on pushes to `003-add-size-reports`, executes the CLI for debug/release, and uploads the entire `reports/size` directory as an artifact (`size-report-dashboard`).
-   - Pipelines should fail if new alerts appear without mitigation notes.
+   - Build workflows (`ci/workflows/web-debug.yml`, `ci/workflows/web-release.yml`, `ci/workflows/win-debug.yml`, `ci/workflows/win-release.yml`) now run `reports/size/update.py` for debug and release folders in parallel immediately after each build, keeping `index.json` and `report.txt` fresh.
+   - The dedicated `ci/workflows/size-report.yml` workflow still runs on pushes to `003-add-size-reports` to provide a focused artifact upload (`size-report-dashboard`). Pipelines should fail if new alerts appear without mitigation notes.
