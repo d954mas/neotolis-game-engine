@@ -14,8 +14,19 @@ Makefile
 *.obj
 *.exe
 *.dll
+*.so
+*.a
 *.wasm
 *.js
+!reports/size/dashboard.js
+!reports/size/lib/chart.min.js
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.env*
+*.log
 
 # IDE and tooling
 .idea/

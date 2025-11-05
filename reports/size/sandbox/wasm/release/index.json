@@ -1,0 +1,55 @@
+{
+  "generated_at": "2025-11-05T12:37:55.752136+00:00",
+  "folder": "sandbox/wasm/release",
+  "report_path": "sandbox/wasm/release/report.txt",
+  "commits": [
+    {
+      "kind": "head",
+      "id": "head:003-add-size-reports:3876a4cccdd02a2b4d7a3952de7cc4e37396f960",
+      "git_sha": "3876a4cccdd02a2b4d7a3952de7cc4e37396f960",
+      "git_message": "fixed branch history",
+      "branch": "003-add-size-reports",
+      "subject": "fixed branch history",
+      "date": "2025-11-05T12:37:55.752136+00:00",
+      "label": "HEAD-003-add-size-reports-fixed branch history-3876a4c",
+      "artifacts": [
+        {
+          "file_name": "index.html",
+          "size_bytes": 19602
+        },
+        {
+          "file_name": "nt_sandbox.js",
+          "size_bytes": 9115
+        },
+        {
+          "file_name": "nt_sandbox.wasm",
+          "size_bytes": 1647
+        }
+      ]
+    },
+    {
+      "kind": "branch",
+      "id": "branch:003-add-size-reports:3876a4cccdd02a2b4d7a3952de7cc4e37396f960",
+      "git_sha": "3876a4cccdd02a2b4d7a3952de7cc4e37396f960",
+      "git_message": "fixed branch history",
+      "branch": "003-add-size-reports",
+      "subject": "fixed branch history",
+      "date": "2025-11-05T17:32:42+05:00",
+      "label": "003-add-size-reports-fixed branch history-3876a4c",
+      "artifacts": [
+        {
+          "file_name": "index.html",
+          "size_bytes": 19602
+        },
+        {
+          "file_name": "nt_sandbox.js",
+          "size_bytes": 9115
+        },
+        {
+          "file_name": "nt_sandbox.wasm",
+          "size_bytes": 1647
+        }
+      ]
+    }
+  ]
+}

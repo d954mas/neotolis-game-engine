@@ -27,10 +27,42 @@ jobs:
       - name: Test
         shell: pwsh
         run: ctest --preset ${{ matrix.preset }}
-      - name: Check size regression threshold
+      - name: Generate size reports (parallel)
         shell: pwsh
         run: |
-          Write-Output "Size regression check placeholder (<2%)"
+          $ErrorActionPreference = 'Stop'
+          $repoRoot = (Get-Location).Path
+          $folders = @("sandbox/wasm/debug", "sandbox/wasm/release")
+          Import-Module ThreadJob
+          $jobs = foreach ($folder in $folders) {
+            Start-ThreadJob -ScriptBlock {
+              param($targetFolder, $root)
+              Set-Location $root
+              Write-Output "Running size report for $targetFolder"
+              python reports/size/update.py --input "reports/size/$targetFolder" --output $targetFolder
+              if ($LASTEXITCODE -ne 0) {
+                throw "Size report failed for $targetFolder with exit code $LASTEXITCODE"
+              }
+            } -ArgumentList $folder, $repoRoot
+          }
+          $failed = $false
+          foreach ($job in $jobs) {
+            try {
+              Wait-Job $job | Out-Null
+              Receive-Job $job
+            } catch {
+              $failed = $true
+              Write-Error $_
+            } finally {
+              Remove-Job $job | Out-Null
+            }
+            if ($job.State -ne 'Completed') {
+              $failed = $true
+            }
+          }
+          if ($failed) {
+            throw "One or more size report jobs failed."
+          }
       - name: Upload size and microbench artifacts
         if: always()
         uses: actions/upload-artifact@v4

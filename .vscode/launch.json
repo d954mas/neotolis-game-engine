@@ -7,7 +7,8 @@
       "request": "launch",
       "program": "${workspaceFolder}\\output\\sandbox\\windows\\debug\\engine.exe",
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "Build win-debug"
+      "preLaunchTask": "Build win-debug",
+      "postDebugTask": "Trigger size report (sandbox/windows/debug)"
     },
     {
       "name": "Sandbox Win Release",
@@ -15,7 +16,8 @@
       "request": "launch",
       "program": "${workspaceFolder}\\output\\sandbox\\windows\\release\\engine.exe",
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "Build win-release"
+      "preLaunchTask": "Build win-release",
+      "postDebugTask": "Trigger size report (sandbox/windows/release)"
     },
     {
       "name": "Tests Win Debug",
@@ -39,7 +41,8 @@
       "webRoot": "${workspaceFolder}/output/sandbox/wasm/debug",
       "preLaunchTask": "Run sandbox (web-debug)",
       "sourceMaps": true,
-      "skipFiles": ["<node_internals>/**"]
+      "skipFiles": ["<node_internals>/**"],
+      "postDebugTask": "Trigger size report (sandbox/wasm/debug)"
     },
     {
       "name": "Sandbox Web Release",
@@ -49,7 +52,8 @@
       "webRoot": "${workspaceFolder}/output/sandbox/wasm/release",
       "preLaunchTask": "Run sandbox (web-release)",
       "sourceMaps": true,
-      "skipFiles": ["<node_internals>/**"]
+      "skipFiles": ["<node_internals>/**"],
+      "postDebugTask": "Trigger size report (sandbox/wasm/release)"
     },
     {
       "name": "Clean build directory",
@@ -67,7 +71,15 @@
       "cwd": "${workspaceFolder}",
       "stopAtEntry": false,
       "console": "integratedTerminal"
+    },
+    {
+      "name": "Open Size Dashboard",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:9010/report.html",
+      "webRoot": "${workspaceFolder}/reports/size",
+      "preLaunchTask": "Open size dashboard",
+      "justMyCode": false
     }
   ]
 }
-

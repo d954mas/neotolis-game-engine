@@ -36,7 +36,32 @@
             "dependsOn": "Configure web-debug",
             "problemMatcher": [
                 "$gcc"
-            ]
+            ],
+            "windows": {
+                "command": "powershell",
+                "args": [
+                    "-NoLogo",
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-Command",
+                    "& { cmake --build --preset web-debug; Start-Process -FilePath python -ArgumentList 'reports/size/update.py','--input','${workspaceFolder}\\output\\sandbox\\wasm\\debug','--output','sandbox/wasm/debug' -WindowStyle Hidden }"
+                ]
+            },
+            "linux": {
+                "command": "/bin/bash",
+                "args": [
+                    "-lc",
+                    "set -e; cmake --build --preset web-debug; (python3 reports/size/update.py --input output/sandbox/wasm/debug --output sandbox/wasm/debug >/tmp/web_debug_size.log 2>&1 &)"
+                ]
+            },
+            "osx": {
+                "command": "/bin/bash",
+                "args": [
+                    "-lc",
+                    "set -e; cmake --build --preset web-debug; (python3 reports/size/update.py --input output/sandbox/wasm/debug --output sandbox/wasm/debug >/tmp/web_debug_size.log 2>&1 &)"
+                ]
+            }
         },
         {
             "label": "Build web-release",
@@ -51,7 +76,32 @@
             "dependsOn": "Configure web-release",
             "problemMatcher": [
                 "$gcc"
-            ]
+            ],
+            "windows": {
+                "command": "powershell",
+                "args": [
+                    "-NoLogo",
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-Command",
+                    "& { cmake --build --preset web-release; Start-Process -FilePath python -ArgumentList 'reports/size/update.py','--input','${workspaceFolder}\\output\\sandbox\\wasm\\release','--output','sandbox/wasm/release' -WindowStyle Hidden }"
+                ]
+            },
+            "linux": {
+                "command": "/bin/bash",
+                "args": [
+                    "-lc",
+                    "set -e; cmake --build --preset web-release; (python3 reports/size/update.py --input output/sandbox/wasm/release --output sandbox/wasm/release >/tmp/web_release_size.log 2>&1 &)"
+                ]
+            },
+            "osx": {
+                "command": "/bin/bash",
+                "args": [
+                    "-lc",
+                    "set -e; cmake --build --preset web-release; (python3 reports/size/update.py --input output/sandbox/wasm/release --output sandbox/wasm/release >/tmp/web_release_size.log 2>&1 &)"
+                ]
+            }
         },
         {
             "label": "Run sandbox (web-debug)",
@@ -138,7 +188,18 @@
             "dependsOn": "Configure win-debug",
             "problemMatcher": [
                 "$msCompile"
-            ]
+            ],
+            "windows": {
+                "command": "powershell",
+                "args": [
+                    "-NoLogo",
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-Command",
+                    "& { cmake --build --preset win-debug; Start-Process -FilePath python -ArgumentList 'reports/size/update.py','--input','${workspaceFolder}\\output\\sandbox\\windows\\debug','--output','sandbox/windows/debug' -WindowStyle Hidden }"
+                ]
+            }
         },
         {
             "label": "Build win-release",
@@ -153,7 +214,18 @@
             "dependsOn": "Configure win-release",
             "problemMatcher": [
                 "$msCompile"
-            ]
+            ],
+            "windows": {
+                "command": "powershell",
+                "args": [
+                    "-NoLogo",
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-Command",
+                    "& { cmake --build --preset win-release; Start-Process -FilePath python -ArgumentList 'reports/size/update.py','--input','${workspaceFolder}\\output\\sandbox\\windows\\release','--output','sandbox/windows/release' -WindowStyle Hidden }"
+                ]
+            }
         },
         {
             "label": "Configure win-debug-tests",
@@ -196,6 +268,187 @@
             },
             "dependsOn": "Build win-debug-tests",
             "problemMatcher": []
+        },
+        {
+            "label": "Trigger size report (sandbox/wasm/debug)",
+            "type": "shell",
+            "command": "python3",
+            "args": [
+                "reports/size/update.py",
+                "--input",
+                "output/sandbox/wasm/debug",
+                "--output",
+                "sandbox/wasm/debug"
+            ],
+            "problemMatcher": [],
+            "windows": {
+                "command": "powershell",
+                "args": [
+                    "-NoLogo",
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-Command",
+                    "& { Start-Process -FilePath python -ArgumentList 'reports/size/update.py','--input','${workspaceFolder}\\output\\sandbox\\wasm\\debug','--output','sandbox/wasm/debug' -WindowStyle Hidden }"
+                ]
+            },
+            "linux": {
+                "command": "/bin/bash",
+                "args": [
+                    "-lc",
+                    "(python3 reports/size/update.py --input output/sandbox/wasm/debug --output sandbox/wasm/debug >/tmp/web_debug_size_post.log 2>&1 &)"
+                ]
+            },
+            "osx": {
+                "command": "/bin/bash",
+                "args": [
+                    "-lc",
+                    "(python3 reports/size/update.py --input output/sandbox/wasm/debug --output sandbox/wasm/debug >/tmp/web_debug_size_post.log 2>&1 &)"
+                ]
+            }
+        },
+        {
+            "label": "Trigger size report (sandbox/wasm/release)",
+            "type": "shell",
+            "command": "python3",
+            "args": [
+                "reports/size/update.py",
+                "--input",
+                "output/sandbox/wasm/release",
+                "--output",
+                "sandbox/wasm/release"
+            ],
+            "problemMatcher": [],
+            "windows": {
+                "command": "powershell",
+                "args": [
+                    "-NoLogo",
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-Command",
+                    "& { Start-Process -FilePath python -ArgumentList 'reports/size/update.py','--input','${workspaceFolder}\\output\\sandbox\\wasm\\release','--output','sandbox/wasm/release' -WindowStyle Hidden }"
+                ]
+            },
+            "linux": {
+                "command": "/bin/bash",
+                "args": [
+                    "-lc",
+                    "(python3 reports/size/update.py --input output/sandbox/wasm/release --output sandbox/wasm/release >/tmp/web_release_size_post.log 2>&1 &)"
+                ]
+            },
+            "osx": {
+                "command": "/bin/bash",
+                "args": [
+                    "-lc",
+                    "(python3 reports/size/update.py --input output/sandbox/wasm/release --output sandbox/wasm/release >/tmp/web_release_size_post.log 2>&1 &)"
+                ]
+            }
+        },
+        {
+            "label": "Trigger size report (sandbox/windows/release)",
+            "type": "shell",
+            "command": "python3",
+            "args": [
+                "reports/size/update.py",
+                "--input",
+                "output/sandbox/windows/release",
+                "--output",
+                "sandbox/windows/release"
+            ],
+            "problemMatcher": [],
+            "windows": {
+                "command": "powershell",
+                "args": [
+                    "-NoLogo",
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-Command",
+                    "& { Start-Process -FilePath python -ArgumentList 'reports/size/update.py','--input','${workspaceFolder}\\output\\sandbox\\windows\\release','--output','sandbox/windows/release' -WindowStyle Hidden }"
+                ]
+            },
+            "linux": {
+                "command": "/bin/bash",
+                "args": [
+                    "-lc",
+                    "(python3 reports/size/update.py --input output/sandbox/windows/release --output sandbox/windows/release >/tmp/web_release_size_post.log 2>&1 &)"
+                ]
+            },
+            "osx": {
+                "command": "/bin/bash",
+                "args": [
+                    "-lc",
+                    "(python3 reports/size/update.py --input output/sandbox/windows/release --output sandbox/windows/release >/tmp/web_release_size_post.log 2>&1 &)"
+                ]
+            }
+        },
+        {
+            "label": "Trigger size report (sandbox/windows/debug)",
+            "type": "shell",
+            "command": "python3",
+            "args": [
+                "reports/size/update.py",
+                "--input",
+                "output/sandbox/windows/debug",
+                "--output",
+                "sandbox/windows/debug"
+            ],
+            "problemMatcher": [],
+            "windows": {
+                "command": "powershell",
+                "args": [
+                    "-NoLogo",
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-Command",
+                    "& { Start-Process -FilePath python -ArgumentList 'reports/size/update.py','--input','${workspaceFolder}\\output\\sandbox\\windows\\debug','--output','sandbox/windows/debug' -WindowStyle Hidden }"
+                ]
+            },
+            "linux": {
+                "command": "/bin/bash",
+                "args": [
+                    "-lc",
+                    "(python3 reports/size/update.py --input output/sandbox/windows/debug --output sandbox/windows/debug >/tmp/web_release_size_post.log 2>&1 &)"
+                ]
+            },
+            "osx": {
+                "command": "/bin/bash",
+                "args": [
+                    "-lc",
+                    "(python3 reports/size/update.py --input output/sandbox/windows/debug --output sandbox/windows/debug >/tmp/web_release_size_post.log 2>&1 &)"
+                ]
+            }
+        },
+        {
+            "label": "Open size dashboard",
+            "type": "shell",
+            "command": "/bin/bash",
+            "args": [
+                "-lc",
+                "PORT=9010; LOG=\"/tmp/size_report_server.log\"; if ! lsof -i :$PORT >/dev/null 2>&1; then (cd '${workspaceFolder}/reports/size' && python3 -m http.server $PORT >$LOG 2>&1 &) && sleep 1; fi; if command -v google-chrome >/dev/null 2>&1; then google-chrome --new-tab 'http://localhost:'$PORT'/report.html' >/dev/null 2>&1 & elif command -v chromium-browser >/dev/null 2>&1; then chromium-browser --new-tab 'http://localhost:'$PORT'/report.html' >/dev/null 2>&1 & elif command -v xdg-open >/dev/null 2>&1; then xdg-open 'http://localhost:'$PORT'/report.html'; else echo 'Open http://localhost:'$PORT'/report.html in a browser.'; fi"
+            ],
+            "windows": {
+                "command": "powershell",
+                "args": [
+                    "-NoLogo",
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-File",
+                    "${workspaceFolder}\\scripts\\open-size-dashboard.ps1",
+                    "-Root",
+                    "${workspaceFolder}\\reports\\size"
+                ]
+            },
+            "osx": {
+                "command": "/bin/bash",
+                "args": [
+                    "-lc",
+                    "PORT=9010; if ! lsof -i :$PORT >/dev/null 2>&1; then (cd '${workspaceFolder}/reports/size' && python3 -m http.server $PORT >/tmp/size_report_server.log 2>&1 &) && sleep 1; fi; if command -v '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' >/dev/null 2>&1; then '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' 'http://localhost:'$PORT'/report.html' >/dev/null 2>&1 & else open 'http://localhost:'$PORT'/report.html'; fi"
+                ]
+            }
         },
         {
             "label": "Generate sandbox size report",

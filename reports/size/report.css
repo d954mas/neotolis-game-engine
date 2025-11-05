@@ -1,0 +1,225 @@
+:root {
+    color-scheme: light dark;
+    --bg: #f7f9fc;
+    --fg: #1f2933;
+    --muted: #52606d;
+    --border: #d1d5db;
+    --accent: #2563eb;
+    --alert: #dc2626;
+    --success: #059669;
+    --table-header: #e5e7eb;
+    --card-bg: #ffffffdd;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Roboto, system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.5;
+}
+
+.page-header {
+    padding: 2.5rem clamp(1rem, 4vw, 3rem) 1.5rem;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: #fff;
+    text-align: center;
+}
+
+.page-header h1 {
+    margin: 0;
+    font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.page-header .description {
+    margin-top: 0.5rem;
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem clamp(1rem, 4vw, 3rem);
+    flex-wrap: wrap;
+}
+
+.controls label {
+    font-weight: 600;
+}
+
+#folder-select {
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border);
+    min-width: 16rem;
+}
+
+.generated-at {
+    margin-left: auto;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+.summary,
+.table-section,
+.chart-section {
+    margin: 0 clamp(1rem, 4vw, 3rem);
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--card-bg);
+    border-radius: 1rem;
+    box-shadow: 0 20px 45px -25px rgba(31, 45, 61, 0.35);
+}
+
+.summary h2,
+.table-section h2,
+.chart-section h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+}
+
+.summary-grid div {
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    background: rgba(37, 99, 235, 0.08);
+}
+
+.summary-grid h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--muted);
+}
+
+.summary-label {
+    display: block;
+    margin-top: 0.5rem;
+    margin-bottom: 0.35rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.summary-select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border);
+    font-size: 0.95rem;
+    background: #fff;
+    color: inherit;
+}
+
+.summary-value {
+    margin: 0.25rem 0;
+    font-size: 0.95rem;
+    font-family: "Fira Mono", "SFMono-Regular", Consolas, monospace;
+    word-break: break-all;
+}
+
+.summary-message {
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.summary-date {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+#artifact-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+
+#artifact-table thead {
+    background: var(--table-header);
+}
+
+#artifact-table th,
+#artifact-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+#artifact-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+#artifact-table tbody tr.alert {
+    background: rgba(220, 38, 38, 0.08);
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    color: #fff;
+}
+
+.status-badge.alert {
+    background: var(--alert);
+}
+
+.status-badge.ok {
+    background: var(--success);
+}
+
+.empty-state {
+    margin-top: 1rem;
+    text-align: center;
+    font-style: italic;
+    color: var(--muted);
+}
+
+.chart-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+#size-chart {
+    max-width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    background: #fff;
+}
+
+.page-footer {
+    text-align: center;
+    padding: 2rem 1rem 3rem;
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+@media (max-width: 640px) {
+    .generated-at {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    #size-chart {
+        height: 320px;
+    }
+}
