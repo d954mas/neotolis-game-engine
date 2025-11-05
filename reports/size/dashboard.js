@@ -7,8 +7,10 @@ const COMMIT_BASE_SELECT = document.getElementById('commit-base-select');
 const COMMIT_TARGET_SELECT = document.getElementById('commit-target-select');
 const COMMIT_BASE_SHA = document.getElementById('commit-base-sha');
 const COMMIT_BASE_MESSAGE = document.getElementById('commit-base-message');
+const COMMIT_BASE_DATE = document.getElementById('commit-base-date');
 const COMMIT_TARGET_SHA = document.getElementById('commit-target-sha');
 const COMMIT_TARGET_MESSAGE = document.getElementById('commit-target-message');
+const COMMIT_TARGET_DATE = document.getElementById('commit-target-date');
 const ALERT_COUNT = document.getElementById('alert-count');
 const BASE_HEADER = document.getElementById('commit-base-column');
 const TARGET_HEADER = document.getElementById('commit-target-column');
@@ -52,16 +54,18 @@ function formatCommitLabel(commit) {
     if (!commit) {
         return 'Unknown';
     }
+    const dateLabel = commit.date ? ` (${formatDate(commit.date)})` : '';
     if (commit.label) {
-        return commit.label;
+        return `${commit.label}${dateLabel}`;
     }
     const kind = (commit.kind || '').toUpperCase();
     const sha = shortenSha(commit.git_sha || 'UNKNOWN');
     if (kind) {
-        return `${kind} — ${sha}`;
+        return `${kind} — ${sha}${dateLabel}`;
     }
     const message = commit.git_message && commit.git_message !== 'UNKNOWN' ? commit.git_message : '';
-    return message ? `${sha} — ${message}` : sha;
+    const baseLabel = message ? `${sha} — ${message}` : sha;
+    return `${baseLabel}${dateLabel}`;
 }
 
 function getCommitId(commit) {
@@ -74,6 +78,17 @@ function getCommitId(commit) {
     const kind = commit.kind || 'commit';
     const sha = commit.git_sha || 'UNKNOWN';
     return `${kind}:${sha}`;
+}
+
+function formatDate(value) {
+    if (!value) {
+        return '—';
+    }
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+        return value;
+    }
+    return date.toLocaleString();
 }
 
 function populateFolderOptions(folders) {
@@ -188,8 +203,10 @@ function computeComparison(baseCommit, targetCommit) {
 function updateSummary(baseCommit, targetCommit, alertCount) {
     COMMIT_BASE_SHA.textContent = baseCommit?.git_sha || 'UNKNOWN';
     COMMIT_BASE_MESSAGE.textContent = baseCommit?.git_message || '—';
+    COMMIT_BASE_DATE.textContent = baseCommit ? formatDate(baseCommit.date) : '—';
     COMMIT_TARGET_SHA.textContent = targetCommit?.git_sha || 'UNKNOWN';
     COMMIT_TARGET_MESSAGE.textContent = targetCommit?.git_message || '—';
+    COMMIT_TARGET_DATE.textContent = targetCommit ? formatDate(targetCommit.date) : '—';
     ALERT_COUNT.textContent = alertCount.toString();
 }
 
@@ -309,8 +326,10 @@ function renderDashboard() {
         EMPTY_STATE.hidden = false;
         COMMIT_BASE_SHA.textContent = 'UNKNOWN';
         COMMIT_BASE_MESSAGE.textContent = '—';
+        COMMIT_BASE_DATE.textContent = '—';
         COMMIT_TARGET_SHA.textContent = 'UNKNOWN';
         COMMIT_TARGET_MESSAGE.textContent = '—';
+        COMMIT_TARGET_DATE.textContent = '—';
         ALERT_COUNT.textContent = '0';
         if (state.chart) {
             state.chart.destroy();
