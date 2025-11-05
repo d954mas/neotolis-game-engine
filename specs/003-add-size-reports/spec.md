@@ -97,7 +97,7 @@ Tooling owners need to switch between multiple tracked sandbox folders (e.g., wa
 ```cmake
 # Size reporting integrates as a post-build workflow.
 add_custom_target(<variant>_size_report
-    COMMAND <size-report-command> --folder <sandbox/wasm/debug>
+    COMMAND <size-report-command> --input <build-output-path> --output <sandbox/wasm/debug>
     WORKING_DIRECTORY <repo-root>
     COMMENT "Update size report for <variant>"
 )

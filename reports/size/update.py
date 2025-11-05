@@ -114,13 +114,25 @@ def _rows_to_entries(rows: List[Dict[str, str]]) -> List[SnapshotEntry]:
             label = sha_field.upper()
 
             if label == "HEAD":
-                commit_sha = message_field if is_hex_sha(message_field) else sha_field or PLACEHOLDER_SHA
-                commit_message = file_field or (message_field if not is_hex_sha(message_field) else PLACEHOLDER_MESSAGE)
+                commit_sha = (
+                    message_field
+                    if is_hex_sha(message_field)
+                    else (sha_field if is_hex_sha(sha_field) else PLACEHOLDER_SHA)
+                )
+                commit_message = file_field or (
+                    message_field if not is_hex_sha(message_field) else PLACEHOLDER_MESSAGE
+                )
             elif label == "MASTER":
-                commit_sha = message_field if is_hex_sha(message_field) else sha_field or PLACEHOLDER_SHA
-                commit_message = file_field or (message_field if not is_hex_sha(message_field) else PLACEHOLDER_MESSAGE)
+                commit_sha = (
+                    message_field
+                    if is_hex_sha(message_field)
+                    else (sha_field if is_hex_sha(sha_field) else PLACEHOLDER_SHA)
+                )
+                commit_message = file_field or (
+                    message_field if not is_hex_sha(message_field) else PLACEHOLDER_MESSAGE
+                )
             else:
-                commit_sha = sha_field or PLACEHOLDER_SHA
+                commit_sha = sha_field if is_hex_sha(sha_field) else PLACEHOLDER_SHA
                 commit_message = message_field or file_field or PLACEHOLDER_MESSAGE
 
             if not master_assigned:
@@ -241,18 +253,24 @@ def write_report_entries(report_path: Path, entries: List[SnapshotEntry]) -> Non
                 )
 
 
-def update_head_snapshot(folder: Path, repo_root: Path, accept_master: str | None = None) -> GitMetadata:
-    if not folder.exists() or not folder.is_dir():
-        raise SizeReportError(f"Folder '{folder}' does not exist or is not a directory")
-    report_path = folder / REPORT_FILENAME
-    if not report_path.exists():
-        raise SizeReportError(f"Report file '{report_path}' is missing")
+def update_head_snapshot(
+    input_folder: Path, output_folder: Path, repo_root: Path, accept_master: str | None = None
+) -> GitMetadata:
+    if not input_folder.exists() or not input_folder.is_dir():
+        raise SizeReportError(f"Input folder '{input_folder}' does not exist or is not a directory")
+    output_folder.mkdir(parents=True, exist_ok=True)
+    report_path = output_folder / REPORT_FILENAME
 
-    artifacts = discover_artifacts(folder)
+    artifacts = discover_artifacts(input_folder)
     if not artifacts:
-        raise SizeReportError(f"No artifacts found in '{folder}'. Build outputs are required.")
+        raise SizeReportError(f"No artifacts found in '{input_folder}'. Build outputs are required.")
 
-    existing_entries = read_report_entries(report_path)
+    if report_path.exists():
+        existing_entries = read_report_entries(report_path)
+    else:
+        existing_entries = [
+            SnapshotEntry(kind="master", sha=PLACEHOLDER_SHA, message=PLACEHOLDER_MESSAGE, artifacts=[])
+        ]
     master_entry: SnapshotEntry | None = None
     history_entries: List[SnapshotEntry] = []
     previous_head: SnapshotEntry | None = None
@@ -411,9 +429,14 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
         description="Update HEAD size snapshot and regenerate dashboards."
     )
     parser.add_argument(
-        "--folder",
+        "--input",
         required=True,
-        help="Target folder relative to reports/size (e.g., sandbox/wasm/debug)",
+        help="Directory containing built artifacts to measure (absolute or relative to repo root).",
+    )
+    parser.add_argument(
+        "--output",
+        required=True,
+        help="Directory under reports/size where report.txt resides (absolute or relative to reports/size).",
     )
     parser.add_argument(
         "--accept-master",
@@ -429,15 +452,36 @@ def main(argv: List[str] | None = None) -> int:
     args = parse_args(argv)
     root = Path(__file__).resolve().parent
     repo_root = root.parent.parent
-    folder = root / args.folder
+
+    input_path = Path(args.input)
+    if not input_path.is_absolute():
+        input_path = (repo_root / args.input).resolve()
+
+    output_path = Path(args.output)
+    if not output_path.is_absolute():
+        output_path = (root / args.output).resolve()
+
     try:
-        head_meta = update_head_snapshot(folder, repo_root, accept_master=args.accept_master)
+        output_label = output_path.relative_to(root)
+    except ValueError:
+        print(
+            f"Error: Output directory '{output_path}' must live under {root}",
+            file=sys.stderr,
+        )
+        return 1
+    try:
+        head_meta = update_head_snapshot(
+            input_path,
+            output_path,
+            repo_root,
+            accept_master=args.accept_master,
+        )
         manifest = regenerate_manifest(root)
         print(
-            f"Updated HEAD snapshot for {args.folder}: {head_meta.sha} — {head_meta.message}",
+            f"Updated HEAD snapshot for {output_label}: {head_meta.sha} — {head_meta.message}",
             file=sys.stdout,
         )
-        log_artifact_summary(args.folder, manifest)
+        log_artifact_summary(output_label.as_posix(), manifest)
     except SizeReportError as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1

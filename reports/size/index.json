@@ -1,12 +1,12 @@
 {
-  "generated_at": "2025-11-05T08:25:03.116243+00:00",
+  "generated_at": "2025-11-05T08:49:28.851603+00:00",
   "folders": [
     {
-      "folder": "sandbox\\wasm\\debug",
-      "report_path": "sandbox\\wasm\\debug\\report.txt",
+      "folder": "sandbox/wasm/debug",
+      "report_path": "sandbox/wasm/debug/report.txt",
       "head": {
-        "git_sha": "1e6bdecdfc1418f94eee52503863b12f6ca4c017",
-        "git_message": "add build report"
+        "git_sha": "0b85db9568c68da95068147b1c71682fced7f31a",
+        "git_message": "add task for python"
       },
       "master": {
         "git_sha": "UNKNOWN",
@@ -49,11 +49,11 @@
       ]
     },
     {
-      "folder": "sandbox\\wasm\\release",
-      "report_path": "sandbox\\wasm\\release\\report.txt",
+      "folder": "sandbox/wasm/release",
+      "report_path": "sandbox/wasm/release/report.txt",
       "head": {
-        "git_sha": "1e6bdecdfc1418f94eee52503863b12f6ca4c017",
-        "git_message": "add build report"
+        "git_sha": "0b85db9568c68da95068147b1c71682fced7f31a",
+        "git_message": "add task for python"
       },
       "master": {
         "git_sha": "UNKNOWN",

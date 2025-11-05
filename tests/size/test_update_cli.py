@@ -35,7 +35,14 @@ def restore_report_file():
 
 def test_head_snapshot_updates_report_and_manifest(tmp_path):
     result = subprocess.run(
-        ["python3", str(REPORT_ROOT / "update.py"), "--folder", "sandbox/wasm/debug"],
+        [
+            "python3",
+            str(REPORT_ROOT / "update.py"),
+            "--input",
+            str(TARGET_FOLDER),
+            "--output",
+            "sandbox/wasm/debug",
+        ],
         cwd=REPO_ROOT,
         capture_output=True,
         text=True,

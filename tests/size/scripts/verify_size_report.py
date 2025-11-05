@@ -28,8 +28,8 @@ def ensure_seed_report(report_path: Path) -> None:
     seed = "\n".join(
         [
             "git_sha,git_message,file_name,size_bytes",
-            "MASTER,UNKNOWN,UNKNOWN,",
-            "HEAD,,,"
+            "UNKNOWN,UNKNOWN,",
+            "HEAD,,",
         ]
     )
     report_path.write_text(f"{seed}\n", encoding="utf-8")
@@ -61,9 +61,15 @@ def main() -> int:
 
             ensure_seed_report(target_folder / "report.txt")
 
-            relative_folder = f"{target_folder.relative_to(reports_root)}"
             result = subprocess.run(
-                ["python3", str(reports_root / "update.py"), "--folder", relative_folder],
+                [
+                    "python3",
+                    str(reports_root / "update.py"),
+                    "--input",
+                    str(target_folder),
+                    "--output",
+                    str(target_folder.relative_to(reports_root)),
+                ],
                 cwd=repo_root,
                 capture_output=True,
                 text=True,

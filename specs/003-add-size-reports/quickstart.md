@@ -5,7 +5,7 @@
    - Confirm `.wasm`, `.js`, and `index.html` exist before running the CLI.
 
 2. **Update HEAD snapshot**
-   - Execute `python3 reports/size/update.py --folder sandbox/wasm/debug` (repeat for `sandbox/wasm/release`).
+   - Execute `python3 reports/size/update.py --input output/sandbox/wasm/debug --output sandbox/wasm/debug` (repeat with release paths as needed). The `--output` folder must live under `reports/size`.
    - The CLI prints per-artifact size measurements plus alert thresholds (`percent>2`, `bytes>25000`) after regenerating `index.json`.
    - `report.txt` now keeps a compact metadata row per commit; the latest HEAD block is rewritten while prior commits remain for historical comparison.
 
@@ -18,7 +18,7 @@
    - Use the folder selector to hop between sandbox configurations; table + chart highlight alerts inline.
 
 5. **Refresh MASTER baseline (release acceptance only)**
-   - After approval, run `python3 reports/size/update.py --folder <folder> --accept-master <commit-sha>` to promote HEAD to MASTER.
+   - After approval, run `python3 reports/size/update.py --input output/<folder> --output <folder> --accept-master <commit-sha>` to promote HEAD to MASTER.
    - Document the baseline change in `reports/size/README.md` per runbook guidance.
 
 6. **CI integration**

@@ -45,7 +45,7 @@ description: "Task list for Size Reporting Dashboard"
 ## Phase 3: User Story 1 - Capture build size snapshot (Priority: P1) 🎯 MVP
 
 **Goal**: Enable engineers to regenerate HEAD size snapshots per sandbox folder while preserving MASTER baselines.  
-**Independent Test**: Run `python reports/size/update.py --folder sandbox/wasm/debug` against fixture artifacts; verify HEAD row updates, MASTER row remains unchanged, and manifest captures deltas.
+**Independent Test**: Run `python reports/size/update.py --input output/sandbox/wasm/debug --output sandbox/wasm/debug` against fixture artifacts; verify HEAD row updates, MASTER row remains unchanged, and manifest captures deltas.
 
 ### Tests for User Story 1 (write first, ensure failing before implementation) ⚠️
 
@@ -151,7 +151,7 @@ python -m pytest tests/size/test_update_cli.py
 python -m pytest tests/size/test_update_missing_baseline.py
 
 # Run CLI locally against fixtures after implementation
-python reports/size/update.py --folder sandbox/wasm/debug --fixtures tests/size/fixtures/sandbox_wasm_debug
+python reports/size/update.py --input output/sandbox/wasm/debug --output sandbox/wasm/debug
 cat reports/size/sandbox/wasm/debug/report.txt
 cat reports/size/index.json | jq .
 ```

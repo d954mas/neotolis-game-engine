@@ -39,7 +39,7 @@ jobs:
               param($targetFolder, $root)
               Set-Location $root
               Write-Output "Running size report for $targetFolder"
-              python reports/size/update.py --folder $targetFolder
+              python reports/size/update.py --input "reports/size/$targetFolder" --output $targetFolder
               if ($LASTEXITCODE -ne 0) {
                 throw "Size report failed for $targetFolder with exit code $LASTEXITCODE"
               }
