@@ -1,29 +1,29 @@
 {
-  "generated_at": "2025-11-05T12:37:55.752136+00:00",
+  "generated_at": "2025-11-05T13:37:46.813151+00:00",
   "folder": "sandbox/wasm/release",
   "report_path": "sandbox/wasm/release/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:003-add-size-reports:3876a4cccdd02a2b4d7a3952de7cc4e37396f960",
-      "git_sha": "3876a4cccdd02a2b4d7a3952de7cc4e37396f960",
-      "git_message": "fixed branch history",
-      "branch": "003-add-size-reports",
-      "subject": "fixed branch history",
-      "date": "2025-11-05T12:37:55.752136+00:00",
-      "label": "HEAD-003-add-size-reports-fixed branch history-3876a4c",
+      "id": "head:master:5c5319f0d10ce27d4d7f7c7eb5f3322754c2f60c",
+      "git_sha": "5c5319f0d10ce27d4d7f7c7eb5f3322754c2f60c",
+      "git_message": "sandbox-size",
+      "branch": "master",
+      "subject": "sandbox-size",
+      "date": "2025-11-05T13:37:47.043337+00:00",
+      "label": "HEAD-master-sandbox-size-5c5319f",
       "artifacts": [
         {
-          "file_name": "index.html",
-          "size_bytes": 19602
+          "file_name": "nt_sandbox.html",
+          "size_bytes": 19546
         },
         {
           "file_name": "nt_sandbox.js",
-          "size_bytes": 9115
+          "size_bytes": 9996
         },
         {
           "file_name": "nt_sandbox.wasm",
-          "size_bytes": 1647
+          "size_bytes": 1442
         }
       ]
     },
