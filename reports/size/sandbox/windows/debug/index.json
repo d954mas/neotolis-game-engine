@@ -4,6 +4,54 @@
   "report_path": "sandbox/windows/debug/report.txt",
   "commits": [
     {
+      "kind": "head",
+      "id": "head:master:c90d71a2a0980d200419e38818fec8650d667aff",
+      "git_sha": "c90d71a2a0980d200419e38818fec8650d667aff",
+      "git_message": "chore: update sandbox size reports",
+      "branch": "master",
+      "subject": "chore: update sandbox size reports",
+      "date": "2025-11-05T14:10:32.475314+00:00",
+      "label": "HEAD-master-chore: update sandbox size reports-c90d71a",
+      "artifacts": [
+        {
+          "file_name": "engine.exe",
+          "size_bytes": 19968
+        }
+      ]
+    },
+    {
+      "kind": "branch",
+      "id": "branch:master:c90d71a2a0980d200419e38818fec8650d667aff",
+      "git_sha": "c90d71a2a0980d200419e38818fec8650d667aff",
+      "git_message": "chore: update sandbox size reports",
+      "branch": "master",
+      "subject": "chore: update sandbox size reports",
+      "date": "2025-11-05T13:54:42Z",
+      "label": "master-chore: update sandbox size reports-c90d71a",
+      "artifacts": [
+        {
+          "file_name": "engine.exe",
+          "size_bytes": 19968
+        }
+      ]
+    },
+    {
+      "kind": "branch",
+      "id": "branch:master:e71f3732466622f12342bc3fcbf8f48d3dcec6a5",
+      "git_sha": "e71f3732466622f12342bc3fcbf8f48d3dcec6a5",
+      "git_message": "chore: update sandbox size reports",
+      "branch": "master",
+      "subject": "chore: update sandbox size reports",
+      "date": "2025-11-05T13:37:47Z",
+      "label": "master-chore: update sandbox size reports-e71f373",
+      "artifacts": [
+        {
+          "file_name": "engine.exe",
+          "size_bytes": 19968
+        }
+      ]
+    },
+    {
       "kind": "branch",
       "id": "branch:003-add-size-reports:3876a4cccdd02a2b4d7a3952de7cc4e37396f960",
       "git_sha": "3876a4cccdd02a2b4d7a3952de7cc4e37396f960",

@@ -1,17 +1,33 @@
 {
-  "generated_at": "2025-11-05T13:54:41.900214+00:00",
+  "generated_at": "2025-11-05T14:10:32.475314+00:00",
   "folder": "sandbox/windows/release",
   "report_path": "sandbox/windows/release/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:c087e00f33d70068a247b4b3b4a74eb2d0208509",
-      "git_sha": "c087e00f33d70068a247b4b3b4a74eb2d0208509",
-      "git_message": "size report",
+      "id": "head:master:08cf815bfec3c5eac68f696f6dd777d504f6f8ea",
+      "git_sha": "08cf815bfec3c5eac68f696f6dd777d504f6f8ea",
+      "git_message": "build wasm on windows",
       "branch": "master",
-      "subject": "size report",
-      "date": "2025-11-05T13:55:55.966593+00:00",
-      "label": "HEAD-master-size report-c087e00",
+      "subject": "build wasm on windows",
+      "date": "2025-11-05T14:10:32.475314+00:00",
+      "label": "HEAD-master-build wasm on windows-08cf815",
+      "artifacts": [
+        {
+          "file_name": "engine.exe",
+          "size_bytes": 9728
+        }
+      ]
+    },
+    {
+      "kind": "branch",
+      "id": "branch:master:08cf815bfec3c5eac68f696f6dd777d504f6f8ea",
+      "git_sha": "08cf815bfec3c5eac68f696f6dd777d504f6f8ea",
+      "git_message": "build wasm on windows",
+      "branch": "master",
+      "subject": "build wasm on windows",
+      "date": "2025-11-05T19:08:35+05:00",
+      "label": "master-build wasm on windows-08cf815",
       "artifacts": [
         {
           "file_name": "engine.exe",

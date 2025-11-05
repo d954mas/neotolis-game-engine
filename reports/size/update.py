@@ -468,14 +468,14 @@ def regenerate_manifest(
                 if entry.date_iso is None and meta is not None:
                     entry.date_iso = meta.date_iso
 
-          commits_payload = []
-          for entry in entries:
-              if is_ignored_commit_message(entry.subject) or is_ignored_commit_message(entry.message):
-                  continue
-              branch_fragment = entry.branch or "NO_BRANCH"
-              commits_payload.append(
-                  {
-                      "kind": entry.kind,
+        commits_payload = []
+        for entry in entries:
+            if is_ignored_commit_message(entry.subject) or is_ignored_commit_message(entry.message):
+                continue
+            branch_fragment = entry.branch or "NO_BRANCH"
+            commits_payload.append(
+                {
+                    "kind": entry.kind,
                     "id": f"{entry.kind}:{branch_fragment}:{entry.sha or PLACEHOLDER_SHA}",
                     "git_sha": entry.sha or PLACEHOLDER_SHA,
                     "git_message": entry.subject or entry.message or PLACEHOLDER_MESSAGE,

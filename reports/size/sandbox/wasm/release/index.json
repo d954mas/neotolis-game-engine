@@ -4,6 +4,78 @@
   "report_path": "sandbox/wasm/release/report.txt",
   "commits": [
     {
+      "kind": "head",
+      "id": "head:master:c90d71a2a0980d200419e38818fec8650d667aff",
+      "git_sha": "c90d71a2a0980d200419e38818fec8650d667aff",
+      "git_message": "chore: update sandbox size reports",
+      "branch": "master",
+      "subject": "chore: update sandbox size reports",
+      "date": "2025-11-05T14:10:32.475314+00:00",
+      "label": "HEAD-master-chore: update sandbox size reports-c90d71a",
+      "artifacts": [
+        {
+          "file_name": "index.html",
+          "size_bytes": 19602
+        },
+        {
+          "file_name": "nt_sandbox.js",
+          "size_bytes": 9115
+        },
+        {
+          "file_name": "nt_sandbox.wasm",
+          "size_bytes": 1647
+        }
+      ]
+    },
+    {
+      "kind": "branch",
+      "id": "branch:master:c90d71a2a0980d200419e38818fec8650d667aff",
+      "git_sha": "c90d71a2a0980d200419e38818fec8650d667aff",
+      "git_message": "chore: update sandbox size reports",
+      "branch": "master",
+      "subject": "chore: update sandbox size reports",
+      "date": "2025-11-05T13:54:42Z",
+      "label": "master-chore: update sandbox size reports-c90d71a",
+      "artifacts": [
+        {
+          "file_name": "index.html",
+          "size_bytes": 19602
+        },
+        {
+          "file_name": "nt_sandbox.js",
+          "size_bytes": 9115
+        },
+        {
+          "file_name": "nt_sandbox.wasm",
+          "size_bytes": 1647
+        }
+      ]
+    },
+    {
+      "kind": "branch",
+      "id": "branch:master:27369022d377b6b45dd2fb52073df240e0c722d6",
+      "git_sha": "27369022d377b6b45dd2fb52073df240e0c722d6",
+      "git_message": "chore: update sandbox size reports",
+      "branch": "master",
+      "subject": "chore: update sandbox size reports",
+      "date": "2025-11-05T13:48:19Z",
+      "label": "master-chore: update sandbox size reports-2736902",
+      "artifacts": [
+        {
+          "file_name": "index.html",
+          "size_bytes": 19602
+        },
+        {
+          "file_name": "nt_sandbox.js",
+          "size_bytes": 9115
+        },
+        {
+          "file_name": "nt_sandbox.wasm",
+          "size_bytes": 1647
+        }
+      ]
+    },
+    {
       "kind": "branch",
       "id": "branch:003-add-size-reports:3876a4cccdd02a2b4d7a3952de7cc4e37396f960",
       "git_sha": "3876a4cccdd02a2b4d7a3952de7cc4e37396f960",
