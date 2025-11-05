@@ -18,6 +18,11 @@ This directory contains size-reporting assets for Speckit sandbox builds. Use th
 4. Inspect `report.txt` to confirm the HEAD metadata row includes the latest commit SHA and subject line.
 5. Commit updated `report.txt` and `index.json` artifacts as needed.
 
+## Review Dashboard
+
+1. Open `reports/size/report.html` (Chart.js loads from `reports/size/lib/chart.min.js`).
+2. Use the folder selector to choose a sandbox configuration, then pick any two recorded commits from the dropdowns to compare. The metadata, table, and chart refresh instantly, with alert badges highlighting threshold breaches.
+
 ## Updating MASTER Baselines
 
 Use baseline updates only after size regressions are approved.

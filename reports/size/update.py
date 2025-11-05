@@ -229,6 +229,19 @@ def ensure_master_entry(entry: SnapshotEntry | None) -> SnapshotEntry:
     return entry
 
 
+def format_entry_label(entry: SnapshotEntry) -> str:
+    sha = entry.sha or PLACEHOLDER_SHA
+    display_sha = sha if len(sha) <= 7 else sha[:7]
+    message = entry.message or PLACEHOLDER_MESSAGE
+    if entry.kind == "head":
+        return f"HEAD — {display_sha}"
+    if entry.kind == "master":
+        return f"MASTER — {display_sha}"
+    if message == PLACEHOLDER_MESSAGE:
+        return display_sha
+    return f"{display_sha} — {message}"
+
+
 def write_report_entries(report_path: Path, entries: List[SnapshotEntry]) -> None:
     with report_path.open("w", newline="", encoding="utf-8") as fp:
         writer = csv.DictWriter(fp, fieldnames=validators.HEADER)
@@ -358,16 +371,47 @@ def regenerate_manifest(root: Path) -> Dict[str, object]:
     datasets = []
     for report_path in sorted(root.glob("**/report.txt")):
         entries = read_report_entries(report_path)
-        head_entry = next((entry for entry in entries if entry.kind == "head"), None)
-        if head_entry is None:
+        if not entries:
             continue
-        master_entry = next((entry for entry in entries if entry.kind == "master"), None)
-        master_entry = ensure_master_entry(master_entry)
+
+        master_entry = ensure_master_entry(next((entry for entry in entries if entry.kind == "master"), None))
+        head_entry = next((entry for entry in entries if entry.kind == "head"), master_entry)
         deltas = compute_deltas(master_entry.artifacts, head_entry.artifacts)
+
+        commits_payload = [
+            {
+                "kind": entry.kind,
+                "id": f"{entry.kind}:{entry.sha or PLACEHOLDER_SHA}",
+                "git_sha": entry.sha or PLACEHOLDER_SHA,
+                "git_message": entry.message or PLACEHOLDER_MESSAGE,
+                "label": format_entry_label(entry),
+                "artifacts": [
+                    {
+                        "file_name": artifact.file_name,
+                        "size_bytes": artifact.size_bytes,
+                    }
+                    for artifact in entry.artifacts
+                ],
+            }
+            for entry in entries
+        ]
+
         datasets.append(
             {
                 "folder": str(report_path.parent.relative_to(root)),
                 "report_path": str(report_path.relative_to(root)),
+                "commits": commits_payload,
+                "comparison": {
+                    "base_id": f"{master_entry.kind}:{master_entry.sha or PLACEHOLDER_SHA}",
+                    "base_sha": master_entry.sha or PLACEHOLDER_SHA,
+                    "base_message": master_entry.message or PLACEHOLDER_MESSAGE,
+                    "base_label": format_entry_label(master_entry),
+                    "target_id": f"{head_entry.kind}:{head_entry.sha or PLACEHOLDER_SHA}",
+                    "target_sha": head_entry.sha or PLACEHOLDER_SHA,
+                    "target_message": head_entry.message or PLACEHOLDER_MESSAGE,
+                    "target_label": format_entry_label(head_entry),
+                    "artifacts": deltas,
+                },
                 "head": {
                     "git_sha": head_entry.sha or PLACEHOLDER_SHA,
                     "git_message": head_entry.message or PLACEHOLDER_MESSAGE,
@@ -401,7 +445,16 @@ def log_artifact_summary(folder: str, manifest: MutableMapping[str, Any]) -> Non
         print(f"No manifest entry found for {folder}; instrumentation summary skipped.", file=sys.stdout)
         return
 
-    artifacts: Sequence[Mapping[str, Any]] = match.get("artifacts", [])  # type: ignore[assignment]
+    comparison: Mapping[str, Any] | None = match.get("comparison")  # type: ignore[assignment]
+    if comparison:
+        base_label = comparison.get("base_label", comparison.get("base_sha", "base"))
+        target_label = comparison.get("target_label", comparison.get("target_sha", "target"))
+        artifacts: Sequence[Mapping[str, Any]] = comparison.get("artifacts", [])  # type: ignore[assignment]
+        print(f"Default comparison: {base_label} → {target_label}", file=sys.stdout)
+    else:
+        artifacts = match.get("artifacts", [])  # type: ignore[assignment]
+        print("Default comparison: MASTER → HEAD", file=sys.stdout)
+
     print(f"Artifacts measured ({len(artifacts)}):", file=sys.stdout)
     alert_total = 0
     for artifact in artifacts:

@@ -9,7 +9,7 @@
 <body>
     <header class="page-header">
         <h1>Size Reporting Dashboard</h1>
-        <p class="description">Review HEAD vs. MASTER artifact sizes and identify regressions quickly.</p>
+        <p class="description">Compare artifact sizes between any two recorded commits and spot regressions quickly.</p>
     </header>
 
     <section class="controls">
@@ -22,14 +22,18 @@
         <h2 id="summary-title">Commit Metadata</h2>
         <div class="summary-grid">
             <div>
-                <h3>HEAD</h3>
-                <p class="summary-value" id="head-sha">—</p>
-                <p class="summary-message" id="head-message">—</p>
+                <h3>Commit 1</h3>
+                <label class="summary-label" for="commit-base-select">Select commit 1</label>
+                <select id="commit-base-select" class="summary-select" aria-label="Commit 1"></select>
+                <p class="summary-value" id="commit-base-sha">—</p>
+                <p class="summary-message" id="commit-base-message">—</p>
             </div>
             <div>
-                <h3>MASTER</h3>
-                <p class="summary-value" id="master-sha">—</p>
-                <p class="summary-message" id="master-message">—</p>
+                <h3>Commit 2</h3>
+                <label class="summary-label" for="commit-target-select">Select commit 2</label>
+                <select id="commit-target-select" class="summary-select" aria-label="Commit 2"></select>
+                <p class="summary-value" id="commit-target-sha">—</p>
+                <p class="summary-message" id="commit-target-message">—</p>
             </div>
             <div>
                 <h3>Alerts</h3>
@@ -45,8 +49,8 @@
             <thead>
                 <tr>
                     <th scope="col">File</th>
-                    <th scope="col">MASTER (bytes)</th>
-                    <th scope="col">HEAD (bytes)</th>
+                    <th scope="col" id="commit-base-column">Commit 1 (bytes)</th>
+                    <th scope="col" id="commit-target-column">Commit 2 (bytes)</th>
                     <th scope="col">Δ bytes</th>
                     <th scope="col">Δ %</th>
                     <th scope="col">Status</th>
@@ -60,7 +64,7 @@
 
     <section class="chart-section" aria-labelledby="chart-title">
         <h2 id="chart-title">Size Trend</h2>
-        <canvas id="size-chart" width="960" height="420" role="img" aria-label="Bar chart comparing HEAD and MASTER sizes"></canvas>
+        <canvas id="size-chart" width="960" height="420" role="img" aria-label="Bar chart comparing selected commits"></canvas>
     </section>
 
     <footer class="page-footer">
