@@ -1,0 +1,99 @@
+{
+  "generated_at": "2025-11-05T07:40:38.183579+00:00",
+  "folders": [
+    {
+      "folder": "sandbox/wasm/debug",
+      "report_path": "sandbox/wasm/debug/report.txt",
+      "head": {
+        "git_sha": "ebe29558d205a43195965d8c8adf690f64cc2e47",
+        "git_message": "update constitution"
+      },
+      "master": {
+        "git_sha": "UNKNOWN",
+        "git_message": "UNKNOWN"
+      },
+      "artifacts": [
+        {
+          "file_name": "index.html",
+          "head_size": 153,
+          "master_size": 0,
+          "delta_bytes": 153,
+          "delta_percent": 100.0,
+          "alert": true,
+          "thresholds": [
+            "percent>2"
+          ]
+        },
+        {
+          "file_name": "sandbox.js",
+          "head_size": 39,
+          "master_size": 0,
+          "delta_bytes": 39,
+          "delta_percent": 100.0,
+          "alert": true,
+          "thresholds": [
+            "percent>2"
+          ]
+        },
+        {
+          "file_name": "sandbox.wasm",
+          "head_size": 32,
+          "master_size": 0,
+          "delta_bytes": 32,
+          "delta_percent": 100.0,
+          "alert": true,
+          "thresholds": [
+            "percent>2"
+          ]
+        }
+      ]
+    },
+    {
+      "folder": "sandbox/wasm/release",
+      "report_path": "sandbox/wasm/release/report.txt",
+      "head": {
+        "git_sha": "ebe29558d205a43195965d8c8adf690f64cc2e47",
+        "git_message": "update constitution"
+      },
+      "master": {
+        "git_sha": "UNKNOWN",
+        "git_message": "UNKNOWN"
+      },
+      "artifacts": [
+        {
+          "file_name": "index.html",
+          "head_size": 157,
+          "master_size": 0,
+          "delta_bytes": 157,
+          "delta_percent": 100.0,
+          "alert": true,
+          "thresholds": [
+            "percent>2"
+          ]
+        },
+        {
+          "file_name": "sandbox.js",
+          "head_size": 47,
+          "master_size": 0,
+          "delta_bytes": 47,
+          "delta_percent": 100.0,
+          "alert": true,
+          "thresholds": [
+            "percent>2"
+          ]
+        },
+        {
+          "file_name": "sandbox.wasm",
+          "head_size": 40,
+          "master_size": 0,
+          "delta_bytes": 40,
+          "delta_percent": 100.0,
+          "alert": true,
+          "thresholds": [
+            "percent>2"
+          ]
+        }
+      ]
+    }
+  ]
+}

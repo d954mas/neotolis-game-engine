@@ -14,8 +14,17 @@ Makefile
 *.obj
 *.exe
 *.dll
+*.so
+*.a
 *.wasm
 *.js
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.env*
+*.log
 
 # IDE and tooling
 .idea/

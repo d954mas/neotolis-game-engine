@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Size Reporting Dashboard</title>
+    <link rel="stylesheet" href="report.css">
+</head>
+<body>
+    <header class="page-header">
+        <h1>Size Reporting Dashboard</h1>
+        <p class="description">Review HEAD vs. MASTER artifact sizes and identify regressions quickly.</p>
+    </header>
+
+    <section class="controls">
+        <label for="folder-select">Select folder</label>
+        <select id="folder-select" aria-label="Size report folder"></select>
+        <span id="generated-at" class="generated-at" aria-live="polite"></span>
+    </section>
+
+    <section class="summary" aria-labelledby="summary-title">
+        <h2 id="summary-title">Commit Metadata</h2>
+        <div class="summary-grid">
+            <div>
+                <h3>HEAD</h3>
+                <p class="summary-value" id="head-sha">—</p>
+                <p class="summary-message" id="head-message">—</p>
+            </div>
+            <div>
+                <h3>MASTER</h3>
+                <p class="summary-value" id="master-sha">—</p>
+                <p class="summary-message" id="master-message">—</p>
+            </div>
+            <div>
+                <h3>Alerts</h3>
+                <p class="summary-value" id="alert-count">0</p>
+                <p class="summary-message">Threshold: &gt;2% or &gt;25 KB</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="table-section" aria-labelledby="table-title">
+        <h2 id="table-title">Artifact Comparison</h2>
+        <table id="artifact-table">
+            <thead>
+                <tr>
+                    <th scope="col">File</th>
+                    <th scope="col">MASTER (bytes)</th>
+                    <th scope="col">HEAD (bytes)</th>
+                    <th scope="col">Δ bytes</th>
+                    <th scope="col">Δ %</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <p id="empty-state" class="empty-state" hidden>No artifacts found for this folder.</p>
+    </section>
+
+    <section class="chart-section" aria-labelledby="chart-title">
+        <h2 id="chart-title">Size Trend</h2>
+        <canvas id="size-chart" width="960" height="420" role="img" aria-label="Bar chart comparing HEAD and MASTER sizes"></canvas>
+    </section>
+
+    <footer class="page-footer">
+        <p>Data source: <code>reports/size/index.json</code>. Refresh via <code>python reports/size/update.py</code>.</p>
+    </footer>
+
+    <script src="lib/chart.min.js"></script>
+    <script src="dashboard.js" type="module"></script>
+</body>
+</html>

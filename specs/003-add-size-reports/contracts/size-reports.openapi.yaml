@@ -1,0 +1,174 @@
+openapi: 3.0.3
+info:
+  title: Size Reports Service (Conceptual)
+  version: 0.1.0
+  description: >
+    Contract describing the data interactions that the `reports/size/update` tooling
+    and `report.html` dashboard must satisfy. Implementation may be file-based or
+    scripted, but responses MUST align with these payloads when exposed to automated
+    tooling or future services.
+servers:
+  - url: https://local-file-system
+    description: Logical endpoint for local scripts and CI to consume JSON exported from CSV.
+paths:
+  /size-reports:
+    get:
+      summary: List available size report folders
+      operationId: listSizeReports
+      responses:
+        '200':
+          description: Collection of tracked folders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  folders:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SizeReportFolder'
+  /size-reports/{folderId}:
+    parameters:
+      - $ref: '#/components/parameters/FolderId'
+    get:
+      summary: Retrieve HEAD vs. MASTER entries for a folder
+      operationId: getSizeReport
+      responses:
+        '200':
+          description: Snapshot data for visualization and CI checks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SizeReportSnapshot'
+        '404':
+          description: Folder not tracked or missing report file
+    post:
+      summary: Trigger HEAD measurement update for the folder
+      operationId: updateHeadMeasurement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - artifacts
+                - commitSha
+              properties:
+                commitSha:
+                  type: string
+                  description: Git SHA to record as HEAD after update.
+                artifacts:
+                  type: array
+                  description: Measured artifact sizes.
+                  items:
+                    $ref: '#/components/schemas/SizeReportRecord'
+      responses:
+        '202':
+          description: Update accepted; HEAD row replaced with provided measurements.
+        '422':
+          description: Validation failure (missing artifact, size mismatch, or schema violation).
+components:
+  parameters:
+    FolderId:
+      name: folderId
+      in: path
+      required: true
+      description: Path fragment identifying the sandbox folder (e.g., sandbox%2Fwasm%2Fdebug).
+      schema:
+        type: string
+  schemas:
+    SizeReportFolder:
+      type: object
+      required:
+        - id
+        - label
+        - paths
+      properties:
+        id:
+          type: string
+          example: sandbox/wasm/debug
+        label:
+          type: string
+          example: Sandbox WASM Debug
+        paths:
+          type: object
+          properties:
+            csv:
+              type: string
+              example: reports/size/sandbox/wasm/debug/report.txt
+            artifacts:
+              type: array
+              items:
+                type: string
+    SizeReportSnapshot:
+      type: object
+      required:
+        - folderId
+        - master
+        - head
+        - alerts
+      properties:
+        folderId:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+        master:
+          $ref: '#/components/schemas/SizeReportRow'
+        head:
+          $ref: '#/components/schemas/SizeReportRow'
+        alerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/SizeReportAlert'
+    SizeReportRow:
+      type: object
+      required:
+        - gitRef
+        - commitSha
+        - artifacts
+      properties:
+        gitRef:
+          type: string
+          enum: [MASTER, HEAD]
+        commitSha:
+          type: string
+        artifacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/SizeReportRecord'
+    SizeReportRecord:
+      type: object
+      required:
+        - fileName
+        - sizeBytes
+      properties:
+        fileName:
+          type: string
+        sizeBytes:
+          type: integer
+          format: int64
+        deltaBytes:
+          type: integer
+          format: int64
+        deltaPercent:
+          type: number
+          format: float
+    SizeReportAlert:
+      type: object
+      required:
+        - fileName
+        - threshold
+        - deltaBytes
+      properties:
+        fileName:
+          type: string
+        threshold:
+          type: string
+          description: Triggered rule (e.g., "percent>2", "bytes>25000").
+        deltaBytes:
+          type: integer
+        severity:
+          type: string
+          enum: [warning, critical]

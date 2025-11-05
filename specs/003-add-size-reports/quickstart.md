@@ -1,0 +1,26 @@
+# Quickstart — Size Reporting Dashboard
+
+1. **Build sandbox artifacts**
+   - Run the standard CMake preset to produce `sandbox/wasm/{debug,release}` artifacts.
+   - Confirm `.wasm`, `.js`, and `index.html` exist before running the CLI.
+
+2. **Update HEAD snapshot**
+   - Execute `python3 reports/size/update.py --folder sandbox/wasm/debug` (repeat for `sandbox/wasm/release`).
+   - The CLI prints per-artifact size measurements plus alert thresholds (`percent>2`, `bytes>25000`) after regenerating `index.json`.
+   - HEAD rows are refreshed with the current commit SHA/message while MASTER data remains unchanged.
+
+3. **Verify instrumentation**
+   - Run `python3 tests/size/scripts/verify_size_report.py`.
+   - The script provisions a temporary dataset and fails if CLI logs omit measured sizes or alert markers.
+
+4. **Review dashboard**
+   - Open `reports/size/report.html` (Chart.js loads from `reports/size/lib/chart.min.js`).
+   - Use the folder selector to hop between sandbox configurations; table + chart highlight alerts inline.
+
+5. **Refresh MASTER baseline (release acceptance only)**
+   - After approval, run `python3 reports/size/update.py --folder <folder> --accept-master <commit-sha>` to promote HEAD to MASTER.
+   - Document the baseline change in `reports/size/README.md` per runbook guidance.
+
+6. **CI integration**
+   - GitHub Actions workflow `ci/workflows/size-report.yml` runs on pushes to `003-add-size-reports`, executes the CLI for debug/release, and uploads the entire `reports/size` directory as an artifact (`size-report-dashboard`).
+   - Pipelines should fail if new alerts appear without mitigation notes.
