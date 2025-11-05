@@ -29,6 +29,7 @@ class GitMetadata:
     sha: str
     subject: str
     branch: str | None = None
+    date_iso: str | None = None
 
 
 @dataclass
@@ -45,6 +46,7 @@ class SnapshotEntry:
     artifacts: List[Artifact]
     branch: str | None = None
     subject: str | None = None
+    date_iso: str | None = None
 
 
 class SizeReportError(RuntimeError):
@@ -67,16 +69,18 @@ def run_git(args: List[str], cwd: Path) -> str:
 def current_head_metadata(repo_root: Path) -> GitMetadata:
     sha = run_git(["rev-parse", "HEAD"], repo_root)
     subject = run_git(["show", "-s", "--format=%s", "HEAD"], repo_root)
+    commit_date = run_git(["show", "-s", "--format=%cI", "HEAD"], repo_root)
     branch = run_git(["rev-parse", "--abbrev-ref", "HEAD"], repo_root)
     if branch.upper() == "HEAD":
         branch = None
-    return GitMetadata(sha=sha, subject=subject, branch=branch)
+    return GitMetadata(sha=sha, subject=subject, branch=branch, date_iso=commit_date)
 
 
 def metadata_for_ref(repo_root: Path, ref: str) -> GitMetadata:
     sha = run_git(["rev-parse", ref], repo_root)
     subject = run_git(["show", "-s", "--format=%s", ref], repo_root)
-    return GitMetadata(sha=sha, subject=subject)
+    commit_date = run_git(["show", "-s", "--format=%cI", ref], repo_root)
+    return GitMetadata(sha=sha, subject=subject, date_iso=commit_date)
 
 
 def discover_artifacts(folder: Path) -> List[Path]:
@@ -196,6 +200,7 @@ def _rows_to_entries(rows: List[Dict[str, str]]) -> List[SnapshotEntry]:
                 artifacts=[],
                 branch=commit_branch,
                 subject=commit_subject,
+                date_iso=None,
             )
             if current.kind == "master":
                 master_assigned = True
@@ -299,6 +304,16 @@ def update_head_snapshot(input_folder: Path, output_folder: Path, repo_root: Pat
         if key in seen_branch_keys:
             continue
         seen_branch_keys.add(key)
+        entry_subject = entry.subject
+        entry_date = None
+        if is_hex_sha(sha_entry):
+            try:
+                meta = metadata_for_ref(repo_root, sha_entry)
+                entry_date = meta.date_iso
+                if not entry_subject or entry_subject == PLACEHOLDER_MESSAGE:
+                    entry_subject = meta.subject
+            except SizeReportError:
+                entry_date = None
         branch_entries.append(
             SnapshotEntry(
                 kind="branch",
@@ -308,7 +323,8 @@ def update_head_snapshot(input_folder: Path, output_folder: Path, repo_root: Pat
                     Artifact(file_name=a.file_name, size_bytes=a.size_bytes) for a in entry.artifacts
                 ],
                 branch=branch_name_entry,
-                subject=entry.subject,
+                subject=entry_subject,
+                date_iso=entry_date,
             )
         )
 
@@ -326,6 +342,7 @@ def update_head_snapshot(input_folder: Path, output_folder: Path, repo_root: Pat
         artifacts=head_artifacts,
         branch=branch_name,
         subject=head_meta.subject,
+        date_iso=datetime.now(timezone.utc).isoformat(),
     )
 
     branch_entry: SnapshotEntry | None = None
@@ -337,6 +354,7 @@ def update_head_snapshot(input_folder: Path, output_folder: Path, repo_root: Pat
             artifacts=[Artifact(file_name=a.file_name, size_bytes=a.size_bytes) for a in head_artifacts],
             branch=branch_name,
             subject=head_meta.subject,
+            date_iso=head_meta.date_iso,
         )
 
     entries_to_write: List[SnapshotEntry] = []
@@ -401,21 +419,32 @@ def regenerate_manifest(
             continue
 
         for entry in entries:
+            meta: GitMetadata | None = None
+            if is_hex_sha(entry.sha):
+                try:
+                    meta = metadata_for_ref(repo_root, entry.sha)
+                except SizeReportError:
+                    meta = None
+
             needs_subject = entry.subject is None or entry.subject == PLACEHOLDER_MESSAGE
             if entry.kind in {"head", "branch"}:
                 needs_subject = True
+
             if needs_subject:
-                if is_hex_sha(entry.sha):
-                    try:
-                        entry.subject = metadata_for_ref(repo_root, entry.sha).subject
-                    except SizeReportError:
-                        entry.subject = entry.message or PLACEHOLDER_MESSAGE
+                if meta is not None:
+                    entry.subject = meta.subject
                 else:
                     entry.subject = entry.message or PLACEHOLDER_MESSAGE
-            if entry.kind == "head" and entry.branch is None:
-                entry.branch = entry.message if entry.message != PLACEHOLDER_MESSAGE else entry.branch
-            if entry.kind == "branch" and entry.branch is None:
-                entry.branch = entry.message if entry.message != PLACEHOLDER_MESSAGE else None
+
+            if entry.kind == "head":
+                if entry.branch is None:
+                    entry.branch = entry.message if entry.message != PLACEHOLDER_MESSAGE else entry.branch
+                entry.date_iso = generated_at
+            elif entry.kind == "branch":
+                if entry.branch is None:
+                    entry.branch = entry.message if entry.message != PLACEHOLDER_MESSAGE else None
+                if entry.date_iso is None and meta is not None:
+                    entry.date_iso = meta.date_iso
 
         commits_payload = []
         for entry in entries:
@@ -428,6 +457,7 @@ def regenerate_manifest(
                     "git_message": entry.subject or entry.message or PLACEHOLDER_MESSAGE,
                     "branch": entry.branch,
                     "subject": entry.subject or entry.message or PLACEHOLDER_MESSAGE,
+                    "date": entry.date_iso or generated_at,
                     "label": format_entry_label(entry),
                     "artifacts": [
                         {
@@ -531,9 +561,18 @@ def log_artifact_summary(folder: str, manifest: MutableMapping[str, Any], root: 
     base_commit = commits[0]
     target_commit = commits[1] if len(commits) > 1 else commits[0]
 
-    # Prefer head as the target and the most recent history (or branch) as the base.
+    # Prefer the HEAD snapshot as the comparison target.
     target_commit = next((item for item in commits if str(item.get("kind")).lower() == "head"), target_commit)
-    base_commit = next((item for item in commits if str(item.get("kind")).lower() == "history"), base_commit)
+    base_commit = next(
+        (
+            item
+            for item in commits
+            if str(item.get("kind")).lower() == "branch"
+            and item is not target_commit
+            and item.get("git_sha") != target_commit.get("git_sha")
+        ),
+        base_commit,
+    )
     if not base_commit or base_commit == target_commit:
         base_commit = next((item for item in commits if str(item.get("kind")).lower() == "branch"), base_commit)
     if not base_commit:
@@ -550,12 +589,12 @@ def log_artifact_summary(folder: str, manifest: MutableMapping[str, Any], root: 
     print(f"Artifacts measured ({len(artifact_names)}):", file=sys.stdout)
     alert_total = 0
     for name in artifact_names:
-        master_size = base_sizes.get(name, 0)
+        base_size = base_sizes.get(name, 0)
         head_size = target_sizes.get(name, 0)
-        delta_bytes = head_size - master_size
+        delta_bytes = head_size - base_size
         delta_percent = None
-        if master_size > 0:
-            delta_percent = (delta_bytes / master_size) * 100
+        if base_size > 0:
+            delta_percent = (delta_bytes / base_size) * 100
         elif head_size > 0:
             delta_percent = 100.0
         exceeds_bytes = abs(delta_bytes) >= 25_000
@@ -569,7 +608,7 @@ def log_artifact_summary(folder: str, manifest: MutableMapping[str, Any], root: 
             alert_total += 1
         threshold_label = ", ".join(thresholds) if thresholds else "none"
         print(
-            f"  - {name}: master={master_size}B head={head_size}B delta={delta_bytes}B ({format_percent(delta_percent)}) "
+            f"  - {name}: base={base_size}B head={head_size}B delta={delta_bytes}B ({format_percent(delta_percent)}) "
             f"thresholds={threshold_label}",
             file=sys.stdout,
         )
