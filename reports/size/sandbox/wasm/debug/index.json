@@ -1,20 +1,20 @@
 {
-  "generated_at": "2025-11-05T13:48:19.071384+00:00",
+  "generated_at": "2025-11-05T13:54:41.484094+00:00",
   "folder": "sandbox/wasm/debug",
   "report_path": "sandbox/wasm/debug/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:e318eecd8c37be5effa2046d07b2ea55c95daa73",
-      "git_sha": "e318eecd8c37be5effa2046d07b2ea55c95daa73",
-      "git_message": "sandbox size report",
+      "id": "head:master:c087e00f33d70068a247b4b3b4a74eb2d0208509",
+      "git_sha": "c087e00f33d70068a247b4b3b4a74eb2d0208509",
+      "git_message": "size report",
       "branch": "master",
-      "subject": "sandbox size report",
-      "date": "2025-11-05T13:51:06.161624+00:00",
-      "label": "HEAD-master-sandbox size report-e318eec",
+      "subject": "size report",
+      "date": "2025-11-05T13:54:41.900214+00:00",
+      "label": "HEAD-master-size report-c087e00",
       "artifacts": [
         {
-          "file_name": "nt_sandbox.html",
+          "file_name": "index.html",
           "size_bytes": 22069
         },
         {
