@@ -103,12 +103,14 @@ function populateCommitSelectors(commits) {
     });
 
     const headCommit = commits.find((commit) => commit.kind === 'head') || commits[0] || null;
-    const historyCommit = commits.find((commit) => commit.kind === 'history') || null;
-    const branchCommit = commits.find((commit) => commit.kind === 'branch') || null;
+    const branchCommits = commits.filter((commit) => commit.kind === 'branch');
+    const branchCommitDifferent =
+        headCommit ?
+            branchCommits.find((commit) => getCommitId(commit) !== getCommitId(headCommit)) || null :
+            null;
+    const branchCommitAny = branchCommits[0] || null;
 
-    const defaultBase =
-        historyCommit ||
-        (branchCommit && headCommit && getCommitId(branchCommit) !== getCommitId(headCommit) ? branchCommit : headCommit);
+    const defaultBase = branchCommitDifferent || branchCommitAny || headCommit;
     const defaultTarget = headCommit || defaultBase;
 
     state.selectedBaseId = defaultBase ? getCommitId(defaultBase) : null;
@@ -320,16 +322,6 @@ function renderDashboard() {
     let baseCommit = findCommitById(commits, state.selectedBaseId) || commits[0];
     let targetCommit =
         findCommitById(commits, state.selectedTargetId) || commits[(commits.length > 1 ? 1 : 0)] || baseCommit;
-
-    if (
-        baseCommit &&
-        targetCommit &&
-        getCommitId(baseCommit) === getCommitId(targetCommit) &&
-        commits.length > 1
-    ) {
-        const alternative = commits.find((commit) => getCommitId(commit) !== state.selectedTargetId) || baseCommit;
-        baseCommit = alternative;
-    }
 
     state.selectedBaseId = getCommitId(baseCommit);
     state.selectedTargetId = getCommitId(targetCommit);
