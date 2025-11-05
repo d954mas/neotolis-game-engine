@@ -1,12 +1,12 @@
 {
-  "generated_at": "2025-11-05T08:49:28.851603+00:00",
+  "generated_at": "2025-11-05T08:54:13.474818+00:00",
   "folders": [
     {
-      "folder": "sandbox/wasm/debug",
-      "report_path": "sandbox/wasm/debug/report.txt",
+      "folder": "sandbox\\wasm\\debug",
+      "report_path": "sandbox\\wasm\\debug\\report.txt",
       "head": {
-        "git_sha": "0b85db9568c68da95068147b1c71682fced7f31a",
-        "git_message": "add task for python"
+        "git_sha": "4e522006a2ca34f56c017ebc213694ae70adf620",
+        "git_message": "fixed build report"
       },
       "master": {
         "git_sha": "UNKNOWN",
@@ -15,9 +15,9 @@
       "artifacts": [
         {
           "file_name": "index.html",
-          "head_size": 153,
+          "head_size": 22190,
           "master_size": 0,
-          "delta_bytes": 153,
+          "delta_bytes": 22190,
           "delta_percent": 100.0,
           "alert": true,
           "thresholds": [
@@ -25,10 +25,60 @@
           ]
         },
         {
-          "file_name": "sandbox.js",
-          "head_size": 39,
+          "file_name": "nt_sandbox.js",
+          "head_size": 65533,
           "master_size": 0,
-          "delta_bytes": 39,
+          "delta_bytes": 65533,
+          "delta_percent": 100.0,
+          "alert": true,
+          "thresholds": [
+            "percent>2",
+            "bytes>25000"
+          ]
+        },
+        {
+          "file_name": "nt_sandbox.wasm",
+          "head_size": 1200419,
+          "master_size": 0,
+          "delta_bytes": 1200419,
+          "delta_percent": 100.0,
+          "alert": true,
+          "thresholds": [
+            "percent>2",
+            "bytes>25000"
+          ]
+        },
+        {
+          "file_name": "nt_sandbox.wasm.map",
+          "head_size": 90100,
+          "master_size": 0,
+          "delta_bytes": 90100,
+          "delta_percent": 100.0,
+          "alert": true,
+          "thresholds": [
+            "percent>2",
+            "bytes>25000"
+          ]
+        }
+      ]
+    },
+    {
+      "folder": "sandbox\\wasm\\release",
+      "report_path": "sandbox\\wasm\\release\\report.txt",
+      "head": {
+        "git_sha": "4e522006a2ca34f56c017ebc213694ae70adf620",
+        "git_message": "fixed build report"
+      },
+      "master": {
+        "git_sha": "UNKNOWN",
+        "git_message": "UNKNOWN"
+      },
+      "artifacts": [
+        {
+          "file_name": "index.html",
+          "head_size": 19602,
+          "master_size": 0,
+          "delta_bytes": 19602,
           "delta_percent": 100.0,
           "alert": true,
           "thresholds": [
@@ -36,10 +86,21 @@
           ]
         },
         {
-          "file_name": "sandbox.wasm",
-          "head_size": 32,
+          "file_name": "nt_sandbox.js",
+          "head_size": 9115,
           "master_size": 0,
-          "delta_bytes": 32,
+          "delta_bytes": 9115,
+          "delta_percent": 100.0,
+          "alert": true,
+          "thresholds": [
+            "percent>2"
+          ]
+        },
+        {
+          "file_name": "nt_sandbox.wasm",
+          "head_size": 1647,
+          "master_size": 0,
+          "delta_bytes": 1647,
           "delta_percent": 100.0,
           "alert": true,
           "thresholds": [
@@ -49,11 +110,11 @@
       ]
     },
     {
-      "folder": "sandbox/wasm/release",
-      "report_path": "sandbox/wasm/release/report.txt",
+      "folder": "sandbox\\windows\\debug",
+      "report_path": "sandbox\\windows\\debug\\report.txt",
       "head": {
-        "git_sha": "0b85db9568c68da95068147b1c71682fced7f31a",
-        "git_message": "add task for python"
+        "git_sha": "4e522006a2ca34f56c017ebc213694ae70adf620",
+        "git_message": "fixed build report"
       },
       "master": {
         "git_sha": "UNKNOWN",
@@ -61,32 +122,35 @@
       },
       "artifacts": [
         {
-          "file_name": "index.html",
-          "head_size": 157,
+          "file_name": "engine.exe",
+          "head_size": 19968,
           "master_size": 0,
-          "delta_bytes": 157,
+          "delta_bytes": 19968,
           "delta_percent": 100.0,
           "alert": true,
           "thresholds": [
             "percent>2"
           ]
-        },
+        }
+      ]
+    },
+    {
+      "folder": "sandbox\\windows\\release",
+      "report_path": "sandbox\\windows\\release\\report.txt",
+      "head": {
+        "git_sha": "4e522006a2ca34f56c017ebc213694ae70adf620",
+        "git_message": "fixed build report"
+      },
+      "master": {
+        "git_sha": "UNKNOWN",
+        "git_message": "UNKNOWN"
+      },
+      "artifacts": [
         {
-          "file_name": "sandbox.js",
-          "head_size": 47,
+          "file_name": "engine.exe",
+          "head_size": 9728,
           "master_size": 0,
-          "delta_bytes": 47,
-          "delta_percent": 100.0,
-          "alert": true,
-          "thresholds": [
-            "percent>2"
-          ]
-        },
-        {
-          "file_name": "sandbox.wasm",
-          "head_size": 40,
-          "master_size": 0,
-          "delta_bytes": 40,
+          "delta_bytes": 9728,
           "delta_percent": 100.0,
           "alert": true,
           "thresholds": [

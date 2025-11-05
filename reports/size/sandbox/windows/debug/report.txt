@@ -1,7 +1,4 @@
 git_sha,git_message,file_name,size_bytes
 UNKNOWN,UNKNOWN,,
 4e522006a2ca34f56c017ebc213694ae70adf620,fixed build report,,
-,,index.html,22190
-,,nt_sandbox.js,65533
-,,nt_sandbox.wasm,1200419
-,,nt_sandbox.wasm.map,90100
+,,engine.exe,19968
