@@ -42,7 +42,7 @@
       "skipFiles": ["<node_internals>/**"]
     },
     {
-      "name": "Sandbox Web Release)",
+      "name": "Sandbox Web Release",
       "type": "chrome",
       "request": "launch",
       "url": "http://localhost:8001",
