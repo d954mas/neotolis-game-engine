@@ -282,6 +282,21 @@ function renderChart(rows, baseCommit, targetCommit) {
                 },
             ],
         },
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    offset: true,
+                    ticks: {
+                        maxRotation: 0,
+                        minRotation: 0,
+                        align: 'center',
+                        autoSkip: false,
+                        padding: 8,
+                    },
+                },
+            },
+        },
     });
 }
 

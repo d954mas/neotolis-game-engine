@@ -134,6 +134,12 @@ body {
     font-size: 0.95rem;
 }
 
+.summary-date {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
 #artifact-table {
     width: 100%;
     border-collapse: collapse;
