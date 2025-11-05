@@ -96,12 +96,14 @@ jobs:
           name: sandbox-windows
           path: artifact-inputs/windows
           merge-multiple: true
-      - name: Arrange artifact directories
+      - name: Stage sandbox outputs
         run: |
           set -euo pipefail
-          rm -rf build-inputs
-          mkdir -p build-inputs/sandbox/wasm
-          mkdir -p build-inputs/sandbox/windows
+          rm -rf output
+          mkdir -p output/sandbox/wasm/debug
+          mkdir -p output/sandbox/wasm/release
+          mkdir -p output/sandbox/windows/debug
+          mkdir -p output/sandbox/windows/release
           find_dir() {
             local search_root=$1
             local pattern=$2
@@ -121,17 +123,17 @@ jobs:
             ls -R artifact-inputs/windows || true
             exit 1
           fi
-          mv "$wasm_debug" build-inputs/sandbox/wasm/
-          mv "$wasm_release" build-inputs/sandbox/wasm/
-          mv "$windows_debug" build-inputs/sandbox/windows/
-          mv "$windows_release" build-inputs/sandbox/windows/
+          cp -a "$wasm_debug/." output/sandbox/wasm/debug/
+          cp -a "$wasm_release/." output/sandbox/wasm/release/
+          cp -a "$windows_debug/." output/sandbox/windows/debug/
+          cp -a "$windows_release/." output/sandbox/windows/release/
       - name: Update size reports
         run: |
           set -euo pipefail
-          python3 reports/size/update.py --input build-inputs/sandbox/wasm/debug --output sandbox/wasm/debug
-          python3 reports/size/update.py --input build-inputs/sandbox/wasm/release --output sandbox/wasm/release
-          python3 reports/size/update.py --input build-inputs/sandbox/windows/debug --output sandbox/windows/debug
-          python3 reports/size/update.py --input build-inputs/sandbox/windows/release --output sandbox/windows/release
+          python3 reports/size/update.py --input output/sandbox/wasm/debug --output sandbox/wasm/debug
+          python3 reports/size/update.py --input output/sandbox/wasm/release --output sandbox/wasm/release
+          python3 reports/size/update.py --input output/sandbox/windows/debug --output sandbox/windows/debug
+          python3 reports/size/update.py --input output/sandbox/windows/release --output sandbox/windows/release
       - name: Commit size report updates
         run: |
           set -euo pipefail

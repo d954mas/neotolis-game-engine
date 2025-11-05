@@ -1,29 +1,37 @@
 {
-  "generated_at": "2025-11-05T13:37:46.928070+00:00",
+  "generated_at": "2025-11-05T13:43:50.812324+00:00",
   "folder": "sandbox/windows/debug",
   "report_path": "sandbox/windows/debug/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:5c5319f0d10ce27d4d7f7c7eb5f3322754c2f60c",
-      "git_sha": "5c5319f0d10ce27d4d7f7c7eb5f3322754c2f60c",
-      "git_message": "sandbox-size",
+      "id": "head:master:e71f3732466622f12342bc3fcbf8f48d3dcec6a5",
+      "git_sha": "e71f3732466622f12342bc3fcbf8f48d3dcec6a5",
+      "git_message": "chore: update sandbox size reports",
       "branch": "master",
-      "subject": "sandbox-size",
-      "date": "2025-11-05T13:37:47.043337+00:00",
-      "label": "HEAD-master-sandbox-size-5c5319f",
+      "subject": "chore: update sandbox size reports",
+      "date": "2025-11-05T13:43:50.812324+00:00",
+      "label": "HEAD-master-chore: update sandbox size reports-e71f373",
       "artifacts": [
         {
-          "file_name": "cmake_install.cmake",
-          "size_bytes": 1378
-        },
-        {
-          "file_name": "nt_sandbox.exe",
+          "file_name": "engine.exe",
           "size_bytes": 19968
-        },
+        }
+      ]
+    },
+    {
+      "kind": "branch",
+      "id": "branch:master:e71f3732466622f12342bc3fcbf8f48d3dcec6a5",
+      "git_sha": "e71f3732466622f12342bc3fcbf8f48d3dcec6a5",
+      "git_message": "chore: update sandbox size reports",
+      "branch": "master",
+      "subject": "chore: update sandbox size reports",
+      "date": "2025-11-05T13:37:47Z",
+      "label": "master-chore: update sandbox size reports-e71f373",
+      "artifacts": [
         {
-          "file_name": "nt_sandbox.pdb",
-          "size_bytes": 495616
+          "file_name": "engine.exe",
+          "size_bytes": 19968
         }
       ]
     },
