@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Run Sandbox (Windows Debug)",
+      "name": "Sandbox Win Debug",
       "type": "cppvsdbg",
       "request": "launch",
       "program": "${workspaceFolder}\\output\\sandbox\\windows\\debug\\engine.exe",
@@ -10,7 +10,7 @@
       "preLaunchTask": "Build win-debug"
     },
     {
-      "name": "Run Sandbox (Windows Release)",
+      "name": "Sandbox Win Release",
       "type": "cppvsdbg",
       "request": "launch",
       "program": "${workspaceFolder}\\output\\sandbox\\windows\\release\\engine.exe",
@@ -18,7 +18,7 @@
       "preLaunchTask": "Build win-release"
     },
     {
-      "name": "Run Tests (Windows Debug)",
+      "name": "Tests Win Debug",
       "type": "cppvsdbg",
       "request": "launch",
       "program": "ctest",
@@ -32,7 +32,7 @@
     },
 
      {
-      "name": "Run Sandbox (web-debug)",
+      "name": "Sandbox Web Debug",
       "type": "chrome",
       "request": "launch",
       "url": "http://localhost:8001",
@@ -42,7 +42,7 @@
       "skipFiles": ["<node_internals>/**"]
     },
     {
-      "name": "Run Sandbox (web-release)",
+      "name": "Sandbox Web Release)",
       "type": "chrome",
       "request": "launch",
       "url": "http://localhost:8001",
