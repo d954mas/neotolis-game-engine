@@ -30,7 +30,8 @@ LEGACY_HEADER = ["git_ref", "file_name", "size_bytes", "git_sha", "git_message"]
 @dataclass
 class GitMetadata:
     sha: str
-    message: str
+    subject: str
+    branch: str | None = None
 
 
 @dataclass
@@ -45,6 +46,8 @@ class SnapshotEntry:
     sha: str
     message: str
     artifacts: List[Artifact]
+    branch: str | None = None
+    subject: str | None = None
 
 
 class SizeReportError(RuntimeError):
@@ -66,19 +69,27 @@ def run_git(args: List[str], cwd: Path) -> str:
 
 def current_head_metadata(repo_root: Path) -> GitMetadata:
     sha = run_git(["rev-parse", "HEAD"], repo_root)
-    message = run_git(["show", "-s", "--format=%s", "HEAD"], repo_root)
-    return GitMetadata(sha=sha, message=message)
+    subject = run_git(["show", "-s", "--format=%s", "HEAD"], repo_root)
+    branch = run_git(["rev-parse", "--abbrev-ref", "HEAD"], repo_root)
+    if branch.upper() == "HEAD":
+        branch = None
+    return GitMetadata(sha=sha, subject=subject, branch=branch)
 
 
 def metadata_for_ref(repo_root: Path, ref: str) -> GitMetadata:
     sha = run_git(["rev-parse", ref], repo_root)
-    message = run_git(["show", "-s", "--format=%s", ref], repo_root)
-    return GitMetadata(sha=sha, message=message)
+    subject = run_git(["show", "-s", "--format=%s", ref], repo_root)
+    return GitMetadata(sha=sha, subject=subject)
 
 
 def discover_artifacts(folder: Path) -> List[Path]:
     artifacts = [p for p in folder.iterdir() if p.is_file() and p.name not in ARTIFACT_EXCLUDES]
     return sorted(artifacts, key=lambda p: p.name)
+
+
+def is_worktree_clean(repo_root: Path) -> bool:
+    status = run_git(["status", "--porcelain"], repo_root)
+    return status.strip() == ""
 
 
 def read_report_entries(report_path: Path) -> List[SnapshotEntry]:
@@ -104,6 +115,7 @@ def _rows_to_entries(rows: List[Dict[str, str]]) -> List[SnapshotEntry]:
     current: SnapshotEntry | None = None
     master_assigned = False
     head_assigned = False
+    branch_assigned = False
 
     for row in rows:
         size_field = (row.get("size_bytes") or "").strip()
@@ -113,14 +125,18 @@ def _rows_to_entries(rows: List[Dict[str, str]]) -> List[SnapshotEntry]:
             file_field = (row.get("file_name") or "").strip()
             label = (file_field or sha_field).strip().upper()
 
+            commit_kind = None
             if label == "HEAD":
                 commit_kind = "head"
             elif label == "MASTER":
                 commit_kind = "master"
+            elif label == "BRANCH":
+                commit_kind = "branch"
             elif label == "HISTORY":
                 commit_kind = "history"
-            else:
-                commit_kind = None
+
+            commit_branch: str | None = None
+            commit_subject: str | None = None
 
             if commit_kind == "head":
                 commit_sha = (
@@ -128,38 +144,57 @@ def _rows_to_entries(rows: List[Dict[str, str]]) -> List[SnapshotEntry]:
                     if is_hex_sha(message_field)
                     else (sha_field if is_hex_sha(sha_field) else PLACEHOLDER_SHA)
                 )
-                commit_message = (
-                    message_field if message_field and not is_hex_sha(message_field) else PLACEHOLDER_MESSAGE
-                )
+                commit_branch = message_field or None
+                commit_message = commit_branch or PLACEHOLDER_MESSAGE
             elif commit_kind == "master":
                 commit_sha = (
                     message_field
                     if is_hex_sha(message_field)
                     else (sha_field if is_hex_sha(sha_field) else PLACEHOLDER_SHA)
                 )
-                commit_message = (
-                    message_field if message_field and not is_hex_sha(message_field) else PLACEHOLDER_MESSAGE
+                commit_message = message_field if message_field else PLACEHOLDER_MESSAGE
+                commit_subject = commit_message
+            elif commit_kind == "branch":
+                commit_sha = (
+                    message_field
+                    if is_hex_sha(message_field)
+                    else (sha_field if is_hex_sha(sha_field) else PLACEHOLDER_SHA)
                 )
+                commit_branch = message_field or None
+                commit_message = commit_branch or PLACEHOLDER_MESSAGE
             else:
                 commit_sha = sha_field if is_hex_sha(sha_field) else PLACEHOLDER_SHA
                 commit_message = message_field or file_field or PLACEHOLDER_MESSAGE
-                if not master_assigned:
-                    commit_kind = "master"
-                elif not head_assigned:
-                    commit_kind = "head"
-                else:
-                    commit_kind = "history"
+                if commit_kind is None:
+                    if not master_assigned:
+                        commit_kind = "master"
+                        master_assigned = True
+                    elif not head_assigned:
+                        commit_kind = "head"
+                        head_assigned = True
+                    elif not branch_assigned:
+                        commit_kind = "branch"
+                        branch_assigned = True
+                    else:
+                        commit_kind = "history"
+                if commit_kind == "history":
+                    commit_subject = message_field or commit_message
+                commit_branch = message_field if commit_kind in {"head", "branch"} else None
 
             current = SnapshotEntry(
-                kind=commit_kind,
+                kind=commit_kind or "history",
                 sha=commit_sha or PLACEHOLDER_SHA,
                 message=commit_message or PLACEHOLDER_MESSAGE,
                 artifacts=[],
+                branch=commit_branch,
+                subject=commit_subject,
             )
-            if commit_kind == "master":
+            if current.kind == "master":
                 master_assigned = True
-            elif commit_kind == "head":
+            elif current.kind == "head":
                 head_assigned = True
+            elif current.kind == "branch":
+                branch_assigned = True
             entries.append(current)
         else:
             if current is None:
@@ -234,14 +269,21 @@ def convert_legacy_rows(rows: List[Dict[str, str]]) -> List[SnapshotEntry]:
 def format_entry_label(entry: SnapshotEntry) -> str:
     sha = entry.sha or PLACEHOLDER_SHA
     display_sha = sha if len(sha) <= 7 else sha[:7]
-    message = entry.message or PLACEHOLDER_MESSAGE
+    subject = entry.subject or entry.message or PLACEHOLDER_MESSAGE
     if entry.kind == "head":
-        return f"HEAD — {display_sha}"
+        message_fragment = subject or PLACEHOLDER_MESSAGE
+        return f"HEAD - {message_fragment} - {display_sha}"
+    if entry.kind == "branch":
+        branch_label = entry.branch or "BRANCH"
+        message_fragment = subject or PLACEHOLDER_MESSAGE
+        return f"{branch_label} - {message_fragment} - {display_sha}"
     if entry.kind == "master":
-        return f"MASTER — {display_sha}"
-    if message == PLACEHOLDER_MESSAGE:
+        message_fragment = subject or PLACEHOLDER_MESSAGE
+        return f"MASTER - {message_fragment} - {display_sha}"
+    message_fragment = subject or entry.message or PLACEHOLDER_MESSAGE
+    if message_fragment == PLACEHOLDER_MESSAGE:
         return display_sha
-    return f"{display_sha} — {message}"
+    return f"{display_sha} - {message_fragment}"
 
 
 def write_report_entries(report_path: Path, entries: List[SnapshotEntry]) -> None:
@@ -249,12 +291,17 @@ def write_report_entries(report_path: Path, entries: List[SnapshotEntry]) -> Non
         writer = csv.DictWriter(fp, fieldnames=validators.HEADER)
         writer.writeheader()
         for entry in entries:
-            if entry.kind == "master" and entry.sha == PLACEHOLDER_SHA and not entry.artifacts:
+            if entry.sha in (None, "", PLACEHOLDER_SHA) and not entry.artifacts:
+                # Skip placeholder rows that carry no useful data.
                 continue
             writer.writerow(
                 {
                     "git_sha": entry.sha or PLACEHOLDER_SHA,
-                    "git_message": entry.message or PLACEHOLDER_MESSAGE,
+                    "git_message": (
+                        entry.message
+                        if entry.kind in {"head", "branch"} and entry.message
+                        else (entry.subject or entry.message or PLACEHOLDER_MESSAGE)
+                    ),
                     "file_name": entry.kind.upper(),
                     "size_bytes": "",
                 }
@@ -292,58 +339,132 @@ def update_head_snapshot(
 
     for entry in existing_entries:
         if entry.kind == "master":
-            if entry.sha == PLACEHOLDER_SHA and not entry.artifacts:
-                continue
-            master_entry = entry
+            if accept_master:
+                if entry.sha == PLACEHOLDER_SHA and not entry.artifacts:
+                    continue
+                master_entry = SnapshotEntry(
+                    kind="master",
+                    sha=entry.sha,
+                    message=entry.message,
+                    artifacts=[Artifact(file_name=a.file_name, size_bytes=a.size_bytes) for a in entry.artifacts],
+                    branch=entry.branch,
+                    subject=entry.subject,
+                )
+            elif entry.sha not in (None, "", PLACEHOLDER_SHA):
+                history_entries.append(
+                    SnapshotEntry(
+                        kind="history",
+                        sha=entry.sha,
+                        message=entry.message,
+                        artifacts=[Artifact(file_name=a.file_name, size_bytes=a.size_bytes) for a in entry.artifacts],
+                        branch=entry.branch,
+                        subject=entry.subject,
+                    )
+                )
         elif entry.kind == "head":
             previous_head = entry
         else:
             history_entries.append(entry)
 
+    # drop legacy branch placeholders from history
+    history_entries = [entry for entry in history_entries if entry.kind != "branch"]
+
     head_meta = current_head_metadata(repo_root)
+    branch_name = head_meta.branch
+    head_message = branch_name or head_meta.subject or PLACEHOLDER_MESSAGE
 
     head_artifacts = [
         Artifact(file_name=artifact.name, size_bytes=artifact.stat().st_size) for artifact in artifacts
     ]
-    head_entry = SnapshotEntry(kind="head", sha=head_meta.sha, message=head_meta.message, artifacts=head_artifacts)
+    head_entry = SnapshotEntry(
+        kind="head",
+        sha=head_meta.sha,
+        message=head_message,
+        artifacts=head_artifacts,
+        branch=branch_name,
+        subject=head_meta.subject,
+    )
+
+    branch_entry: SnapshotEntry | None = None
+    if branch_name and is_worktree_clean(repo_root):
+        branch_entry = SnapshotEntry(
+            kind="branch",
+            sha=head_meta.sha,
+            message=branch_name,
+            artifacts=[Artifact(file_name=a.file_name, size_bytes=a.size_bytes) for a in head_artifacts],
+            branch=branch_name,
+            subject=head_meta.subject,
+        )
 
     if accept_master:
         master_meta = metadata_for_ref(repo_root, accept_master)
         master_entry = SnapshotEntry(
             kind="master",
             sha=master_meta.sha,
-            message=master_meta.message,
+            message=master_meta.subject,
             artifacts=[Artifact(file_name=a.file_name, size_bytes=a.size_bytes) for a in head_artifacts],
+            subject=master_meta.subject,
         )
 
-    if master_entry is not None and head_entry is not None and master_entry.sha == head_entry.sha:
+    if master_entry is not None and master_entry.sha == head_entry.sha:
         master_map = {artifact.file_name: artifact.size_bytes for artifact in master_entry.artifacts}
         head_map = {artifact.file_name: artifact.size_bytes for artifact in head_entry.artifacts}
         if master_map == head_map:
             master_entry = None
 
-    if master_entry is not None and not master_entry.artifacts:
-        master_entry = None
-
     if previous_head and previous_head.sha not in (PLACEHOLDER_SHA, head_entry.sha):
         history_entries = [entry for entry in history_entries if entry.sha != previous_head.sha]
+        previous_subject = previous_head.subject or metadata_for_ref(repo_root, previous_head.sha).subject
         history_entries.insert(
             0,
             SnapshotEntry(
                 kind="history",
                 sha=previous_head.sha,
-                message=previous_head.message,
-                artifacts=[Artifact(file_name=a.file_name, size_bytes=a.size_bytes) for a in previous_head.artifacts],
+                message=previous_subject or previous_head.message,
+                artifacts=[
+                    Artifact(file_name=a.file_name, size_bytes=a.size_bytes) for a in previous_head.artifacts
+                ],
+                branch=previous_head.branch,
+                subject=previous_subject,
             ),
         )
 
-    # Remove any stale history entry matching the current HEAD sha
-    history_entries = [entry for entry in history_entries if entry.sha != head_entry.sha]
+    history_entries = [entry for entry in history_entries if entry.sha not in (None, "", head_entry.sha)]
+
+    deduped_history: List[SnapshotEntry] = []
+    subject_cache: Dict[str, str] = {}
+    seen_history: set[str] = set()
+    for entry in history_entries:
+        sha = entry.sha or PLACEHOLDER_SHA
+        if sha in seen_history:
+            continue
+        seen_history.add(sha)
+        resolved_subject = entry.subject
+        if not resolved_subject and is_hex_sha(sha):
+            if sha not in subject_cache:
+                try:
+                    subject_cache[sha] = metadata_for_ref(repo_root, sha).subject
+                except SizeReportError:
+                    subject_cache[sha] = entry.message or PLACEHOLDER_MESSAGE
+            resolved_subject = subject_cache.get(sha, entry.message)
+        deduped_history.append(
+            SnapshotEntry(
+                kind="history",
+                sha=sha,
+                message=entry.message,
+                artifacts=[Artifact(file_name=a.file_name, size_bytes=a.size_bytes) for a in entry.artifacts],
+                branch=entry.branch,
+                subject=resolved_subject,
+            )
+        )
+    history_entries = deduped_history
 
     entries_to_write: List[SnapshotEntry] = []
     if master_entry is not None:
         entries_to_write.append(master_entry)
     entries_to_write.append(head_entry)
+    if branch_entry is not None:
+        entries_to_write.append(branch_entry)
     entries_to_write.extend(history_entries)
     write_report_entries(report_path, entries_to_write)
     return head_meta
@@ -400,6 +521,8 @@ def regenerate_manifest(root: Path) -> Dict[str, object]:
                     "id": f"{entry.kind}:{entry.sha or PLACEHOLDER_SHA}",
                     "git_sha": entry.sha or PLACEHOLDER_SHA,
                     "git_message": entry.message or PLACEHOLDER_MESSAGE,
+                    "branch": entry.branch,
+                    "subject": entry.subject or entry.message or PLACEHOLDER_MESSAGE,
                     "label": format_entry_label(entry),
                     "artifacts": [
                         {
@@ -449,9 +572,14 @@ def format_commit_label_from_dict(commit: Mapping[str, Any]) -> str:
     label = commit.get("label")
     if label:
         return str(label)
-    kind = str(commit.get("kind") or "").upper()
+    branch = commit.get("branch")
     sha = str(commit.get("git_sha") or PLACEHOLDER_SHA)
     short_sha = sha if len(sha) <= 7 else sha[:7]
+    kind = str(commit.get("kind") or "").upper()
+    if branch:
+        if kind == "BRANCH":
+            return f"{branch} — {short_sha}"
+        return f"{kind or 'HEAD'} — {branch}"
     if kind:
         return f"{kind} — {short_sha}"
     return short_sha
@@ -485,6 +613,14 @@ def log_artifact_summary(folder: str, manifest: MutableMapping[str, Any], root: 
     base_commit = commits[0]
     target_commit = commits[1] if len(commits) > 1 else commits[0]
 
+    # Prefer head as the target and the most recent history (or branch) as the base.
+    target_commit = next((item for item in commits if str(item.get("kind")).lower() == "head"), target_commit)
+    base_commit = next((item for item in commits if str(item.get("kind")).lower() == "history"), base_commit)
+    if not base_commit or base_commit == target_commit:
+        base_commit = next((item for item in commits if str(item.get("kind")).lower() == "branch"), base_commit)
+    if not base_commit:
+        base_commit = target_commit
+
     base_label = format_commit_label_from_dict(base_commit)
     target_label = format_commit_label_from_dict(target_commit)
     print(f"Default comparison: {base_label} → {target_label}", file=sys.stdout)
@@ -513,13 +649,13 @@ def log_artifact_summary(folder: str, manifest: MutableMapping[str, Any], root: 
             thresholds.append("bytes>25000")
         if thresholds:
             alert_total += 1
+        threshold_label = ", ".join(thresholds) if thresholds else "none"
         print(
             f"  - {name}: master={master_size}B head={head_size}B delta={delta_bytes}B ({format_percent(delta_percent)}) "
-            f"thresholds={', '.join(thresholds) if thresholds else 'none'}",
+            f"thresholds={threshold_label}",
             file=sys.stdout,
         )
     print(f"Alert thresholds triggered: {alert_total}", file=sys.stdout)
-
 
 def parse_args(argv: List[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -575,7 +711,7 @@ def main(argv: List[str] | None = None) -> int:
         )
         manifest = regenerate_manifest(root)
         print(
-            f"Updated HEAD snapshot for {output_label}: {head_meta.sha} — {head_meta.message}",
+            f"Updated HEAD snapshot for {output_label}: {head_meta.sha} — {head_meta.subject}",
             file=sys.stdout,
         )
         log_artifact_summary(output_label.as_posix(), manifest, root)

@@ -52,12 +52,15 @@ def test_head_snapshot_updates_report_and_manifest(tmp_path):
 
     commit_sha = git(["rev-parse", "HEAD"])
     commit_message = git(["show", "-s", "--format=%s", "HEAD"])
+    branch_name = git(["rev-parse", "--abbrev-ref", "HEAD"])
 
     entries = read_report_entries(REPORT_FILE)
     head_entry = next((entry for entry in entries if entry.kind == "head"), None)
     assert head_entry is not None, "Expected HEAD entry after update"
     assert head_entry.sha == commit_sha
-    assert head_entry.message == commit_message
+    expected_label = branch_name if branch_name and branch_name.upper() != "HEAD" else commit_message
+    assert head_entry.message == expected_label
+    assert head_entry.branch == (branch_name if branch_name and branch_name.upper() != "HEAD" else None)
 
     artifact_names = sorted(artifact.file_name for artifact in head_entry.artifacts)
     assert artifact_names == sorted(ARTIFACTS)
@@ -71,6 +74,22 @@ def test_head_snapshot_updates_report_and_manifest(tmp_path):
     folders = {entry["folder"]: entry for entry in manifest["folders"]}
     debug_entry = folders.get("sandbox/wasm/debug")
     assert debug_entry is not None
-    assert debug_entry["head"]["git_sha"] == commit_sha
-    assert debug_entry["head"]["git_message"] == commit_message
-    assert len(debug_entry["artifacts"]) == len(ARTIFACTS)
+    assert debug_entry["commit_count"] >= 1
+
+    folder_index_path = REPORT_ROOT / debug_entry["index"]
+    assert folder_index_path.exists()
+
+    folder_index = json.loads(folder_index_path.read_text())
+    commits = folder_index.get("commits", [])
+    assert commits, "Expected at least one commit entry in per-folder manifest"
+
+    head_commit = next((item for item in commits if item.get("kind") == "head"), None)
+    assert head_commit is not None, "Head commit missing from per-folder manifest"
+    assert head_commit["git_sha"] == commit_sha
+    assert head_commit["git_message"] == branch_name
+    assert head_commit["branch"] == branch_name
+    assert head_commit["subject"] == commit_message
+    assert len(head_commit.get("artifacts", [])) == len(ARTIFACTS)
+
+    history_commits = [item for item in commits if item.get("kind") == "history"]
+    assert history_commits, "Expected previous commits to be retained as history entries"

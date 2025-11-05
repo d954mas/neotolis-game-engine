@@ -7,7 +7,7 @@
 2. **Update HEAD snapshot**
    - Execute `python3 reports/size/update.py --input output/sandbox/wasm/debug --output sandbox/wasm/debug` (repeat with release paths as needed). The `--output` folder must live under `reports/size`.
    - The CLI prints per-artifact size measurements plus alert thresholds (`percent>2`, `bytes>25000`) after regenerating `index.json`.
-   - `report.txt` now keeps a compact metadata row per commit; the latest HEAD block is rewritten while prior commits remain for historical comparison.
+   - `report.txt` now keeps a compact metadata row per commit; the latest HEAD block is rewritten while prior commits remain as `HISTORY` entries for comparison.
 
 3. **Verify instrumentation**
    - Run `python3 tests/size/scripts/verify_size_report.py`.
@@ -15,11 +15,11 @@
 
 4. **Review dashboard**
    - Open `reports/size/report.html` (Chart.js loads from `reports/size/lib/chart.min.js`).
-   - Use the folder selector to hop between sandbox configurations, and pick any two commits from the commit dropdowns to compare. The table and chart update immediately while alert badges flag regressions inline.
+   - Use the folder selector to hop between sandbox configurations, and pick any two commits (HEAD, branch snapshots, or history) from the dropdowns to compare. The table and chart update immediately while alert badges flag regressions inline.
    - Each folder keeps its own `index.json` alongside `report.txt`; the root `reports/size/index.json` simply lists available folders and their manifest paths.
 
-5. **Refresh MASTER baseline (release acceptance only)**
-   - After approval, run `python3 reports/size/update.py --input output/<folder> --output <folder> --accept-master <commit-sha>` to promote HEAD to MASTER.
+5. **Optionally promote a MASTER baseline (release acceptance only)**
+   - After approval, run `python3 reports/size/update.py --input output/<folder> --output <folder> --accept-master <commit-sha>` to add a `MASTER` snapshot alongside the standard HEAD/history entries.
    - Document the baseline change in `reports/size/README.md` per runbook guidance.
 
 6. **CI integration**
