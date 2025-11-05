@@ -1,0 +1,231 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Configure web-debug",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--preset",
+                "web-debug"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Configure web-release",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--preset",
+                "web-release"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build web-debug",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "--preset",
+                "web-debug"
+            ],
+            "group": "build",
+            "dependsOn": "Configure web-debug",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Build web-release",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "--preset",
+                "web-release"
+            ],
+            "group": "build",
+            "dependsOn": "Configure web-release",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Run sandbox (web-debug)",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-NoLogo",
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder}\\scripts\\serve-sandbox.ps1",
+                "-Port",
+                "8001",
+                "-Root",
+                "${workspaceFolder}\\output\\sandbox\\wasm\\debug",
+                "-NoWait"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": "Build web-debug",
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+          {
+            "label": "Run sandbox (web-release)",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-NoLogo",
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder}\\scripts\\serve-sandbox.ps1",
+                "-Port",
+                "8001",
+                "-Root",
+                "${workspaceFolder}\\output\\sandbox\\wasm\\release",
+                "-NoWait"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": "Build web-release",
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+
+
+        {
+            "label": "Configure win-debug",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--preset",
+                "win-debug"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Configure win-release",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--preset",
+                "win-release"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build win-debug",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "--preset",
+                "win-debug"
+            ],
+            "group": "build",
+            "dependsOn": "Configure win-debug",
+            "problemMatcher": [
+                "$msCompile"
+            ]
+        },
+        {
+            "label": "Build win-release",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "--preset",
+                "win-release"
+            ],
+            "group": "build",
+            "dependsOn": "Configure win-release",
+            "problemMatcher": [
+                "$msCompile"
+            ]
+        },
+        {
+            "label": "Configure win-debug-tests",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--preset",
+                "win-debug-tests"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build win-debug-tests",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "--preset",
+                "win-debug-tests"
+            ],
+            "group": "build",
+            "dependsOn": "Configure win-debug-tests",
+            "problemMatcher": [
+                "$msCompile"
+            ]
+        },
+        {
+            "label": "Run win-debug tests",
+            "type": "shell",
+            "command": "ctest",
+            "args": [
+                "--preset",
+                "win-debug-tests",
+
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "dependsOn": "Build win-debug-tests",
+            "problemMatcher": []
+        },
+        {
+            "label": "Generate sandbox size report",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-NoLogo",
+                "-NoProfile",
+                "-Command",
+                "& { cmake --preset ${input:ntSizeReportPreset} -DNT_SANDBOX_ENABLE_SIZE_REPORT=ON; cmake --build --preset ${input:ntSizeReportPreset} --target nt_sandbox_size_report }"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        }
+    ]
+    ,
+    "inputs": [
+        {
+            "id": "ntSizeReportPreset",
+            "description": "CMake preset to use for the sandbox size report",
+            "type": "pickString",
+            "options": [
+                "web-debug",
+                "web-release",
+                "win-debug",
+                "win-release"
+            ],
+            "default": "web-debug"
+        }
+    ]
+}

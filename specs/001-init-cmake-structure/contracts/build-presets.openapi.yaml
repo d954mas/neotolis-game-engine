@@ -1,0 +1,82 @@
+openapi: 3.1.0
+info:
+  title: Speckit Build Preset Service
+  version: 0.1.0
+  description: >
+    Logical contract documenting how developer tooling can query build presets,
+    ensuring local scripts and CI pipelines stay in sync with constitutional
+    requirements.
+servers:
+  - url: https://speckit.local/api
+paths:
+  /build/presets:
+    get:
+      summary: List available build presets
+      description: Returns all configured build profiles (web + win, debug + release).
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  presets:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BuildProfile'
+  /build/presets/{name}:
+    get:
+      summary: Retrieve build preset details
+      description: Provides toolchain, optimization, and CI workflow info for a specific preset.
+      parameters:
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
+          description: Preset name (e.g., web-debug, win-release)
+      responses:
+        '200':
+          description: Preset found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuildProfile'
+        '404':
+          description: Preset not defined
+components:
+  schemas:
+    BuildProfile:
+      type: object
+      required:
+        - name
+        - platform
+        - optimization
+        - ciWorkflow
+        - toolchainFile
+      properties:
+        name:
+          type: string
+          examples: [web-debug]
+        platform:
+          type: string
+          enum: [web, windows]
+        optimization:
+          type: string
+          enum: [debug, release]
+        ciWorkflow:
+          type: string
+          examples: [web-debug, win-release]
+        toolchainFile:
+          type: string
+          examples: [cmake/toolchains/emscripten.cmake]
+        artifactDir:
+          type: string
+          examples: [build/web-debug]
+        ltoEnabled:
+          type: boolean
+        sanitizerSet:
+          type: array
+          items:
+            type: string

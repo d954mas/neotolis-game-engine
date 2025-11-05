@@ -1,0 +1,134 @@
+{
+  "version": 5,
+  "cmakeMinimumRequired": { "major": 3, "minor": 27, "patch": 0 },
+
+  "configurePresets": [
+     {
+      "name": "base-web",
+      "hidden": true,
+      "generator": "Ninja",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/emscripten.cmake",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "CMAKE_TARGET_PLATFORM": "wasm"
+      }
+    },
+    {
+      "name": "base-win",
+      "hidden": true,
+      "generator": "Ninja",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/clang-cl.cmake",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "CMAKE_TARGET_PLATFORM": "windows"
+      },
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
+    },
+
+   {
+      "name": "web-debug",
+      "displayName": "WebAssembly Debug",
+      "inherits": "base-web",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "WEB_SOURCE_MAP_BASE": "http://localhost:8000/"
+      }
+    },
+    {
+      "name": "web-release",
+      "displayName": "WebAssembly Release",
+      "inherits": "base-web",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "WEB_SOURCE_MAP_BASE": "http://localhost:8001/"
+      }
+    },
+
+    {
+      "name": "win-debug",
+      "displayName": "Windows Debug",
+      "inherits": "base-win",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+    },
+    {
+      "name": "win-release",
+      "displayName": "Windows Release",
+      "inherits": "base-win",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+    },
+
+    {
+      "name": "web-debug-tests",
+      "displayName": "WebAssembly Debug (tests)",
+      "inherits": "base-web",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "WEB_SOURCE_MAP_BASE": "http://localhost:8000/",
+        "NT_ENABLE_TESTS": true,
+        "NT_PROJECT_SANDBOX": false
+      }
+    },
+    {
+      "name": "web-release-tests",
+      "displayName": "WebAssembly Release (tests)",
+      "inherits": "base-web",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "WEB_SOURCE_MAP_BASE": "http://localhost:8001/",
+        "NT_ENABLE_TESTS": true,
+        "NT_PROJECT_SANDBOX": false
+      }
+    },
+
+    {
+      "name": "win-debug-tests",
+      "displayName": "Windows Debug (tests)",
+      "inherits": "base-win",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "NT_ENABLE_TESTS": true,
+        "NT_PROJECT_SANDBOX": false
+      },
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
+    },
+    {
+      "name": "win-release-tests",
+      "displayName": "Windows Release (tests)",
+      "inherits": "base-win",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "NT_ENABLE_TESTS": true,
+        "NT_PROJECT_SANDBOX": false
+      },
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
+    }
+  ],
+
+  "buildPresets": [
+    { "name": "web-debug",   "configurePreset": "web-debug",   "jobs": 8 },
+    { "name": "web-release", "configurePreset": "web-release", "jobs": 12 },
+    { "name": "win-debug",   "configurePreset": "win-debug",   "jobs": 8 },
+    { "name": "win-release", "configurePreset": "win-release", "jobs": 12 },
+    { "name": "web-debug-tests",   "configurePreset": "web-debug-tests",   "jobs": 8 },
+    { "name": "web-release-tests", "configurePreset": "web-release-tests", "jobs": 12 },
+    { "name": "win-debug-tests",   "configurePreset": "win-debug-tests",   "jobs": 8 },
+    { "name": "win-release-tests", "configurePreset": "win-release-tests", "jobs": 12 }
+  ],
+
+  "testPresets": [
+    {
+      "name": "base-test",
+      "hidden": true,
+      "output": { "outputOnFailure": true },
+      "execution": { "noTestsAction": "ignore", "stopOnFailure": true, "jobs": 8, "timeout": 120 }
+    },
+    { "name": "web-debug-tests",   "inherits": "base-test", "configurePreset": "web-debug-tests" },
+    { "name": "web-release-tests", "inherits": "base-test", "configurePreset": "web-release-tests",
+      "execution": { "jobs": 16, "timeout": 60, "noTestsAction": "ignore" } },
+    { "name": "win-debug-tests",   "inherits": "base-test", "configurePreset": "win-debug-tests" },
+    { "name": "win-release-tests", "inherits": "base-test", "configurePreset": "win-release-tests",
+      "execution": { "jobs": 16, "timeout": 60, "noTestsAction": "ignore" } }
+  ]
+}

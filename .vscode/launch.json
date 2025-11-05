@@ -1,0 +1,73 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Sandbox Win Debug",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}\\output\\sandbox\\windows\\debug\\engine.exe",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "Build win-debug"
+    },
+    {
+      "name": "Sandbox Win Release",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}\\output\\sandbox\\windows\\release\\engine.exe",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "Build win-release"
+    },
+    {
+      "name": "Tests Win Debug",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "ctest",
+      "args": [
+        "--preset",
+        "win-debug-tests",
+      ],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "Build win-debug-tests",
+      "console": "integratedTerminal"
+    },
+
+     {
+      "name": "Sandbox Web Debug",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8001",
+      "webRoot": "${workspaceFolder}/output/sandbox/wasm/debug",
+      "preLaunchTask": "Run sandbox (web-debug)",
+      "sourceMaps": true,
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Sandbox Web Release)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8001",
+      "webRoot": "${workspaceFolder}/output/sandbox/wasm/release",
+      "preLaunchTask": "Run sandbox (web-release)",
+      "sourceMaps": true,
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Clean build directory",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "powershell.exe",
+      "args": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "if (Test-Path '${workspaceFolder}\\build') { Remove-Item -Path '${workspaceFolder}\\build' -Recurse -Force }; New-Item -ItemType Directory -Path '${workspaceFolder}\\build' | Out-Null"
+      ],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

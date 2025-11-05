@@ -1,0 +1,4 @@
+Checks: 'clang-analyzer-*,bugprone-*,modernize-use-nullptr,readability-*'
+WarningsAsErrors: '*'
+HeaderFilterRegex: 'engine/.*'
+FormatStyle: none
