@@ -384,55 +384,55 @@ def compute_deltas(master_artifacts: Sequence[Artifact], head_artifacts: Sequenc
 
 
 def regenerate_manifest(root: Path) -> Dict[str, object]:
-    datasets = []
+    generated_at = datetime.now(timezone.utc).isoformat()
+    summary_entries: List[Dict[str, object]] = []
+
     for report_path in sorted(root.glob("**/report.txt")):
         entries = read_report_entries(report_path)
         if not entries:
             continue
 
-        master_entry = next((entry for entry in entries if entry.kind == "master"), None)
-        head_entry = next((entry for entry in entries if entry.kind == "head"), None)
+        commits_payload = []
+        for entry in entries:
+            commits_payload.append(
+                {
+                    "kind": entry.kind,
+                    "id": f"{entry.kind}:{entry.sha or PLACEHOLDER_SHA}",
+                    "git_sha": entry.sha or PLACEHOLDER_SHA,
+                    "git_message": entry.message or PLACEHOLDER_MESSAGE,
+                    "label": format_entry_label(entry),
+                    "artifacts": [
+                        {
+                            "file_name": artifact.file_name,
+                            "size_bytes": artifact.size_bytes,
+                        }
+                        for artifact in entry.artifacts
+                    ],
+                }
+            )
 
-        comparison_base = master_entry
-        if comparison_base is None:
-            comparison_base = next((entry for entry in entries if entry.kind == "history"), None)
-        if comparison_base is None:
-            comparison_base = head_entry
+        folder_relative = report_path.parent.relative_to(root)
+        folder_index = {
+            "generated_at": generated_at,
+            "folder": folder_relative.as_posix(),
+            "report_path": report_path.relative_to(root).as_posix(),
+            "commits": commits_payload,
+        }
+        folder_index_path = report_path.parent / "index.json"
+        with folder_index_path.open("w", encoding="utf-8") as folder_fp:
+            json.dump(folder_index, folder_fp, indent=2)
 
-        comparison_target = head_entry or comparison_base
-
-        base_artifacts = comparison_base.artifacts if comparison_base else []
-        target_artifacts = comparison_target.artifacts if comparison_target else []
-        deltas = compute_deltas(base_artifacts, target_artifacts)
-
-        commits_payload = [
+        summary_entries.append(
             {
-                "kind": entry.kind,
-                "id": f"{entry.kind}:{entry.sha or PLACEHOLDER_SHA}",
-                "git_sha": entry.sha or PLACEHOLDER_SHA,
-                "git_message": entry.message or PLACEHOLDER_MESSAGE,
-                "label": format_entry_label(entry),
-                "artifacts": [
-                    {
-                        "file_name": artifact.file_name,
-                        "size_bytes": artifact.size_bytes,
-                    }
-                    for artifact in entry.artifacts
-                ],
-            }
-            for entry in entries
-        ]
-
-        datasets.append(
-            {
-                "folder": str(report_path.parent.relative_to(root)),
-                "report_path": str(report_path.relative_to(root)),
-                "commits": commits_payload,
+                "folder": folder_relative.as_posix(),
+                "index": folder_index_path.relative_to(root).as_posix(),
+                "commit_count": len(commits_payload),
             }
         )
+
     manifest = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
-        "folders": datasets,
+        "generated_at": generated_at,
+        "folders": summary_entries,
     }
     with (root / MANIFEST_FILENAME).open("w", encoding="utf-8") as fp:
         json.dump(manifest, fp, indent=2)
@@ -445,40 +445,77 @@ def format_percent(value: object) -> str:
     return "n/a"
 
 
-def log_artifact_summary(folder: str, manifest: MutableMapping[str, Any]) -> None:
+def format_commit_label_from_dict(commit: Mapping[str, Any]) -> str:
+    label = commit.get("label")
+    if label:
+        return str(label)
+    kind = str(commit.get("kind") or "").upper()
+    sha = str(commit.get("git_sha") or PLACEHOLDER_SHA)
+    short_sha = sha if len(sha) <= 7 else sha[:7]
+    if kind:
+        return f"{kind} — {short_sha}"
+    return short_sha
+
+
+def log_artifact_summary(folder: str, manifest: MutableMapping[str, Any], root: Path) -> None:
     folders: Sequence[Mapping[str, Any]] = manifest.get("folders", [])  # type: ignore[assignment]
     match = next((item for item in folders if item.get("folder") == folder), None)
     if not match:
         print(f"No manifest entry found for {folder}; instrumentation summary skipped.", file=sys.stdout)
         return
 
-    comparison: Mapping[str, Any] | None = match.get("comparison")  # type: ignore[assignment]
-    if comparison:
-        base_label = comparison.get("base_label", comparison.get("base_sha", "base"))
-        target_label = comparison.get("target_label", comparison.get("target_sha", "target"))
-        artifacts: Sequence[Mapping[str, Any]] = comparison.get("artifacts", [])  # type: ignore[assignment]
-        print(f"Default comparison: {base_label} → {target_label}", file=sys.stdout)
-    else:
-        artifacts = match.get("artifacts", [])  # type: ignore[assignment]
-        print("Default comparison: MASTER → HEAD", file=sys.stdout)
+    index_rel = match.get("index")
+    if not index_rel:
+        print("No per-folder index reference found; instrumentation summary skipped.", file=sys.stdout)
+        return
 
-    print(f"Artifacts measured ({len(artifacts)}):", file=sys.stdout)
+    index_path = (root / index_rel).resolve()
+    if not index_path.exists():
+        print(f"Folder index '{index_path}' missing; instrumentation summary skipped.", file=sys.stdout)
+        return
+
+    with index_path.open(encoding="utf-8") as fp:
+        folder_index = json.load(fp)
+
+    commits: Sequence[Mapping[str, Any]] = folder_index.get("commits", [])  # type: ignore[assignment]
+    if not commits:
+        print("No commits recorded; instrumentation summary skipped.", file=sys.stdout)
+        return
+
+    base_commit = commits[0]
+    target_commit = commits[1] if len(commits) > 1 else commits[0]
+
+    base_label = format_commit_label_from_dict(base_commit)
+    target_label = format_commit_label_from_dict(target_commit)
+    print(f"Default comparison: {base_label} → {target_label}", file=sys.stdout)
+
+    base_sizes = {item["file_name"]: item["size_bytes"] for item in base_commit.get("artifacts", [])}
+    target_sizes = {item["file_name"]: item["size_bytes"] for item in target_commit.get("artifacts", [])}
+    artifact_names = sorted(set(base_sizes) | set(target_sizes))
+
+    print(f"Artifacts measured ({len(artifact_names)}):", file=sys.stdout)
     alert_total = 0
-    for artifact in artifacts:
-        file_name = str(artifact.get("file_name") or "<unknown>")
-        master_size = int(artifact.get("master_size") or 0)
-        head_size = int(artifact.get("head_size") or 0)
-        delta_bytes = int(artifact.get("delta_bytes") or 0)
-        thresholds = artifact.get("thresholds") or []
-        if artifact.get("alert"):
+    for name in artifact_names:
+        master_size = base_sizes.get(name, 0)
+        head_size = target_sizes.get(name, 0)
+        delta_bytes = head_size - master_size
+        delta_percent = None
+        if master_size > 0:
+            delta_percent = (delta_bytes / master_size) * 100
+        elif head_size > 0:
+            delta_percent = 100.0
+        exceeds_bytes = abs(delta_bytes) >= 25_000
+        exceeds_percent = delta_percent is not None and abs(delta_percent) >= 2.0
+        thresholds = []
+        if exceeds_percent:
+            thresholds.append("percent>2")
+        if exceeds_bytes:
+            thresholds.append("bytes>25000")
+        if thresholds:
             alert_total += 1
-        if isinstance(thresholds, Sequence) and not isinstance(thresholds, (str, bytes)):
-            threshold_label = ", ".join(str(item) for item in thresholds) or "none"
-        else:
-            threshold_label = str(thresholds) if thresholds else "none"
-        percent = format_percent(artifact.get("delta_percent"))
         print(
-            f"  - {file_name}: master={master_size}B head={head_size}B delta={delta_bytes}B ({percent}) thresholds={threshold_label}",
+            f"  - {name}: master={master_size}B head={head_size}B delta={delta_bytes}B ({format_percent(delta_percent)}) "
+            f"thresholds={', '.join(thresholds) if thresholds else 'none'}",
             file=sys.stdout,
         )
     print(f"Alert thresholds triggered: {alert_total}", file=sys.stdout)
@@ -541,7 +578,7 @@ def main(argv: List[str] | None = None) -> int:
             f"Updated HEAD snapshot for {output_label}: {head_meta.sha} — {head_meta.message}",
             file=sys.stdout,
         )
-        log_artifact_summary(output_label.as_posix(), manifest)
+        log_artifact_summary(output_label.as_posix(), manifest, root)
     except SizeReportError as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1

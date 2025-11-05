@@ -1,13 +1,5 @@
 git_sha,git_message,file_name,size_bytes
-4ff8af695f5ab54c8d74d4ac952b8db28722e524,build report,MASTER,
-,,index.html,142
-,,sandbox.js,39
-,,sandbox.wasm,32
-08f954ec3985bd4f7a4706a15fd154f34a2a1396,fixed build report,HEAD,
-,,index.html,142
-,,sandbox.js,39
-,,sandbox.wasm,32
-4ff8af695f5ab54c8d74d4ac952b8db28722e524,build report,HISTORY,
+17d033d9b856faafb1a59b50f80dff70ccb7e45c,optimize index.json,HEAD,
 ,,index.html,22190
 ,,nt_sandbox.js,65533
 ,,nt_sandbox.wasm,1200419

@@ -1,4 +1,4 @@
-const DATA_URL = 'index.json';
+const SUMMARY_URL = 'index.json';
 const TABLE_BODY = document.querySelector('#artifact-table tbody');
 const EMPTY_STATE = document.getElementById('empty-state');
 const FOLDER_SELECT = document.getElementById('folder-select');
@@ -15,11 +15,13 @@ const TARGET_HEADER = document.getElementById('commit-target-column');
 const CHART_CANVAS = document.getElementById('size-chart');
 
 const state = {
-    manifest: null,
+    summary: null,
+    folderCache: new Map(),
     currentFolderIndex: 0,
-    chart: null,
+    currentCommits: [],
     selectedBaseId: null,
     selectedTargetId: null,
+    chart: null,
 };
 
 function formatNumber(value) {
@@ -46,6 +48,22 @@ function shortenSha(sha) {
     return sha.length <= 7 ? sha : sha.slice(0, 7);
 }
 
+function formatCommitLabel(commit) {
+    if (!commit) {
+        return 'Unknown';
+    }
+    if (commit.label) {
+        return commit.label;
+    }
+    const kind = (commit.kind || '').toUpperCase();
+    const sha = shortenSha(commit.git_sha || 'UNKNOWN');
+    if (kind) {
+        return `${kind} — ${sha}`;
+    }
+    const message = commit.git_message && commit.git_message !== 'UNKNOWN' ? commit.git_message : '';
+    return message ? `${sha} — ${message}` : sha;
+}
+
 function getCommitId(commit) {
     if (!commit) {
         return '';
@@ -58,62 +76,17 @@ function getCommitId(commit) {
     return `${kind}:${sha}`;
 }
 
-function formatCommitLabel(commit) {
-    if (!commit) {
-        return 'Unknown';
-    }
-    if (commit.label) {
-        return commit.label;
-    }
-    const sha = shortenSha(commit.git_sha || 'UNKNOWN');
-    if (commit.kind) {
-        return `${commit.kind.toUpperCase()} — ${sha}`;
-    }
-    const message = commit.git_message && commit.git_message !== 'UNKNOWN' ? commit.git_message : '';
-    return message ? `${sha} — ${message}` : sha;
-}
-
-function getFolderCommits(folder) {
-    if (folder.commits && folder.commits.length) {
-        return folder.commits;
-    }
-    // Fallback for legacy manifests: synthesise commits using master/head data.
-    const commits = [];
-    if (folder.master) {
-        commits.push({
-            kind: 'master',
-            id: `master:${folder.master.git_sha || 'UNKNOWN'}`,
-            git_sha: folder.master.git_sha,
-            git_message: folder.master.git_message,
-            label: `MASTER — ${shortenSha(folder.master.git_sha || 'UNKNOWN')}`,
-            artifacts: [],
-        });
-    }
-    if (folder.head) {
-        commits.push({
-            kind: 'head',
-            id: `head:${folder.head.git_sha || 'UNKNOWN'}`,
-            git_sha: folder.head.git_sha,
-            git_message: folder.head.git_message,
-            label: `HEAD — ${shortenSha(folder.head.git_sha || 'UNKNOWN')}`,
-            artifacts: [],
-        });
-    }
-    return commits;
-}
-
 function populateFolderOptions(folders) {
     FOLDER_SELECT.innerHTML = '';
-    folders.forEach((folder, index) => {
+    folders.forEach((entry, index) => {
         const option = document.createElement('option');
         option.value = index.toString();
-        option.textContent = folder.folder;
+        option.textContent = entry.folder;
         FOLDER_SELECT.appendChild(option);
     });
 }
 
-function populateCommitSelectors(folder) {
-    const commits = getFolderCommits(folder);
+function populateCommitSelectors(commits) {
     COMMIT_BASE_SELECT.innerHTML = '';
     COMMIT_TARGET_SELECT.innerHTML = '';
 
@@ -130,7 +103,8 @@ function populateCommitSelectors(folder) {
     });
 
     const defaultBase = commits.find((commit) => commit.kind === 'master') || commits[0] || null;
-    const defaultTarget = commits.find((commit) => commit.kind === 'head') || commits[1] || defaultBase;
+    const defaultTarget =
+        commits.find((commit) => commit.kind === 'head') || commits[(commits.length > 1 ? 1 : 0)] || defaultBase;
 
     state.selectedBaseId = defaultBase ? getCommitId(defaultBase) : null;
     state.selectedTargetId = defaultTarget ? getCommitId(defaultTarget) : state.selectedBaseId;
@@ -147,11 +121,11 @@ function populateCommitSelectors(folder) {
     COMMIT_TARGET_SELECT.disabled = disabled;
 }
 
-function findCommitById(folder, id) {
+function findCommitById(commits, id) {
     if (!id) {
         return null;
     }
-    return getFolderCommits(folder).find((commit) => getCommitId(commit) === id) || null;
+    return commits.find((commit) => getCommitId(commit) === id) || null;
 }
 
 function computeComparison(baseCommit, targetCommit) {
@@ -287,26 +261,50 @@ function renderChart(rows, baseCommit, targetCommit) {
     });
 }
 
-function updateGeneratedAt(manifest) {
-    if (!manifest || !manifest.generated_at) {
+function updateGeneratedAt(summary) {
+    if (!summary || !summary.generated_at) {
         GENERATED_AT.textContent = '';
         return;
     }
-    const date = new Date(manifest.generated_at);
+    const date = new Date(summary.generated_at);
     GENERATED_AT.textContent = `Generated: ${date.toLocaleString()}`;
 }
 
-function renderDashboard() {
-    const folder = state.manifest.folders[state.currentFolderIndex];
-    if (!folder) {
-        return;
+async function fetchSummary() {
+    const response = await fetch(SUMMARY_URL, { cache: 'no-cache' });
+    if (!response.ok) {
+        throw new Error(`Failed to load ${SUMMARY_URL}: ${response.status}`);
     }
+    return response.json();
+}
 
-    const commits = getFolderCommits(folder);
+async function ensureCommits(entry) {
+    if (!entry) {
+        return [];
+    }
+    if (state.folderCache.has(entry.folder)) {
+        return state.folderCache.get(entry.folder);
+    }
+    const response = await fetch(entry.index, { cache: 'no-cache' });
+    if (!response.ok) {
+        throw new Error(`Failed to load ${entry.index}: ${response.status}`);
+    }
+    const data = await response.json();
+    const commits = data.commits || [];
+    state.folderCache.set(entry.folder, commits);
+    return commits;
+}
+
+function renderDashboard() {
+    const commits = state.currentCommits;
     if (!commits.length) {
         TABLE_BODY.innerHTML = '';
         EMPTY_STATE.hidden = false;
-        updateSummary(null, null, 0);
+        COMMIT_BASE_SHA.textContent = 'UNKNOWN';
+        COMMIT_BASE_MESSAGE.textContent = '—';
+        COMMIT_TARGET_SHA.textContent = 'UNKNOWN';
+        COMMIT_TARGET_MESSAGE.textContent = '—';
+        ALERT_COUNT.textContent = '0';
         if (state.chart) {
             state.chart.destroy();
             state.chart = null;
@@ -314,8 +312,9 @@ function renderDashboard() {
         return;
     }
 
-    let baseCommit = findCommitById(folder, state.selectedBaseId) || commits[0];
-    let targetCommit = findCommitById(folder, state.selectedTargetId) || commits[commits.length > 1 ? 1 : 0];
+    let baseCommit = findCommitById(commits, state.selectedBaseId) || commits[0];
+    let targetCommit =
+        findCommitById(commits, state.selectedTargetId) || commits[(commits.length > 1 ? 1 : 0)] || baseCommit;
 
     state.selectedBaseId = getCommitId(baseCommit);
     state.selectedTargetId = getCommitId(targetCommit);
@@ -328,31 +327,29 @@ function renderDashboard() {
     renderChart(comparison.rows, baseCommit, targetCommit);
 }
 
-function selectFolder(index) {
-    const folder = state.manifest.folders[index];
-    if (!folder) {
+async function selectFolder(index) {
+    const entry = state.summary.folders[index];
+    if (!entry) {
         return;
     }
     state.currentFolderIndex = index;
-    populateCommitSelectors(folder);
+    const commits = await ensureCommits(entry);
+    state.currentCommits = commits;
+    populateCommitSelectors(commits);
     renderDashboard();
 }
 
 async function bootstrap() {
     try {
-        const response = await fetch(DATA_URL, { cache: 'no-cache' });
-        if (!response.ok) {
-            throw new Error(`Failed to load ${DATA_URL}: ${response.status}`);
-        }
-        const manifest = await response.json();
-        if (!manifest.folders || manifest.folders.length === 0) {
+        const summary = await fetchSummary();
+        if (!summary.folders || summary.folders.length === 0) {
             throw new Error('No folders available in manifest');
         }
-        state.manifest = manifest;
-        populateFolderOptions(manifest.folders);
-        updateGeneratedAt(manifest);
+        state.summary = summary;
+        updateGeneratedAt(summary);
+        populateFolderOptions(summary.folders);
         FOLDER_SELECT.value = '0';
-        selectFolder(0);
+        await selectFolder(0);
     } catch (error) {
         console.error(error);
         TABLE_BODY.innerHTML = '<tr><td colspan="6">Failed to load size data.</td></tr>';
@@ -362,7 +359,9 @@ async function bootstrap() {
 
 FOLDER_SELECT.addEventListener('change', (event) => {
     const index = Number(event.target.value);
-    selectFolder(Number.isNaN(index) ? 0 : index);
+    selectFolder(Number.isNaN(index) ? 0 : index).catch((error) => {
+        console.error(error);
+    });
 });
 
 COMMIT_BASE_SELECT.addEventListener('change', (event) => {
@@ -376,5 +375,5 @@ COMMIT_TARGET_SELECT.addEventListener('change', (event) => {
 });
 
 window.addEventListener('DOMContentLoaded', () => {
-    bootstrap();
+    bootstrap().catch((error) => console.error(error));
 });

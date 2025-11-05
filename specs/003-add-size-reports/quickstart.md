@@ -16,6 +16,7 @@
 4. **Review dashboard**
    - Open `reports/size/report.html` (Chart.js loads from `reports/size/lib/chart.min.js`).
    - Use the folder selector to hop between sandbox configurations, and pick any two commits from the commit dropdowns to compare. The table and chart update immediately while alert badges flag regressions inline.
+   - Each folder keeps its own `index.json` alongside `report.txt`; the root `reports/size/index.json` simply lists available folders and their manifest paths.
 
 5. **Refresh MASTER baseline (release acceptance only)**
    - After approval, run `python3 reports/size/update.py --input output/<folder> --output <folder> --accept-master <commit-sha>` to promote HEAD to MASTER.

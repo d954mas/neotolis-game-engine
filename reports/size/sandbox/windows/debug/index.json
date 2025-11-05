@@ -1,0 +1,20 @@
+{
+  "generated_at": "2025-11-05T10:24:26.641049+00:00",
+  "folder": "sandbox/windows/debug",
+  "report_path": "sandbox/windows/debug/report.txt",
+  "commits": [
+    {
+      "kind": "head",
+      "id": "head:17d033d9b856faafb1a59b50f80dff70ccb7e45c",
+      "git_sha": "17d033d9b856faafb1a59b50f80dff70ccb7e45c",
+      "git_message": "optimize index.json",
+      "label": "HEAD \u2014 17d033d",
+      "artifacts": [
+        {
+          "file_name": "engine.exe",
+          "size_bytes": 19968
+        }
+      ]
+    }
+  ]
+}

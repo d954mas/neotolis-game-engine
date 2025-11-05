@@ -8,7 +8,8 @@ This directory contains size-reporting assets for Speckit sandbox builds. Use th
 - `lib/chart.min.js` – bundled charting library.
 - `update.py` – CLI workflow for regenerating reports (implemented in User Story 1).
 - `sandbox/wasm/<configuration>/report.txt` – CSV snapshots for each tracked build variant (one metadata row per commit followed by artifact rows; previous commits remain intact and only the HEAD block is rewritten).
-- `index.json` – Manifest file consumed by the dashboard; includes commit SHA/message metadata and per-artifact deltas.
+- `index.json` – Root manifest listing available folders and the relative path to each folder-specific index.
+- `sandbox/<path>/index.json` – Per-folder commit manifest with artifact sizes for every recorded snapshot.
 
 ## Refreshing HEAD Snapshots
 
