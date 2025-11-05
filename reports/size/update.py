@@ -87,11 +87,6 @@ def discover_artifacts(folder: Path) -> List[Path]:
     return sorted(artifacts, key=lambda p: p.name)
 
 
-def is_worktree_clean(repo_root: Path) -> bool:
-    status = run_git(["status", "--porcelain"], repo_root)
-    return status.strip() == ""
-
-
 def read_report_entries(report_path: Path) -> List[SnapshotEntry]:
     if not report_path.exists():
         return []
@@ -144,8 +139,8 @@ def _rows_to_entries(rows: List[Dict[str, str]]) -> List[SnapshotEntry]:
                     if is_hex_sha(message_field)
                     else (sha_field if is_hex_sha(sha_field) else PLACEHOLDER_SHA)
                 )
-                commit_branch = message_field or None
-                commit_message = commit_branch or PLACEHOLDER_MESSAGE
+                commit_message = message_field or PLACEHOLDER_MESSAGE
+                commit_subject = message_field or None
             elif commit_kind == "master":
                 commit_sha = (
                     message_field
@@ -207,6 +202,26 @@ def _rows_to_entries(rows: List[Dict[str, str]]) -> List[SnapshotEntry]:
             except ValueError as exc:  # pragma: no cover - validated earlier
                 raise SizeReportError(f"Invalid size '{size_field}' for artifact '{file_name}'") from exc
             current.artifacts.append(Artifact(file_name=file_name, size_bytes=size_value))
+    branch_map: Dict[str, str] = {}
+    for entry in entries:
+        if entry.kind == "branch":
+            branch_name = entry.message if entry.message != PLACEHOLDER_MESSAGE else entry.branch
+            if branch_name:
+                entry.branch = branch_name
+                branch_map[entry.sha] = branch_name
+            if entry.subject is None or entry.subject == PLACEHOLDER_MESSAGE:
+                entry.subject = entry.message if entry.message != PLACEHOLDER_MESSAGE else None
+
+    for entry in entries:
+        if entry.kind == "head":
+            if entry.branch is None and entry.sha in branch_map:
+                entry.branch = branch_map[entry.sha]
+            if entry.subject is None or entry.subject == PLACEHOLDER_MESSAGE:
+                entry.subject = entry.message if entry.message != PLACEHOLDER_MESSAGE else None
+        elif entry.kind == "history":
+            if entry.subject is None or entry.subject == PLACEHOLDER_MESSAGE:
+                entry.subject = entry.message if entry.message != PLACEHOLDER_MESSAGE else None
+
     return entries
 
 
@@ -269,21 +284,33 @@ def convert_legacy_rows(rows: List[Dict[str, str]]) -> List[SnapshotEntry]:
 def format_entry_label(entry: SnapshotEntry) -> str:
     sha = entry.sha or PLACEHOLDER_SHA
     display_sha = sha if len(sha) <= 7 else sha[:7]
+    branch = entry.branch
     subject = entry.subject or entry.message or PLACEHOLDER_MESSAGE
+
     if entry.kind == "head":
-        message_fragment = subject or PLACEHOLDER_MESSAGE
-        return f"HEAD - {message_fragment} - {display_sha}"
+        parts = ["HEAD"]
+        if branch:
+            parts.append(branch)
+        parts.append(subject or PLACEHOLDER_MESSAGE)
+        parts.append(display_sha)
+        return "-".join(parts)
     if entry.kind == "branch":
-        branch_label = entry.branch or "BRANCH"
-        message_fragment = subject or PLACEHOLDER_MESSAGE
-        return f"{branch_label} - {message_fragment} - {display_sha}"
+        parts = []
+        if branch:
+            parts.append(branch)
+        parts.append(subject or PLACEHOLDER_MESSAGE)
+        parts.append(display_sha)
+        return "-".join([part for part in parts if part])
     if entry.kind == "master":
-        message_fragment = subject or PLACEHOLDER_MESSAGE
-        return f"MASTER - {message_fragment} - {display_sha}"
-    message_fragment = subject or entry.message or PLACEHOLDER_MESSAGE
-    if message_fragment == PLACEHOLDER_MESSAGE:
-        return display_sha
-    return f"{display_sha} - {message_fragment}"
+        parts = ["MASTER", subject or PLACEHOLDER_MESSAGE, display_sha]
+        return "-".join(parts)
+
+    parts = []
+    if branch:
+        parts.append(branch)
+    parts.append(subject or PLACEHOLDER_MESSAGE)
+    parts.append(display_sha)
+    return "-".join([part for part in parts if part])
 
 
 def write_report_entries(report_path: Path, entries: List[SnapshotEntry]) -> None:
@@ -371,7 +398,7 @@ def update_head_snapshot(
 
     head_meta = current_head_metadata(repo_root)
     branch_name = head_meta.branch
-    head_message = branch_name or head_meta.subject or PLACEHOLDER_MESSAGE
+    head_message = head_meta.subject or PLACEHOLDER_MESSAGE
 
     head_artifacts = [
         Artifact(file_name=artifact.name, size_bytes=artifact.stat().st_size) for artifact in artifacts
@@ -386,7 +413,7 @@ def update_head_snapshot(
     )
 
     branch_entry: SnapshotEntry | None = None
-    if branch_name and is_worktree_clean(repo_root):
+    if branch_name:
         branch_entry = SnapshotEntry(
             kind="branch",
             sha=head_meta.sha,
@@ -504,7 +531,7 @@ def compute_deltas(master_artifacts: Sequence[Artifact], head_artifacts: Sequenc
     return deltas
 
 
-def regenerate_manifest(root: Path) -> Dict[str, object]:
+def regenerate_manifest(root: Path, repo_root: Path) -> Dict[str, object]:
     generated_at = datetime.now(timezone.utc).isoformat()
     summary_entries: List[Dict[str, object]] = []
 
@@ -513,6 +540,23 @@ def regenerate_manifest(root: Path) -> Dict[str, object]:
         if not entries:
             continue
 
+        for entry in entries:
+            needs_subject = entry.subject is None or entry.subject == PLACEHOLDER_MESSAGE
+            if entry.kind in {"head", "branch"}:
+                needs_subject = True
+            if needs_subject:
+                if is_hex_sha(entry.sha):
+                    try:
+                        entry.subject = metadata_for_ref(repo_root, entry.sha).subject
+                    except SizeReportError:
+                        entry.subject = entry.message or PLACEHOLDER_MESSAGE
+                else:
+                    entry.subject = entry.message or PLACEHOLDER_MESSAGE
+            if entry.kind == "head" and entry.branch is None:
+                entry.branch = entry.message if entry.message != PLACEHOLDER_MESSAGE else entry.branch
+            if entry.kind == "branch" and entry.branch is None:
+                entry.branch = entry.message if entry.message != PLACEHOLDER_MESSAGE else None
+
         commits_payload = []
         for entry in entries:
             commits_payload.append(
@@ -520,7 +564,7 @@ def regenerate_manifest(root: Path) -> Dict[str, object]:
                     "kind": entry.kind,
                     "id": f"{entry.kind}:{entry.sha or PLACEHOLDER_SHA}",
                     "git_sha": entry.sha or PLACEHOLDER_SHA,
-                    "git_message": entry.message or PLACEHOLDER_MESSAGE,
+                    "git_message": entry.subject or entry.message or PLACEHOLDER_MESSAGE,
                     "branch": entry.branch,
                     "subject": entry.subject or entry.message or PLACEHOLDER_MESSAGE,
                     "label": format_entry_label(entry),
@@ -709,7 +753,7 @@ def main(argv: List[str] | None = None) -> int:
             repo_root,
             accept_master=args.accept_master,
         )
-        manifest = regenerate_manifest(root)
+        manifest = regenerate_manifest(root, repo_root)
         print(
             f"Updated HEAD snapshot for {output_label}: {head_meta.sha} — {head_meta.subject}",
             file=sys.stdout,

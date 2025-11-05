@@ -1,5 +1,0 @@
-git_sha,git_message,file_name,size_bytes
-46b8949ef5b2ec086e7072b5f0f4076ccaaf4fda,003-add-size-reports,HEAD,
-,,engine.exe,19968
-17d033d9b856faafb1a59b50f80dff70ccb7e45c,optimize index.json,HISTORY,
-,,engine.exe,19968

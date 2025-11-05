@@ -16,7 +16,7 @@ This directory contains size-reporting assets for Speckit sandbox builds. Use th
 1. Build the desired sandbox target (e.g., `sandbox-wasm-debug`).
 2. Run `python reports/size/update.py --input output/sandbox/wasm/debug --output sandbox/wasm/debug` (adjust the `--input` path to match your build artifacts). The `--output` directory must live under `reports/size` and will be created if it does not exist.
 3. Review CLI output for threshold alerts (>2% or >25 KB deltas).
-4. Inspect `report.txt` to confirm the HEAD metadata row includes the latest commit SHA and current branch name. Prior commits remain beneath the HEAD block as `HISTORY` entries; only the HEAD block is rewritten on subsequent runs.
+4. Inspect `report.txt` to confirm the HEAD metadata row includes the latest commit SHA and subject; a companion `BRANCH` row preserves the active branch name. Prior commits remain beneath the HEAD block as `HISTORY` entries; only the HEAD block is rewritten on subsequent runs.
 5. Commit updated `report.txt`, per-folder `index.json`, and the root manifest as needed.
 
 ## Review Dashboard

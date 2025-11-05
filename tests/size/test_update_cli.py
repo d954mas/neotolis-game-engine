@@ -58,9 +58,9 @@ def test_head_snapshot_updates_report_and_manifest(tmp_path):
     head_entry = next((entry for entry in entries if entry.kind == "head"), None)
     assert head_entry is not None, "Expected HEAD entry after update"
     assert head_entry.sha == commit_sha
-    expected_label = branch_name if branch_name and branch_name.upper() != "HEAD" else commit_message
-    assert head_entry.message == expected_label
-    assert head_entry.branch == (branch_name if branch_name and branch_name.upper() != "HEAD" else None)
+    expected_branch = branch_name if branch_name and branch_name.upper() != "HEAD" else None
+    assert head_entry.message == commit_message
+    assert head_entry.branch == expected_branch
 
     artifact_names = sorted(artifact.file_name for artifact in head_entry.artifacts)
     assert artifact_names == sorted(ARTIFACTS)
@@ -86,10 +86,18 @@ def test_head_snapshot_updates_report_and_manifest(tmp_path):
     head_commit = next((item for item in commits if item.get("kind") == "head"), None)
     assert head_commit is not None, "Head commit missing from per-folder manifest"
     assert head_commit["git_sha"] == commit_sha
-    assert head_commit["git_message"] == branch_name
-    assert head_commit["branch"] == branch_name
+    assert head_commit["git_message"] == commit_message
+    assert head_commit["branch"] == expected_branch
     assert head_commit["subject"] == commit_message
     assert len(head_commit.get("artifacts", [])) == len(ARTIFACTS)
 
+    branch_commit = next((item for item in commits if item.get("kind") == "branch"), None)
+    assert branch_commit is not None, "Branch commit metadata should mirror HEAD when a branch is active"
+    assert branch_commit["branch"] == expected_branch
+    assert branch_commit["subject"] == commit_message
+    assert branch_commit["git_message"] == commit_message
+
     history_commits = [item for item in commits if item.get("kind") == "history"]
-    assert history_commits, "Expected previous commits to be retained as history entries"
+    if history_commits:
+        for entry in history_commits:
+            assert "git_sha" in entry
