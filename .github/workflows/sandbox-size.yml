@@ -102,10 +102,22 @@ jobs:
           rm -rf build-inputs
           mkdir -p build-inputs/sandbox/wasm
           mkdir -p build-inputs/sandbox/windows
-          mv artifact-inputs/wasm/size-inputs/sandbox/wasm/debug build-inputs/sandbox/wasm/
-          mv artifact-inputs/wasm/size-inputs/sandbox/wasm/release build-inputs/sandbox/wasm/
-          mv artifact-inputs/windows/size-inputs/sandbox/windows/debug build-inputs/sandbox/windows/
-          mv artifact-inputs/windows/size-inputs/sandbox/windows/release build-inputs/sandbox/windows/
+          wasm_root=$(find artifact-inputs/wasm -maxdepth 2 -type d -name size-inputs | head -n 1)
+          windows_root=$(find artifact-inputs/windows -maxdepth 2 -type d -name size-inputs | head -n 1)
+          if [ -z "${wasm_root:-}" ]; then
+            echo "Unable to locate wasm size-inputs directory"
+            ls -R artifact-inputs/wasm || true
+            exit 1
+          fi
+          if [ -z "${windows_root:-}" ]; then
+            echo "Unable to locate windows size-inputs directory"
+            ls -R artifact-inputs/windows || true
+            exit 1
+          fi
+          mv "$wasm_root/sandbox/wasm/debug" build-inputs/sandbox/wasm/
+          mv "$wasm_root/sandbox/wasm/release" build-inputs/sandbox/wasm/
+          mv "$windows_root/sandbox/windows/debug" build-inputs/sandbox/windows/
+          mv "$windows_root/sandbox/windows/release" build-inputs/sandbox/windows/
       - name: Update size reports
         run: |
           set -euo pipefail
