@@ -1,24 +1,16 @@
 {
-  "generated_at": "2025-11-05T09:40:35.150690+00:00",
+  "generated_at": "2025-11-05T09:58:18.963116+00:00",
   "folders": [
     {
       "folder": "sandbox\\wasm\\debug",
       "report_path": "sandbox\\wasm\\debug\\report.txt",
       "commits": [
         {
-          "kind": "master",
-          "id": "master:UNKNOWN",
-          "git_sha": "UNKNOWN",
-          "git_message": "UNKNOWN",
-          "label": "MASTER \u2014 UNKNOWN",
-          "artifacts": []
-        },
-        {
           "kind": "head",
-          "id": "head:406c165c78f7f89d1fd487bd8bdea1ce03692918",
-          "git_sha": "406c165c78f7f89d1fd487bd8bdea1ce03692918",
-          "git_message": "fixed size report",
-          "label": "HEAD \u2014 406c165",
+          "id": "head:4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+          "git_sha": "4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+          "git_message": "build report",
+          "label": "HEAD \u2014 4ff8af6",
           "artifacts": [
             {
               "file_name": "index.html",
@@ -40,140 +32,69 @@
         }
       ],
       "comparison": {
-        "base_id": "master:UNKNOWN",
-        "base_sha": "UNKNOWN",
-        "base_message": "UNKNOWN",
-        "base_label": "MASTER \u2014 UNKNOWN",
-        "target_id": "head:406c165c78f7f89d1fd487bd8bdea1ce03692918",
-        "target_sha": "406c165c78f7f89d1fd487bd8bdea1ce03692918",
-        "target_message": "fixed size report",
-        "target_label": "HEAD \u2014 406c165",
+        "base_id": "head:4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+        "base_sha": "4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+        "base_message": "build report",
+        "base_label": "HEAD \u2014 4ff8af6",
+        "target_id": "head:4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+        "target_sha": "4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+        "target_message": "build report",
+        "target_label": "HEAD \u2014 4ff8af6",
         "artifacts": [
           {
             "file_name": "index.html",
             "head_size": 22190,
-            "master_size": 0,
-            "delta_bytes": 22190,
-            "delta_percent": 100.0,
-            "alert": true,
-            "thresholds": [
-              "percent>2"
-            ]
+            "master_size": 22190,
+            "delta_bytes": 0,
+            "delta_percent": 0.0,
+            "alert": false,
+            "thresholds": []
           },
           {
             "file_name": "nt_sandbox.js",
             "head_size": 65533,
-            "master_size": 0,
-            "delta_bytes": 65533,
-            "delta_percent": 100.0,
-            "alert": true,
-            "thresholds": [
-              "percent>2",
-              "bytes>25000"
-            ]
+            "master_size": 65533,
+            "delta_bytes": 0,
+            "delta_percent": 0.0,
+            "alert": false,
+            "thresholds": []
           },
           {
             "file_name": "nt_sandbox.wasm",
             "head_size": 1200419,
-            "master_size": 0,
-            "delta_bytes": 1200419,
-            "delta_percent": 100.0,
-            "alert": true,
-            "thresholds": [
-              "percent>2",
-              "bytes>25000"
-            ]
+            "master_size": 1200419,
+            "delta_bytes": 0,
+            "delta_percent": 0.0,
+            "alert": false,
+            "thresholds": []
           },
           {
             "file_name": "nt_sandbox.wasm.map",
             "head_size": 90100,
-            "master_size": 0,
-            "delta_bytes": 90100,
-            "delta_percent": 100.0,
-            "alert": true,
-            "thresholds": [
-              "percent>2",
-              "bytes>25000"
-            ]
+            "master_size": 90100,
+            "delta_bytes": 0,
+            "delta_percent": 0.0,
+            "alert": false,
+            "thresholds": []
           }
         ]
       },
       "head": {
-        "git_sha": "406c165c78f7f89d1fd487bd8bdea1ce03692918",
-        "git_message": "fixed size report"
+        "git_sha": "4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+        "git_message": "build report"
       },
-      "master": {
-        "git_sha": "UNKNOWN",
-        "git_message": "UNKNOWN"
-      },
-      "artifacts": [
-        {
-          "file_name": "index.html",
-          "head_size": 22190,
-          "master_size": 0,
-          "delta_bytes": 22190,
-          "delta_percent": 100.0,
-          "alert": true,
-          "thresholds": [
-            "percent>2"
-          ]
-        },
-        {
-          "file_name": "nt_sandbox.js",
-          "head_size": 65533,
-          "master_size": 0,
-          "delta_bytes": 65533,
-          "delta_percent": 100.0,
-          "alert": true,
-          "thresholds": [
-            "percent>2",
-            "bytes>25000"
-          ]
-        },
-        {
-          "file_name": "nt_sandbox.wasm",
-          "head_size": 1200419,
-          "master_size": 0,
-          "delta_bytes": 1200419,
-          "delta_percent": 100.0,
-          "alert": true,
-          "thresholds": [
-            "percent>2",
-            "bytes>25000"
-          ]
-        },
-        {
-          "file_name": "nt_sandbox.wasm.map",
-          "head_size": 90100,
-          "master_size": 0,
-          "delta_bytes": 90100,
-          "delta_percent": 100.0,
-          "alert": true,
-          "thresholds": [
-            "percent>2",
-            "bytes>25000"
-          ]
-        }
-      ]
+      "master": null
     },
     {
       "folder": "sandbox\\wasm\\release",
       "report_path": "sandbox\\wasm\\release\\report.txt",
       "commits": [
         {
-          "kind": "master",
-          "id": "master:UNKNOWN",
-          "git_sha": "UNKNOWN",
-          "git_message": "UNKNOWN",
-          "label": "MASTER \u2014 UNKNOWN",
-          "artifacts": []
-        },
-        {
           "kind": "head",
-          "id": "head:406c165c78f7f89d1fd487bd8bdea1ce03692918",
-          "git_sha": "406c165c78f7f89d1fd487bd8bdea1ce03692918",
-          "git_message": "fixed size report",
-          "label": "HEAD \u2014 406c165",
+          "id": "head:4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+          "git_sha": "4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+          "git_message": "build report",
+          "label": "HEAD \u2014 4ff8af6",
           "artifacts": [
             {
               "file_name": "index.html",
@@ -191,112 +112,60 @@
         }
       ],
       "comparison": {
-        "base_id": "master:UNKNOWN",
-        "base_sha": "UNKNOWN",
-        "base_message": "UNKNOWN",
-        "base_label": "MASTER \u2014 UNKNOWN",
-        "target_id": "head:406c165c78f7f89d1fd487bd8bdea1ce03692918",
-        "target_sha": "406c165c78f7f89d1fd487bd8bdea1ce03692918",
-        "target_message": "fixed size report",
-        "target_label": "HEAD \u2014 406c165",
+        "base_id": "head:4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+        "base_sha": "4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+        "base_message": "build report",
+        "base_label": "HEAD \u2014 4ff8af6",
+        "target_id": "head:4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+        "target_sha": "4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+        "target_message": "build report",
+        "target_label": "HEAD \u2014 4ff8af6",
         "artifacts": [
           {
             "file_name": "index.html",
             "head_size": 19602,
-            "master_size": 0,
-            "delta_bytes": 19602,
-            "delta_percent": 100.0,
-            "alert": true,
-            "thresholds": [
-              "percent>2"
-            ]
+            "master_size": 19602,
+            "delta_bytes": 0,
+            "delta_percent": 0.0,
+            "alert": false,
+            "thresholds": []
           },
           {
             "file_name": "nt_sandbox.js",
             "head_size": 9115,
-            "master_size": 0,
-            "delta_bytes": 9115,
-            "delta_percent": 100.0,
-            "alert": true,
-            "thresholds": [
-              "percent>2"
-            ]
+            "master_size": 9115,
+            "delta_bytes": 0,
+            "delta_percent": 0.0,
+            "alert": false,
+            "thresholds": []
           },
           {
             "file_name": "nt_sandbox.wasm",
             "head_size": 1647,
-            "master_size": 0,
-            "delta_bytes": 1647,
-            "delta_percent": 100.0,
-            "alert": true,
-            "thresholds": [
-              "percent>2"
-            ]
+            "master_size": 1647,
+            "delta_bytes": 0,
+            "delta_percent": 0.0,
+            "alert": false,
+            "thresholds": []
           }
         ]
       },
       "head": {
-        "git_sha": "406c165c78f7f89d1fd487bd8bdea1ce03692918",
-        "git_message": "fixed size report"
+        "git_sha": "4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+        "git_message": "build report"
       },
-      "master": {
-        "git_sha": "UNKNOWN",
-        "git_message": "UNKNOWN"
-      },
-      "artifacts": [
-        {
-          "file_name": "index.html",
-          "head_size": 19602,
-          "master_size": 0,
-          "delta_bytes": 19602,
-          "delta_percent": 100.0,
-          "alert": true,
-          "thresholds": [
-            "percent>2"
-          ]
-        },
-        {
-          "file_name": "nt_sandbox.js",
-          "head_size": 9115,
-          "master_size": 0,
-          "delta_bytes": 9115,
-          "delta_percent": 100.0,
-          "alert": true,
-          "thresholds": [
-            "percent>2"
-          ]
-        },
-        {
-          "file_name": "nt_sandbox.wasm",
-          "head_size": 1647,
-          "master_size": 0,
-          "delta_bytes": 1647,
-          "delta_percent": 100.0,
-          "alert": true,
-          "thresholds": [
-            "percent>2"
-          ]
-        }
-      ]
+      "master": null
     },
     {
       "folder": "sandbox\\windows\\debug",
       "report_path": "sandbox\\windows\\debug\\report.txt",
       "commits": [
         {
-          "kind": "master",
-          "id": "master:UNKNOWN",
-          "git_sha": "UNKNOWN",
-          "git_message": "UNKNOWN",
-          "label": "MASTER \u2014 UNKNOWN",
-          "artifacts": []
-        },
-        {
           "kind": "head",
-          "id": "head:406c165c78f7f89d1fd487bd8bdea1ce03692918",
-          "git_sha": "406c165c78f7f89d1fd487bd8bdea1ce03692918",
-          "git_message": "fixed size report",
-          "label": "HEAD \u2014 406c165",
+          "id": "head:4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+          "git_sha": "4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+          "git_message": "build report",
+          "label": "HEAD \u2014 4ff8af6",
           "artifacts": [
             {
               "file_name": "engine.exe",
@@ -306,68 +175,42 @@
         }
       ],
       "comparison": {
-        "base_id": "master:UNKNOWN",
-        "base_sha": "UNKNOWN",
-        "base_message": "UNKNOWN",
-        "base_label": "MASTER \u2014 UNKNOWN",
-        "target_id": "head:406c165c78f7f89d1fd487bd8bdea1ce03692918",
-        "target_sha": "406c165c78f7f89d1fd487bd8bdea1ce03692918",
-        "target_message": "fixed size report",
-        "target_label": "HEAD \u2014 406c165",
+        "base_id": "head:4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+        "base_sha": "4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+        "base_message": "build report",
+        "base_label": "HEAD \u2014 4ff8af6",
+        "target_id": "head:4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+        "target_sha": "4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+        "target_message": "build report",
+        "target_label": "HEAD \u2014 4ff8af6",
         "artifacts": [
           {
             "file_name": "engine.exe",
             "head_size": 19968,
-            "master_size": 0,
-            "delta_bytes": 19968,
-            "delta_percent": 100.0,
-            "alert": true,
-            "thresholds": [
-              "percent>2"
-            ]
+            "master_size": 19968,
+            "delta_bytes": 0,
+            "delta_percent": 0.0,
+            "alert": false,
+            "thresholds": []
           }
         ]
       },
       "head": {
-        "git_sha": "406c165c78f7f89d1fd487bd8bdea1ce03692918",
-        "git_message": "fixed size report"
+        "git_sha": "4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+        "git_message": "build report"
       },
-      "master": {
-        "git_sha": "UNKNOWN",
-        "git_message": "UNKNOWN"
-      },
-      "artifacts": [
-        {
-          "file_name": "engine.exe",
-          "head_size": 19968,
-          "master_size": 0,
-          "delta_bytes": 19968,
-          "delta_percent": 100.0,
-          "alert": true,
-          "thresholds": [
-            "percent>2"
-          ]
-        }
-      ]
+      "master": null
     },
     {
       "folder": "sandbox\\windows\\release",
       "report_path": "sandbox\\windows\\release\\report.txt",
       "commits": [
         {
-          "kind": "master",
-          "id": "master:UNKNOWN",
-          "git_sha": "UNKNOWN",
-          "git_message": "UNKNOWN",
-          "label": "MASTER \u2014 UNKNOWN",
-          "artifacts": []
-        },
-        {
           "kind": "head",
-          "id": "head:406c165c78f7f89d1fd487bd8bdea1ce03692918",
-          "git_sha": "406c165c78f7f89d1fd487bd8bdea1ce03692918",
-          "git_message": "fixed size report",
-          "label": "HEAD \u2014 406c165",
+          "id": "head:4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+          "git_sha": "4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+          "git_message": "build report",
+          "label": "HEAD \u2014 4ff8af6",
           "artifacts": [
             {
               "file_name": "engine.exe",
@@ -377,49 +220,31 @@
         }
       ],
       "comparison": {
-        "base_id": "master:UNKNOWN",
-        "base_sha": "UNKNOWN",
-        "base_message": "UNKNOWN",
-        "base_label": "MASTER \u2014 UNKNOWN",
-        "target_id": "head:406c165c78f7f89d1fd487bd8bdea1ce03692918",
-        "target_sha": "406c165c78f7f89d1fd487bd8bdea1ce03692918",
-        "target_message": "fixed size report",
-        "target_label": "HEAD \u2014 406c165",
+        "base_id": "head:4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+        "base_sha": "4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+        "base_message": "build report",
+        "base_label": "HEAD \u2014 4ff8af6",
+        "target_id": "head:4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+        "target_sha": "4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+        "target_message": "build report",
+        "target_label": "HEAD \u2014 4ff8af6",
         "artifacts": [
           {
             "file_name": "engine.exe",
             "head_size": 9728,
-            "master_size": 0,
-            "delta_bytes": 9728,
-            "delta_percent": 100.0,
-            "alert": true,
-            "thresholds": [
-              "percent>2"
-            ]
+            "master_size": 9728,
+            "delta_bytes": 0,
+            "delta_percent": 0.0,
+            "alert": false,
+            "thresholds": []
           }
         ]
       },
       "head": {
-        "git_sha": "406c165c78f7f89d1fd487bd8bdea1ce03692918",
-        "git_message": "fixed size report"
+        "git_sha": "4ff8af695f5ab54c8d74d4ac952b8db28722e524",
+        "git_message": "build report"
       },
-      "master": {
-        "git_sha": "UNKNOWN",
-        "git_message": "UNKNOWN"
-      },
-      "artifacts": [
-        {
-          "file_name": "engine.exe",
-          "head_size": 9728,
-          "master_size": 0,
-          "delta_bytes": 9728,
-          "delta_percent": 100.0,
-          "alert": true,
-          "thresholds": [
-            "percent>2"
-          ]
-        }
-      ]
+      "master": null
     }
   ]
 }

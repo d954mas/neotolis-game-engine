@@ -111,43 +111,55 @@ def _rows_to_entries(rows: List[Dict[str, str]]) -> List[SnapshotEntry]:
             sha_field = (row.get("git_sha") or "").strip()
             message_field = (row.get("git_message") or "").strip()
             file_field = (row.get("file_name") or "").strip()
-            label = sha_field.upper()
+            label = (file_field or sha_field).strip().upper()
 
             if label == "HEAD":
-                commit_sha = (
-                    message_field
-                    if is_hex_sha(message_field)
-                    else (sha_field if is_hex_sha(sha_field) else PLACEHOLDER_SHA)
-                )
-                commit_message = file_field or (
-                    message_field if not is_hex_sha(message_field) else PLACEHOLDER_MESSAGE
-                )
+                commit_kind = "head"
             elif label == "MASTER":
+                commit_kind = "master"
+            elif label == "HISTORY":
+                commit_kind = "history"
+            else:
+                commit_kind = None
+
+            if commit_kind == "head":
                 commit_sha = (
                     message_field
                     if is_hex_sha(message_field)
                     else (sha_field if is_hex_sha(sha_field) else PLACEHOLDER_SHA)
                 )
-                commit_message = file_field or (
-                    message_field if not is_hex_sha(message_field) else PLACEHOLDER_MESSAGE
+                commit_message = (
+                    message_field if message_field and not is_hex_sha(message_field) else PLACEHOLDER_MESSAGE
+                )
+            elif commit_kind == "master":
+                commit_sha = (
+                    message_field
+                    if is_hex_sha(message_field)
+                    else (sha_field if is_hex_sha(sha_field) else PLACEHOLDER_SHA)
+                )
+                commit_message = (
+                    message_field if message_field and not is_hex_sha(message_field) else PLACEHOLDER_MESSAGE
                 )
             else:
                 commit_sha = sha_field if is_hex_sha(sha_field) else PLACEHOLDER_SHA
                 commit_message = message_field or file_field or PLACEHOLDER_MESSAGE
+                if not master_assigned:
+                    commit_kind = "master"
+                elif not head_assigned:
+                    commit_kind = "head"
+                else:
+                    commit_kind = "history"
 
-            if not master_assigned:
-                current = SnapshotEntry(
-                    kind="master",
-                    sha=commit_sha,
-                    message=commit_message,
-                    artifacts=[],
-                )
+            current = SnapshotEntry(
+                kind=commit_kind,
+                sha=commit_sha or PLACEHOLDER_SHA,
+                message=commit_message or PLACEHOLDER_MESSAGE,
+                artifacts=[],
+            )
+            if commit_kind == "master":
                 master_assigned = True
-            elif not head_assigned:
-                current = SnapshotEntry(kind="head", sha=commit_sha, message=commit_message, artifacts=[])
+            elif commit_kind == "head":
                 head_assigned = True
-            else:
-                current = SnapshotEntry(kind="history", sha=commit_sha, message=commit_message, artifacts=[])
             entries.append(current)
         else:
             if current is None:
@@ -219,16 +231,6 @@ def convert_legacy_rows(rows: List[Dict[str, str]]) -> List[SnapshotEntry]:
     return entries
 
 
-def ensure_master_entry(entry: SnapshotEntry | None) -> SnapshotEntry:
-    if entry is None:
-        return SnapshotEntry(kind="master", sha=PLACEHOLDER_SHA, message=PLACEHOLDER_MESSAGE, artifacts=[])
-    if not entry.sha:
-        entry.sha = PLACEHOLDER_SHA
-    if not entry.message:
-        entry.message = PLACEHOLDER_MESSAGE
-    return entry
-
-
 def format_entry_label(entry: SnapshotEntry) -> str:
     sha = entry.sha or PLACEHOLDER_SHA
     display_sha = sha if len(sha) <= 7 else sha[:7]
@@ -247,11 +249,13 @@ def write_report_entries(report_path: Path, entries: List[SnapshotEntry]) -> Non
         writer = csv.DictWriter(fp, fieldnames=validators.HEADER)
         writer.writeheader()
         for entry in entries:
+            if entry.kind == "master" and entry.sha == PLACEHOLDER_SHA and not entry.artifacts:
+                continue
             writer.writerow(
                 {
                     "git_sha": entry.sha or PLACEHOLDER_SHA,
                     "git_message": entry.message or PLACEHOLDER_MESSAGE,
-                    "file_name": "",
+                    "file_name": entry.kind.upper(),
                     "size_bytes": "",
                 }
             )
@@ -281,15 +285,15 @@ def update_head_snapshot(
     if report_path.exists():
         existing_entries = read_report_entries(report_path)
     else:
-        existing_entries = [
-            SnapshotEntry(kind="master", sha=PLACEHOLDER_SHA, message=PLACEHOLDER_MESSAGE, artifacts=[])
-        ]
+        existing_entries = []
     master_entry: SnapshotEntry | None = None
     history_entries: List[SnapshotEntry] = []
     previous_head: SnapshotEntry | None = None
 
     for entry in existing_entries:
         if entry.kind == "master":
+            if entry.sha == PLACEHOLDER_SHA and not entry.artifacts:
+                continue
             master_entry = entry
         elif entry.kind == "head":
             previous_head = entry
@@ -311,7 +315,15 @@ def update_head_snapshot(
             message=master_meta.message,
             artifacts=[Artifact(file_name=a.file_name, size_bytes=a.size_bytes) for a in head_artifacts],
         )
-    master_entry = ensure_master_entry(master_entry)
+
+    if master_entry is not None and head_entry is not None and master_entry.sha == head_entry.sha:
+        master_map = {artifact.file_name: artifact.size_bytes for artifact in master_entry.artifacts}
+        head_map = {artifact.file_name: artifact.size_bytes for artifact in head_entry.artifacts}
+        if master_map == head_map:
+            master_entry = None
+
+    if master_entry is not None and not master_entry.artifacts:
+        master_entry = None
 
     if previous_head and previous_head.sha not in (PLACEHOLDER_SHA, head_entry.sha):
         history_entries = [entry for entry in history_entries if entry.sha != previous_head.sha]
@@ -328,7 +340,11 @@ def update_head_snapshot(
     # Remove any stale history entry matching the current HEAD sha
     history_entries = [entry for entry in history_entries if entry.sha != head_entry.sha]
 
-    entries_to_write: List[SnapshotEntry] = [master_entry, head_entry, *history_entries]
+    entries_to_write: List[SnapshotEntry] = []
+    if master_entry is not None:
+        entries_to_write.append(master_entry)
+    entries_to_write.append(head_entry)
+    entries_to_write.extend(history_entries)
     write_report_entries(report_path, entries_to_write)
     return head_meta
 
@@ -374,9 +390,20 @@ def regenerate_manifest(root: Path) -> Dict[str, object]:
         if not entries:
             continue
 
-        master_entry = ensure_master_entry(next((entry for entry in entries if entry.kind == "master"), None))
-        head_entry = next((entry for entry in entries if entry.kind == "head"), master_entry)
-        deltas = compute_deltas(master_entry.artifacts, head_entry.artifacts)
+        master_entry = next((entry for entry in entries if entry.kind == "master"), None)
+        head_entry = next((entry for entry in entries if entry.kind == "head"), None)
+
+        comparison_base = master_entry
+        if comparison_base is None:
+            comparison_base = next((entry for entry in entries if entry.kind == "history"), None)
+        if comparison_base is None:
+            comparison_base = head_entry
+
+        comparison_target = head_entry or comparison_base
+
+        base_artifacts = comparison_base.artifacts if comparison_base else []
+        target_artifacts = comparison_target.artifacts if comparison_target else []
+        deltas = compute_deltas(base_artifacts, target_artifacts)
 
         commits_payload = [
             {
@@ -402,25 +429,24 @@ def regenerate_manifest(root: Path) -> Dict[str, object]:
                 "report_path": str(report_path.relative_to(root)),
                 "commits": commits_payload,
                 "comparison": {
-                    "base_id": f"{master_entry.kind}:{master_entry.sha or PLACEHOLDER_SHA}",
-                    "base_sha": master_entry.sha or PLACEHOLDER_SHA,
-                    "base_message": master_entry.message or PLACEHOLDER_MESSAGE,
-                    "base_label": format_entry_label(master_entry),
-                    "target_id": f"{head_entry.kind}:{head_entry.sha or PLACEHOLDER_SHA}",
-                    "target_sha": head_entry.sha or PLACEHOLDER_SHA,
-                    "target_message": head_entry.message or PLACEHOLDER_MESSAGE,
-                    "target_label": format_entry_label(head_entry),
+                    "base_id": f"{comparison_base.kind}:{comparison_base.sha or PLACEHOLDER_SHA}" if comparison_base else None,
+                    "base_sha": comparison_base.sha if comparison_base else PLACEHOLDER_SHA,
+                    "base_message": comparison_base.message if comparison_base else PLACEHOLDER_MESSAGE,
+                    "base_label": format_entry_label(comparison_base) if comparison_base else "",
+                    "target_id": f"{comparison_target.kind}:{comparison_target.sha or PLACEHOLDER_SHA}" if comparison_target else None,
+                    "target_sha": comparison_target.sha if comparison_target else PLACEHOLDER_SHA,
+                    "target_message": comparison_target.message if comparison_target else PLACEHOLDER_MESSAGE,
+                    "target_label": format_entry_label(comparison_target) if comparison_target else "",
                     "artifacts": deltas,
                 },
                 "head": {
-                    "git_sha": head_entry.sha or PLACEHOLDER_SHA,
-                    "git_message": head_entry.message or PLACEHOLDER_MESSAGE,
-                },
+                    "git_sha": head_entry.sha if head_entry else PLACEHOLDER_SHA,
+                    "git_message": head_entry.message if head_entry else PLACEHOLDER_MESSAGE,
+                } if head_entry else None,
                 "master": {
-                    "git_sha": master_entry.sha or PLACEHOLDER_SHA,
-                    "git_message": master_entry.message or PLACEHOLDER_MESSAGE,
-                },
-                "artifacts": deltas,
+                    "git_sha": master_entry.sha,
+                    "git_message": master_entry.message,
+                } if master_entry else None,
             }
         )
     manifest = {

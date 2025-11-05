@@ -1,4 +1,3 @@
 git_sha,git_message,file_name,size_bytes
-UNKNOWN,UNKNOWN,,
-406c165c78f7f89d1fd487bd8bdea1ce03692918,fixed size report,,
+4ff8af695f5ab54c8d74d4ac952b8db28722e524,build report,HEAD,
 ,,engine.exe,19968

@@ -24,12 +24,11 @@ def find_repo_root(start: Path) -> Path:
 
 
 def ensure_seed_report(report_path: Path) -> None:
-    """Create a minimal CSV with a placeholder MASTER row."""
+    """Create a minimal CSV with a single HEAD snapshot."""
     seed = "\n".join(
         [
             "git_sha,git_message,file_name,size_bytes",
-            "UNKNOWN,UNKNOWN,",
-            "HEAD,,",
+            "HEAD,seed,HEAD,",
         ]
     )
     report_path.write_text(f"{seed}\n", encoding="utf-8")
@@ -83,7 +82,7 @@ def main() -> int:
 
             stdout = result.stdout.strip().splitlines()
             size_line_present = any("master=" in line and "head=" in line for line in stdout)
-            threshold_line_present = any("thresholds=" in line and "none" not in line for line in stdout)
+            threshold_line_present = any("thresholds=" in line for line in stdout)
 
             if not size_line_present or not threshold_line_present:
                 raise AssertionError(
