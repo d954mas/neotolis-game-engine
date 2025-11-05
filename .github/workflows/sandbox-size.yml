@@ -31,9 +31,9 @@ jobs:
           set -euo pipefail
           rm -rf size-inputs
           mkdir -p size-inputs/sandbox/wasm/debug
-          cp build/web-debug/sandbox/* size-inputs/sandbox/wasm/debug/
+          cp -a output/sandbox/wasm/debug/. size-inputs/sandbox/wasm/debug/
           mkdir -p size-inputs/sandbox/wasm/release
-          cp build/web-release/sandbox/* size-inputs/sandbox/wasm/release/
+          cp -a output/sandbox/wasm/release/. size-inputs/sandbox/wasm/release/
       - name: Upload sandbox wasm artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -64,9 +64,9 @@ jobs:
           $ErrorActionPreference = 'Stop'
           Remove-Item -Recurse -Force size-inputs -ErrorAction SilentlyContinue
           New-Item -ItemType Directory -Force -Path size-inputs\sandbox\windows\debug | Out-Null
-          Copy-Item -Path build\win-debug\testbeds\sandbox\* -Destination size-inputs\sandbox\windows\debug -Recurse -Force
+          Copy-Item -Path output\sandbox\windows\debug\* -Destination size-inputs\sandbox\windows\debug -Recurse -Force
           New-Item -ItemType Directory -Force -Path size-inputs\sandbox\windows\release | Out-Null
-          Copy-Item -Path build\win-release\testbeds\sandbox\* -Destination size-inputs\sandbox\windows\release -Recurse -Force
+          Copy-Item -Path output\sandbox\windows\release\* -Destination size-inputs\sandbox\windows\release -Recurse -Force
       - name: Upload sandbox windows artifacts
         uses: actions/upload-artifact@v4
         with:
