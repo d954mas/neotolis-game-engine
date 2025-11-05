@@ -1,12 +1,12 @@
 {
-  "generated_at": "2025-11-05T07:55:21.505943+00:00",
+  "generated_at": "2025-11-05T08:25:03.116243+00:00",
   "folders": [
     {
       "folder": "sandbox\\wasm\\debug",
       "report_path": "sandbox\\wasm\\debug\\report.txt",
       "head": {
-        "git_sha": "ebe29558d205a43195965d8c8adf690f64cc2e47",
-        "git_message": "update constitution"
+        "git_sha": "1e6bdecdfc1418f94eee52503863b12f6ca4c017",
+        "git_message": "add build report"
       },
       "master": {
         "git_sha": "UNKNOWN",
@@ -52,8 +52,8 @@
       "folder": "sandbox\\wasm\\release",
       "report_path": "sandbox\\wasm\\release\\report.txt",
       "head": {
-        "git_sha": "523f65cd4dd98194f8834718f1fed6c140bcdb7d",
-        "git_message": "add base for report file size"
+        "git_sha": "1e6bdecdfc1418f94eee52503863b12f6ca4c017",
+        "git_message": "add build report"
       },
       "master": {
         "git_sha": "UNKNOWN",

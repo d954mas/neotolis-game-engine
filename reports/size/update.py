@@ -6,11 +6,10 @@ import argparse
 import csv
 import json
 import sys
-from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, Iterable, List, Mapping, MutableMapping, Sequence
+from typing import Any, Dict, List, Mapping, MutableMapping, Sequence
 
 # Support running as a script by ensuring package imports succeed
 if __package__ is None or __package__ == "":
@@ -25,6 +24,7 @@ MANIFEST_FILENAME = "index.json"
 PLACEHOLDER_SHA = "UNKNOWN"
 PLACEHOLDER_MESSAGE = "UNKNOWN"
 ARTIFACT_EXCLUDES = {REPORT_FILENAME, MANIFEST_FILENAME, "README.md"}
+LEGACY_HEADER = ["git_ref", "file_name", "size_bytes", "git_sha", "git_message"]
 
 
 @dataclass
@@ -33,8 +33,26 @@ class GitMetadata:
     message: str
 
 
+@dataclass
+class Artifact:
+    file_name: str
+    size_bytes: int
+
+
+@dataclass
+class SnapshotEntry:
+    kind: str  # "master", "head", or "history"
+    sha: str
+    message: str
+    artifacts: List[Artifact]
+
+
 class SizeReportError(RuntimeError):
     """Raised when the size-report workflow encounters a blocking issue."""
+
+
+def is_hex_sha(candidate: str) -> bool:
+    return len(candidate) == 40 and all(ch in "0123456789abcdef" for ch in candidate.lower())
 
 
 def run_git(args: List[str], cwd: Path) -> str:
@@ -63,38 +81,164 @@ def discover_artifacts(folder: Path) -> List[Path]:
     return sorted(artifacts, key=lambda p: p.name)
 
 
-def read_report(report_path: Path) -> List[Dict[str, str]]:
+def read_report_entries(report_path: Path) -> List[SnapshotEntry]:
     if not report_path.exists():
         return []
     with report_path.open(newline="", encoding="utf-8") as fp:
         reader = csv.DictReader(fp)
-        validators.ensure_header(reader.fieldnames)
-        rows = list(reader)
+        header = reader.fieldnames or []
+        rows: List[Dict[str, str]] = list(reader)
+
+    if header == validators.HEADER:
         validators.ensure_rows(rows)
-        return rows
-
-
-def ensure_master_rows(rows: List[Dict[str, str]]) -> None:
-    if any(row.get("git_ref") == "MASTER" for row in rows):
-        return
-    rows.append(
-        {
-            "git_ref": "MASTER",
-            "file_name": "",
-            "size_bytes": "",
-            "git_sha": PLACEHOLDER_SHA,
-            "git_message": PLACEHOLDER_MESSAGE,
-        }
+        return _rows_to_entries(rows)
+    if header == LEGACY_HEADER:
+        return convert_legacy_rows(rows)
+    raise SizeReportError(
+        f"Unexpected report header {header}. Expected {validators.HEADER} or legacy {LEGACY_HEADER}."
     )
 
 
-def write_report(report_path: Path, rows: Iterable[Mapping[str, str]]) -> None:
-    ordered = sorted(rows, key=validators.sort_key)
+def _rows_to_entries(rows: List[Dict[str, str]]) -> List[SnapshotEntry]:
+    entries: List[SnapshotEntry] = []
+    current: SnapshotEntry | None = None
+    master_assigned = False
+    head_assigned = False
+
+    for row in rows:
+        size_field = (row.get("size_bytes") or "").strip()
+        if not size_field:
+            sha_field = (row.get("git_sha") or "").strip()
+            message_field = (row.get("git_message") or "").strip()
+            file_field = (row.get("file_name") or "").strip()
+            label = sha_field.upper()
+
+            if label == "HEAD":
+                commit_sha = message_field if is_hex_sha(message_field) else sha_field or PLACEHOLDER_SHA
+                commit_message = file_field or (message_field if not is_hex_sha(message_field) else PLACEHOLDER_MESSAGE)
+            elif label == "MASTER":
+                commit_sha = message_field if is_hex_sha(message_field) else sha_field or PLACEHOLDER_SHA
+                commit_message = file_field or (message_field if not is_hex_sha(message_field) else PLACEHOLDER_MESSAGE)
+            else:
+                commit_sha = sha_field or PLACEHOLDER_SHA
+                commit_message = message_field or file_field or PLACEHOLDER_MESSAGE
+
+            if not master_assigned:
+                current = SnapshotEntry(
+                    kind="master",
+                    sha=commit_sha,
+                    message=commit_message,
+                    artifacts=[],
+                )
+                master_assigned = True
+            elif not head_assigned:
+                current = SnapshotEntry(kind="head", sha=commit_sha, message=commit_message, artifacts=[])
+                head_assigned = True
+            else:
+                current = SnapshotEntry(kind="history", sha=commit_sha, message=commit_message, artifacts=[])
+            entries.append(current)
+        else:
+            if current is None:
+                raise SizeReportError("Encountered artifact row before metadata section header")
+            file_name = (row.get("file_name") or "").strip()
+            if not file_name:
+                raise SizeReportError("Artifact row missing file_name")
+            try:
+                size_value = int(size_field)
+            except ValueError as exc:  # pragma: no cover - validated earlier
+                raise SizeReportError(f"Invalid size '{size_field}' for artifact '{file_name}'") from exc
+            current.artifacts.append(Artifact(file_name=file_name, size_bytes=size_value))
+    return entries
+
+
+def convert_legacy_rows(rows: List[Dict[str, str]]) -> List[SnapshotEntry]:
+    order: List[str] = []
+    grouped: Dict[str, SnapshotEntry] = {}
+
+    for row in rows:
+        ref = (row.get("git_ref") or "").strip()
+        sha_value = (row.get("git_sha") or "").strip() or PLACEHOLDER_SHA
+        message_value = (row.get("git_message") or "").strip() or PLACEHOLDER_MESSAGE
+        key = ref
+        kind = "history"
+        if ref == "HEAD":
+            kind = "head"
+            key = "HEAD"
+        elif ref == "MASTER":
+            kind = "master"
+            key = "MASTER"
+        else:
+            key = sha_value
+
+        if key not in grouped:
+            grouped[key] = SnapshotEntry(
+                kind=kind,
+                sha=sha_value,
+                message=message_value,
+                artifacts=[],
+            )
+            order.append(key)
+        entry = grouped[key]
+        entry.sha = sha_value
+        entry.message = message_value
+
+        file_name = (row.get("file_name") or "").strip()
+        size_field = (row.get("size_bytes") or "").strip()
+        if file_name:
+            size_value = int(size_field) if size_field.isdigit() else 0
+            entry.artifacts.append(Artifact(file_name=file_name, size_bytes=size_value))
+
+    for entry in grouped.values():
+        entry.artifacts = sorted(entry.artifacts, key=lambda item: item.file_name)
+
+    # Ensure master entry exists even if absent in legacy data
+    if "MASTER" not in grouped:
+        order.insert(0, "MASTER")
+        grouped["MASTER"] = SnapshotEntry(
+            kind="master",
+            sha=PLACEHOLDER_SHA,
+            message=PLACEHOLDER_MESSAGE,
+            artifacts=[],
+        )
+
+    entries: List[SnapshotEntry] = []
+    for key in order:
+        entries.append(grouped[key])
+    return entries
+
+
+def ensure_master_entry(entry: SnapshotEntry | None) -> SnapshotEntry:
+    if entry is None:
+        return SnapshotEntry(kind="master", sha=PLACEHOLDER_SHA, message=PLACEHOLDER_MESSAGE, artifacts=[])
+    if not entry.sha:
+        entry.sha = PLACEHOLDER_SHA
+    if not entry.message:
+        entry.message = PLACEHOLDER_MESSAGE
+    return entry
+
+
+def write_report_entries(report_path: Path, entries: List[SnapshotEntry]) -> None:
     with report_path.open("w", newline="", encoding="utf-8") as fp:
         writer = csv.DictWriter(fp, fieldnames=validators.HEADER)
         writer.writeheader()
-        for row in ordered:
-            writer.writerow(row)
+        for entry in entries:
+            writer.writerow(
+                {
+                    "git_sha": entry.sha or PLACEHOLDER_SHA,
+                    "git_message": entry.message or PLACEHOLDER_MESSAGE,
+                    "file_name": "",
+                    "size_bytes": "",
+                }
+            )
+            for artifact in sorted(entry.artifacts, key=lambda item: item.file_name):
+                writer.writerow(
+                    {
+                        "git_sha": "",
+                        "git_message": "",
+                        "file_name": artifact.file_name,
+                        "size_bytes": str(artifact.size_bytes),
+                    }
+                )
 
 
 def update_head_snapshot(folder: Path, repo_root: Path, accept_master: str | None = None) -> GitMetadata:
@@ -104,84 +248,66 @@ def update_head_snapshot(folder: Path, repo_root: Path, accept_master: str | Non
     if not report_path.exists():
         raise SizeReportError(f"Report file '{report_path}' is missing")
 
-    rows = read_report(report_path)
-    ensure_master_rows(rows)
-    for row in rows:
-        if row.get("git_ref") == "MASTER":
-            if not row.get("git_sha"):
-                row["git_sha"] = PLACEHOLDER_SHA
-            if not row.get("git_message"):
-                row["git_message"] = PLACEHOLDER_MESSAGE
-
     artifacts = discover_artifacts(folder)
     if not artifacts:
         raise SizeReportError(f"No artifacts found in '{folder}'. Build outputs are required.")
 
+    existing_entries = read_report_entries(report_path)
+    master_entry: SnapshotEntry | None = None
+    history_entries: List[SnapshotEntry] = []
+    previous_head: SnapshotEntry | None = None
+
+    for entry in existing_entries:
+        if entry.kind == "master":
+            master_entry = entry
+        elif entry.kind == "head":
+            previous_head = entry
+        else:
+            history_entries.append(entry)
+
     head_meta = current_head_metadata(repo_root)
 
-    # Remove existing HEAD rows and rebuild
-    rows = [row for row in rows if row.get("git_ref") != "HEAD"]
-    for artifact in artifacts:
-        rows.append(
-            {
-                "git_ref": "HEAD",
-                "file_name": artifact.name,
-                "size_bytes": str(artifact.stat().st_size),
-                "git_sha": head_meta.sha,
-                "git_message": head_meta.message,
-            }
-        )
+    head_artifacts = [
+        Artifact(file_name=artifact.name, size_bytes=artifact.stat().st_size) for artifact in artifacts
+    ]
+    head_entry = SnapshotEntry(kind="head", sha=head_meta.sha, message=head_meta.message, artifacts=head_artifacts)
 
     if accept_master:
         master_meta = metadata_for_ref(repo_root, accept_master)
-        rows = [row for row in rows if row.get("git_ref") != "MASTER"]
-        for artifact in artifacts:
-            rows.append(
-                {
-                    "git_ref": "MASTER",
-                    "file_name": artifact.name,
-                    "size_bytes": str(artifact.stat().st_size),
-                    "git_sha": master_meta.sha,
-                    "git_message": master_meta.message,
-                }
-            )
-    write_report(report_path, rows)
+        master_entry = SnapshotEntry(
+            kind="master",
+            sha=master_meta.sha,
+            message=master_meta.message,
+            artifacts=[Artifact(file_name=a.file_name, size_bytes=a.size_bytes) for a in head_artifacts],
+        )
+    master_entry = ensure_master_entry(master_entry)
+
+    if previous_head and previous_head.sha not in (PLACEHOLDER_SHA, head_entry.sha):
+        history_entries = [entry for entry in history_entries if entry.sha != previous_head.sha]
+        history_entries.insert(
+            0,
+            SnapshotEntry(
+                kind="history",
+                sha=previous_head.sha,
+                message=previous_head.message,
+                artifacts=[Artifact(file_name=a.file_name, size_bytes=a.size_bytes) for a in previous_head.artifacts],
+            ),
+        )
+
+    # Remove any stale history entry matching the current HEAD sha
+    history_entries = [entry for entry in history_entries if entry.sha != head_entry.sha]
+
+    entries_to_write: List[SnapshotEntry] = [master_entry, head_entry, *history_entries]
+    write_report_entries(report_path, entries_to_write)
     return head_meta
 
 
-def parse_report_rows(rows: Iterable[Mapping[str, str]]) -> Dict[str, Dict[str, object]]:
-    grouped: Dict[str, Dict[str, object]] = {}
-    for ref in ("MASTER", "HEAD"):
-        grouped[ref] = {
-            "git_sha": PLACEHOLDER_SHA,
-            "git_message": PLACEHOLDER_MESSAGE,
-            "artifacts": [],
-        }
-
-    for row in rows:
-        ref = row.get("git_ref", "")
-        target = grouped.setdefault(ref, {"git_sha": PLACEHOLDER_SHA, "git_message": PLACEHOLDER_MESSAGE, "artifacts": []})
-        git_sha = row.get("git_sha") or PLACEHOLDER_SHA
-        git_message = row.get("git_message") or PLACEHOLDER_MESSAGE
-        target["git_sha"] = git_sha
-        target["git_message"] = git_message
-        file_name = row.get("file_name", "")
-        if not file_name:
-            continue
-        size = row.get("size_bytes", "")
-        size_int = int(size) if str(size).isdigit() else 0
-        target["artifacts"].append({"file_name": file_name, "size_bytes": size_int})
-    for ref in grouped:
-        grouped[ref]["artifacts"] = sorted(grouped[ref]["artifacts"], key=lambda item: item["file_name"])
-    return grouped
-
-
-def compute_deltas(master_artifacts: List[Dict[str, object]], head_artifacts: List[Dict[str, object]]) -> List[Dict[str, object]]:
-    master_sizes = {item["file_name"]: item["size_bytes"] for item in master_artifacts}
+def compute_deltas(master_artifacts: Sequence[Artifact], head_artifacts: Sequence[Artifact]) -> List[Dict[str, object]]:
+    master_sizes = {item.file_name: item.size_bytes for item in master_artifacts}
     deltas = []
     for head in head_artifacts:
-        name = head["file_name"]
-        head_size = head["size_bytes"]
+        name = head.file_name
+        head_size = head.size_bytes
         master_size = master_sizes.get(name, 0)
         delta = head_size - master_size
         delta_percent = None
@@ -213,20 +339,24 @@ def compute_deltas(master_artifacts: List[Dict[str, object]], head_artifacts: Li
 def regenerate_manifest(root: Path) -> Dict[str, object]:
     datasets = []
     for report_path in sorted(root.glob("**/report.txt")):
-        rows = read_report(report_path)
-        summary = parse_report_rows(rows)
-        deltas = compute_deltas(summary["MASTER"]["artifacts"], summary["HEAD"]["artifacts"])
+        entries = read_report_entries(report_path)
+        head_entry = next((entry for entry in entries if entry.kind == "head"), None)
+        if head_entry is None:
+            continue
+        master_entry = next((entry for entry in entries if entry.kind == "master"), None)
+        master_entry = ensure_master_entry(master_entry)
+        deltas = compute_deltas(master_entry.artifacts, head_entry.artifacts)
         datasets.append(
             {
                 "folder": str(report_path.parent.relative_to(root)),
                 "report_path": str(report_path.relative_to(root)),
                 "head": {
-                    "git_sha": summary["HEAD"]["git_sha"],
-                    "git_message": summary["HEAD"]["git_message"],
+                    "git_sha": head_entry.sha or PLACEHOLDER_SHA,
+                    "git_message": head_entry.message or PLACEHOLDER_MESSAGE,
                 },
                 "master": {
-                    "git_sha": summary["MASTER"]["git_sha"],
-                    "git_message": summary["MASTER"]["git_message"],
+                    "git_sha": master_entry.sha or PLACEHOLDER_SHA,
+                    "git_message": master_entry.message or PLACEHOLDER_MESSAGE,
                 },
                 "artifacts": deltas,
             }
@@ -246,14 +376,14 @@ def format_percent(value: object) -> str:
     return "n/a"
 
 
-def log_artifact_summary(folder: str, manifest: MutableMapping[str, object]) -> None:
-    folders: Sequence[Mapping[str, object]] = manifest.get("folders", [])  # type: ignore[assignment]
+def log_artifact_summary(folder: str, manifest: MutableMapping[str, Any]) -> None:
+    folders: Sequence[Mapping[str, Any]] = manifest.get("folders", [])  # type: ignore[assignment]
     match = next((item for item in folders if item.get("folder") == folder), None)
     if not match:
         print(f"No manifest entry found for {folder}; instrumentation summary skipped.", file=sys.stdout)
         return
 
-    artifacts: Sequence[Mapping[str, object]] = match.get("artifacts", [])  # type: ignore[assignment]
+    artifacts: Sequence[Mapping[str, Any]] = match.get("artifacts", [])  # type: ignore[assignment]
     print(f"Artifacts measured ({len(artifacts)}):", file=sys.stdout)
     alert_total = 0
     for artifact in artifacts:

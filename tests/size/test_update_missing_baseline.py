@@ -1,21 +1,25 @@
-import csv
 import subprocess
 from pathlib import Path
 
 import pytest
 
+from reports.size.update import (
+    PLACEHOLDER_MESSAGE,
+    PLACEHOLDER_SHA,
+    read_report_entries,
+)
 REPO_ROOT = Path(__file__).resolve().parents[2]
 REPORT_ROOT = REPO_ROOT / "reports" / "size"
 TARGET_FOLDER = REPORT_ROOT / "sandbox" / "wasm" / "debug"
 REPORT_FILE = TARGET_FOLDER / "report.txt"
 
-PLACEHOLDER_WITH_MASTER = """git_ref,file_name,size_bytes,git_sha,git_message
-MASTER,,,,
-HEAD,,,,
+PLACEHOLDER_WITH_MASTER = """git_sha,git_message,file_name,size_bytes
+MASTER,UNKNOWN,UNKNOWN,
+HEAD,,,
 """
 
-PLACEHOLDER_WITHOUT_MASTER = """git_ref,file_name,size_bytes,git_sha,git_message
-HEAD,,,,
+PLACEHOLDER_WITHOUT_MASTER = """git_sha,git_message,file_name,size_bytes
+HEAD,,,
 """
 
 
@@ -38,9 +42,8 @@ def test_missing_master_placeholder_is_restored():
     )
     assert result.returncode == 0, result.stderr
 
-    with REPORT_FILE.open() as fp:
-        rows = list(csv.DictReader(fp))
-    master_rows = [row for row in rows if row["git_ref"] == "MASTER"]
-    assert master_rows, "Expected placeholder MASTER row when none provided"
-    assert master_rows[0]["git_sha"] == "UNKNOWN"
-    assert master_rows[0]["git_message"] == "UNKNOWN"
+    entries = read_report_entries(REPORT_FILE)
+    master_entry = next((entry for entry in entries if entry.kind == "master"), None)
+    assert master_entry is not None, "Expected placeholder MASTER entry when none provided"
+    assert master_entry.sha == PLACEHOLDER_SHA
+    assert master_entry.message == PLACEHOLDER_MESSAGE

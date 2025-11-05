@@ -7,7 +7,7 @@ This directory contains size-reporting assets for Speckit sandbox builds. Use th
 - `report.html` – reviewer dashboard (loads Chart.js from `lib/chart.min.js`).
 - `lib/chart.min.js` – bundled charting library.
 - `update.py` – CLI workflow for regenerating reports (implemented in User Story 1).
-- `sandbox/wasm/<configuration>/report.txt` – CSV snapshots for each tracked build variant.
+- `sandbox/wasm/<configuration>/report.txt` – CSV snapshots for each tracked build variant (one metadata row per commit followed by artifact rows; previous commits remain intact and only the HEAD block is rewritten).
 - `index.json` – Manifest file consumed by the dashboard; includes commit SHA/message metadata and per-artifact deltas.
 
 ## Refreshing HEAD Snapshots
@@ -15,7 +15,7 @@ This directory contains size-reporting assets for Speckit sandbox builds. Use th
 1. Build the desired sandbox target (e.g., `sandbox-wasm-debug`).
 2. Run `python reports/size/update.py --folder sandbox/wasm/debug`.
 3. Review CLI output for threshold alerts (>2% or >25 KB deltas).
-4. Inspect `report.txt` to confirm HEAD rows include the latest commit SHA and subject line.
+4. Inspect `report.txt` to confirm the HEAD metadata row includes the latest commit SHA and subject line.
 5. Commit updated `report.txt` and `index.json` artifacts as needed.
 
 ## Updating MASTER Baselines

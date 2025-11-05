@@ -7,7 +7,7 @@
 2. **Update HEAD snapshot**
    - Execute `python3 reports/size/update.py --folder sandbox/wasm/debug` (repeat for `sandbox/wasm/release`).
    - The CLI prints per-artifact size measurements plus alert thresholds (`percent>2`, `bytes>25000`) after regenerating `index.json`.
-   - HEAD rows are refreshed with the current commit SHA/message while MASTER data remains unchanged.
+   - `report.txt` now keeps a compact metadata row per commit; the latest HEAD block is rewritten while prior commits remain for historical comparison.
 
 3. **Verify instrumentation**
    - Run `python3 tests/size/scripts/verify_size_report.py`.

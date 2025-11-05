@@ -1,5 +1,0 @@
-git_ref,file_name,size_bytes,git_sha,git_message
-MASTER,,,UNKNOWN,UNKNOWN
-HEAD,index.html,157,523f65cd4dd98194f8834718f1fed6c140bcdb7d,add base for report file size
-HEAD,sandbox.js,47,523f65cd4dd98194f8834718f1fed6c140bcdb7d,add base for report file size
-HEAD,sandbox.wasm,40,523f65cd4dd98194f8834718f1fed6c140bcdb7d,add base for report file size

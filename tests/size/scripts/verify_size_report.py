@@ -27,8 +27,9 @@ def ensure_seed_report(report_path: Path) -> None:
     """Create a minimal CSV with a placeholder MASTER row."""
     seed = "\n".join(
         [
-            "git_ref,file_name,size_bytes,git_sha,git_message",
-            "MASTER,,,UNKNOWN,UNKNOWN",
+            "git_sha,git_message,file_name,size_bytes",
+            "MASTER,UNKNOWN,UNKNOWN,",
+            "HEAD,,,"
         ]
     )
     report_path.write_text(f"{seed}\n", encoding="utf-8")

@@ -1,9 +1,9 @@
-import csv
 import json
 import subprocess
 from pathlib import Path
 
 import pytest
+from reports.size.update import read_report_entries
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 REPORT_ROOT = REPO_ROOT / "reports" / "size"
@@ -46,19 +46,18 @@ def test_head_snapshot_updates_report_and_manifest(tmp_path):
     commit_sha = git(["rev-parse", "HEAD"])
     commit_message = git(["show", "-s", "--format=%s", "HEAD"])
 
-    with REPORT_FILE.open() as fp:
-        rows = list(csv.DictReader(fp))
-    head_rows = [row for row in rows if row["git_ref"] == "HEAD"]
-    assert head_rows, "Expected HEAD rows after update"
+    entries = read_report_entries(REPORT_FILE)
+    head_entry = next((entry for entry in entries if entry.kind == "head"), None)
+    assert head_entry is not None, "Expected HEAD entry after update"
+    assert head_entry.sha == commit_sha
+    assert head_entry.message == commit_message
 
-    artifact_names = sorted(artifact["file_name"] for artifact in head_rows)
+    artifact_names = sorted(artifact.file_name for artifact in head_entry.artifacts)
     assert artifact_names == sorted(ARTIFACTS)
-    for row in head_rows:
-        artifact_path = TARGET_FOLDER / row["file_name"]
+    for artifact in head_entry.artifacts:
+        artifact_path = TARGET_FOLDER / artifact.file_name
         assert artifact_path.exists()
-        assert int(row["size_bytes"]) == artifact_path.stat().st_size
-        assert row["git_sha"] == commit_sha
-        assert row["git_message"] == commit_message
+        assert artifact.size_bytes == artifact_path.stat().st_size
 
     assert INDEX_FILE.exists()
     manifest = json.loads(INDEX_FILE.read_text())
