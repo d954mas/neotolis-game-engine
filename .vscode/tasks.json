@@ -422,6 +422,35 @@
             }
         },
         {
+            "label": "Open size dashboard",
+            "type": "shell",
+            "command": "/bin/bash",
+            "args": [
+                "-lc",
+                "PORT=9010; LOG=\"/tmp/size_report_server.log\"; if ! lsof -i :$PORT >/dev/null 2>&1; then (cd '${workspaceFolder}/reports/size' && python3 -m http.server $PORT >$LOG 2>&1 &) && sleep 1; fi; if command -v google-chrome >/dev/null 2>&1; then google-chrome --new-tab 'http://localhost:'$PORT'/report.html' >/dev/null 2>&1 & elif command -v chromium-browser >/dev/null 2>&1; then chromium-browser --new-tab 'http://localhost:'$PORT'/report.html' >/dev/null 2>&1 & elif command -v xdg-open >/dev/null 2>&1; then xdg-open 'http://localhost:'$PORT'/report.html'; else echo 'Open http://localhost:'$PORT'/report.html in a browser.'; fi"
+            ],
+            "windows": {
+                "command": "powershell",
+                "args": [
+                    "-NoLogo",
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-File",
+                    "${workspaceFolder}\\scripts\\open-size-dashboard.ps1",
+                    "-Root",
+                    "${workspaceFolder}\\reports\\size"
+                ]
+            },
+            "osx": {
+                "command": "/bin/bash",
+                "args": [
+                    "-lc",
+                    "PORT=9010; if ! lsof -i :$PORT >/dev/null 2>&1; then (cd '${workspaceFolder}/reports/size' && python3 -m http.server $PORT >/tmp/size_report_server.log 2>&1 &) && sleep 1; fi; if command -v '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' >/dev/null 2>&1; then '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' 'http://localhost:'$PORT'/report.html' >/dev/null 2>&1 & else open 'http://localhost:'$PORT'/report.html'; fi"
+                ]
+            }
+        },
+        {
             "label": "Generate sandbox size report",
             "type": "shell",
             "command": "powershell",
