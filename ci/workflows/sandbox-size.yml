@@ -1,0 +1,126 @@
+name: sandbox-size
+
+on:
+  push:
+    branches: ["master"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-wasm:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 3.1.57
+      - name: Configure web debug
+        run: cmake --preset web-debug
+      - name: Build web debug
+        run: cmake --build --preset web-debug
+      - name: Configure web release
+        run: cmake --preset web-release
+      - name: Build web release
+        run: cmake --build --preset web-release
+      - name: Stage sandbox artifacts
+        run: |
+          set -euo pipefail
+          rm -rf size-inputs
+          mkdir -p size-inputs/sandbox/wasm/debug
+          cp build/web-debug/sandbox/* size-inputs/sandbox/wasm/debug/
+          mkdir -p size-inputs/sandbox/wasm/release
+          cp build/web-release/sandbox/* size-inputs/sandbox/wasm/release/
+      - name: Upload sandbox wasm artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sandbox-wasm
+          path: size-inputs
+          retention-days: 3
+
+  build-windows:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure win debug
+        shell: pwsh
+        run: cmake --preset win-debug
+      - name: Build win debug
+        shell: pwsh
+        run: cmake --build --preset win-debug
+      - name: Configure win release
+        shell: pwsh
+        run: cmake --preset win-release
+      - name: Build win release
+        shell: pwsh
+        run: cmake --build --preset win-release
+      - name: Stage sandbox artifacts
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Remove-Item -Recurse -Force size-inputs -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path size-inputs\sandbox\windows\debug | Out-Null
+          Copy-Item -Path build\win-debug\testbeds\sandbox\* -Destination size-inputs\sandbox\windows\debug -Recurse -Force
+          New-Item -ItemType Directory -Force -Path size-inputs\sandbox\windows\release | Out-Null
+          Copy-Item -Path build\win-release\testbeds\sandbox\* -Destination size-inputs\sandbox\windows\release -Recurse -Force
+      - name: Upload sandbox windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sandbox-windows
+          path: size-inputs
+          retention-days: 3
+
+  update-size-reports:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    needs:
+      - build-wasm
+      - build-windows
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Download wasm artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: sandbox-wasm
+          path: artifact-inputs/wasm
+      - name: Download windows artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: sandbox-windows
+          path: artifact-inputs/windows
+      - name: Arrange artifact directories
+        run: |
+          set -euo pipefail
+          rm -rf build-inputs
+          mkdir -p build-inputs/sandbox/wasm
+          mkdir -p build-inputs/sandbox/windows
+          mv artifact-inputs/wasm/size-inputs/sandbox/wasm/debug build-inputs/sandbox/wasm/
+          mv artifact-inputs/wasm/size-inputs/sandbox/wasm/release build-inputs/sandbox/wasm/
+          mv artifact-inputs/windows/size-inputs/sandbox/windows/debug build-inputs/sandbox/windows/
+          mv artifact-inputs/windows/size-inputs/sandbox/windows/release build-inputs/sandbox/windows/
+      - name: Update size reports
+        run: |
+          set -euo pipefail
+          python3 reports/size/update.py --input build-inputs/sandbox/wasm/debug --output sandbox/wasm/debug
+          python3 reports/size/update.py --input build-inputs/sandbox/wasm/release --output sandbox/wasm/release
+          python3 reports/size/update.py --input build-inputs/sandbox/windows/debug --output sandbox/windows/debug
+          python3 reports/size/update.py --input build-inputs/sandbox/windows/release --output sandbox/windows/release
+      - name: Commit size report updates
+        run: |
+          set -euo pipefail
+          changes=$(git status --short reports/size)
+          if [ -z "$changes" ]; then
+            echo "No size report changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add reports/size
+          git commit -m "chore: update sandbox size reports"
+          git push
