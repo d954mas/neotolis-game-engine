@@ -102,22 +102,29 @@ jobs:
           rm -rf build-inputs
           mkdir -p build-inputs/sandbox/wasm
           mkdir -p build-inputs/sandbox/windows
-          wasm_root=$(find artifact-inputs/wasm -maxdepth 2 -type d -name size-inputs | head -n 1)
-          windows_root=$(find artifact-inputs/windows -maxdepth 2 -type d -name size-inputs | head -n 1)
-          if [ -z "${wasm_root:-}" ]; then
-            echo "Unable to locate wasm size-inputs directory"
+          find_dir() {
+            local search_root=$1
+            local pattern=$2
+            find "$search_root" -type d -path "$pattern" | head -n 1
+          }
+          wasm_debug=$(find_dir artifact-inputs/wasm "*/sandbox/wasm/debug")
+          wasm_release=$(find_dir artifact-inputs/wasm "*/sandbox/wasm/release")
+          windows_debug=$(find_dir artifact-inputs/windows "*/sandbox/windows/debug")
+          windows_release=$(find_dir artifact-inputs/windows "*/sandbox/windows/release")
+          if [ -z "${wasm_debug:-}" ] || [ -z "${wasm_release:-}" ]; then
+            echo "Unable to locate wasm sandbox directories"
             ls -R artifact-inputs/wasm || true
             exit 1
           fi
-          if [ -z "${windows_root:-}" ]; then
-            echo "Unable to locate windows size-inputs directory"
+          if [ -z "${windows_debug:-}" ] || [ -z "${windows_release:-}" ]; then
+            echo "Unable to locate windows sandbox directories"
             ls -R artifact-inputs/windows || true
             exit 1
           fi
-          mv "$wasm_root/sandbox/wasm/debug" build-inputs/sandbox/wasm/
-          mv "$wasm_root/sandbox/wasm/release" build-inputs/sandbox/wasm/
-          mv "$windows_root/sandbox/windows/debug" build-inputs/sandbox/windows/
-          mv "$windows_root/sandbox/windows/release" build-inputs/sandbox/windows/
+          mv "$wasm_debug" build-inputs/sandbox/wasm/
+          mv "$wasm_release" build-inputs/sandbox/wasm/
+          mv "$windows_debug" build-inputs/sandbox/windows/
+          mv "$windows_release" build-inputs/sandbox/windows/
       - name: Update size reports
         run: |
           set -euo pipefail
