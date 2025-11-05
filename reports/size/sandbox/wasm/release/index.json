@@ -1,56 +1,8 @@
 {
-  "generated_at": "2025-11-05T13:54:41.616571+00:00",
+  "generated_at": "2025-11-05T13:55:50.067991+00:00",
   "folder": "sandbox/wasm/release",
   "report_path": "sandbox/wasm/release/report.txt",
   "commits": [
-    {
-      "kind": "head",
-      "id": "head:master:c087e00f33d70068a247b4b3b4a74eb2d0208509",
-      "git_sha": "c087e00f33d70068a247b4b3b4a74eb2d0208509",
-      "git_message": "size report",
-      "branch": "master",
-      "subject": "size report",
-      "date": "2025-11-05T13:54:41.900214+00:00",
-      "label": "HEAD-master-size report-c087e00",
-      "artifacts": [
-        {
-          "file_name": "index.html",
-          "size_bytes": 19546
-        },
-        {
-          "file_name": "nt_sandbox.js",
-          "size_bytes": 9996
-        },
-        {
-          "file_name": "nt_sandbox.wasm",
-          "size_bytes": 1442
-        }
-      ]
-    },
-    {
-      "kind": "branch",
-      "id": "branch:master:27369022d377b6b45dd2fb52073df240e0c722d6",
-      "git_sha": "27369022d377b6b45dd2fb52073df240e0c722d6",
-      "git_message": "chore: update sandbox size reports",
-      "branch": "master",
-      "subject": "chore: update sandbox size reports",
-      "date": "2025-11-05T13:48:19Z",
-      "label": "master-chore: update sandbox size reports-2736902",
-      "artifacts": [
-        {
-          "file_name": "index.html",
-          "size_bytes": 19602
-        },
-        {
-          "file_name": "nt_sandbox.js",
-          "size_bytes": 9115
-        },
-        {
-          "file_name": "nt_sandbox.wasm",
-          "size_bytes": 1647
-        }
-      ]
-    },
     {
       "kind": "branch",
       "id": "branch:003-add-size-reports:3876a4cccdd02a2b4d7a3952de7cc4e37396f960",

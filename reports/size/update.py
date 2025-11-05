@@ -24,6 +24,7 @@ MANIFEST_FILENAME = "index.json"
 PLACEHOLDER_SHA = "UNKNOWN"
 PLACEHOLDER_MESSAGE = "UNKNOWN"
 ARTIFACT_EXCLUDES = {REPORT_FILENAME, MANIFEST_FILENAME, "README.md"}
+IGNORED_COMMIT_PREFIXES: tuple[str, ...] = ("master-chore:",)
 @dataclass
 class GitMetadata:
     sha: str
@@ -53,6 +54,13 @@ class SizeReportError(RuntimeError):
     """Raised when the size-report workflow encounters a blocking issue."""
 
 
+def is_ignored_commit_message(message: str | None) -> bool:
+    if not message:
+        return False
+    normalized = message.strip().lower()
+    return any(normalized.startswith(prefix) for prefix in IGNORED_COMMIT_PREFIXES)
+
+
 def is_hex_sha(candidate: str) -> bool:
     return len(candidate) == 40 and all(ch in "0123456789abcdef" for ch in candidate.lower())
 
@@ -73,6 +81,18 @@ def current_head_metadata(repo_root: Path) -> GitMetadata:
     branch = run_git(["rev-parse", "--abbrev-ref", "HEAD"], repo_root)
     if branch.upper() == "HEAD":
         branch = None
+    if is_ignored_commit_message(subject):
+        try:
+            parent_meta = metadata_for_ref(repo_root, "HEAD^")
+        except SizeReportError:
+            pass
+        else:
+            return GitMetadata(
+                sha=parent_meta.sha,
+                subject=parent_meta.subject,
+                branch=branch,
+                date_iso=parent_meta.date_iso,
+            )
     return GitMetadata(sha=sha, subject=subject, branch=branch, date_iso=commit_date)
 
 
@@ -314,6 +334,8 @@ def update_head_snapshot(input_folder: Path, output_folder: Path, repo_root: Pat
                     entry_subject = meta.subject
             except SizeReportError:
                 entry_date = None
+        if is_ignored_commit_message(entry_subject) or is_ignored_commit_message(entry.message):
+            continue
         branch_entries.append(
             SnapshotEntry(
                 kind="branch",
@@ -446,12 +468,14 @@ def regenerate_manifest(
                 if entry.date_iso is None and meta is not None:
                     entry.date_iso = meta.date_iso
 
-        commits_payload = []
-        for entry in entries:
-            branch_fragment = entry.branch or "NO_BRANCH"
-            commits_payload.append(
-                {
-                    "kind": entry.kind,
+          commits_payload = []
+          for entry in entries:
+              if is_ignored_commit_message(entry.subject) or is_ignored_commit_message(entry.message):
+                  continue
+              branch_fragment = entry.branch or "NO_BRANCH"
+              commits_payload.append(
+                  {
+                      "kind": entry.kind,
                     "id": f"{entry.kind}:{branch_fragment}:{entry.sha or PLACEHOLDER_SHA}",
                     "git_sha": entry.sha or PLACEHOLDER_SHA,
                     "git_message": entry.subject or entry.message or PLACEHOLDER_MESSAGE,
