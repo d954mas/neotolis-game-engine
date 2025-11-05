@@ -428,25 +428,6 @@ def regenerate_manifest(root: Path) -> Dict[str, object]:
                 "folder": str(report_path.parent.relative_to(root)),
                 "report_path": str(report_path.relative_to(root)),
                 "commits": commits_payload,
-                "comparison": {
-                    "base_id": f"{comparison_base.kind}:{comparison_base.sha or PLACEHOLDER_SHA}" if comparison_base else None,
-                    "base_sha": comparison_base.sha if comparison_base else PLACEHOLDER_SHA,
-                    "base_message": comparison_base.message if comparison_base else PLACEHOLDER_MESSAGE,
-                    "base_label": format_entry_label(comparison_base) if comparison_base else "",
-                    "target_id": f"{comparison_target.kind}:{comparison_target.sha or PLACEHOLDER_SHA}" if comparison_target else None,
-                    "target_sha": comparison_target.sha if comparison_target else PLACEHOLDER_SHA,
-                    "target_message": comparison_target.message if comparison_target else PLACEHOLDER_MESSAGE,
-                    "target_label": format_entry_label(comparison_target) if comparison_target else "",
-                    "artifacts": deltas,
-                },
-                "head": {
-                    "git_sha": head_entry.sha if head_entry else PLACEHOLDER_SHA,
-                    "git_message": head_entry.message if head_entry else PLACEHOLDER_MESSAGE,
-                } if head_entry else None,
-                "master": {
-                    "git_sha": master_entry.sha,
-                    "git_message": master_entry.message,
-                } if master_entry else None,
             }
         )
     manifest = {

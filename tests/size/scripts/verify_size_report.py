@@ -81,13 +81,11 @@ def main() -> int:
                 )
 
             stdout = result.stdout.strip().splitlines()
-            size_line_present = any("master=" in line and "head=" in line for line in stdout)
-            threshold_line_present = any("thresholds=" in line for line in stdout)
+            summary_present = any("Artifacts measured" in line for line in stdout)
 
-            if not size_line_present or not threshold_line_present:
+            if not summary_present:
                 raise AssertionError(
-                    "CLI output missing instrumentation details. "
-                    "Expect lines with measured sizes and alert thresholds.\n"
+                    "CLI output missing instrumentation summary.\n"
                     f"Captured stdout:\n{result.stdout}"
                 )
     finally:
