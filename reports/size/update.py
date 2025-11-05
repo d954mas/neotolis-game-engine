@@ -24,9 +24,6 @@ MANIFEST_FILENAME = "index.json"
 PLACEHOLDER_SHA = "UNKNOWN"
 PLACEHOLDER_MESSAGE = "UNKNOWN"
 ARTIFACT_EXCLUDES = {REPORT_FILENAME, MANIFEST_FILENAME, "README.md"}
-LEGACY_HEADER = ["git_ref", "file_name", "size_bytes", "git_sha", "git_message"]
-
-
 @dataclass
 class GitMetadata:
     sha: str
@@ -114,14 +111,10 @@ def read_report_entries(report_path: Path) -> List[SnapshotEntry]:
         header = reader.fieldnames or []
         rows: List[Dict[str, str]] = list(reader)
 
-    if header == validators.HEADER:
-        validators.ensure_rows(rows)
-        return _rows_to_entries(rows)
-    if header == LEGACY_HEADER:
-        return convert_legacy_rows(rows)
-    raise SizeReportError(
-        f"Unexpected report header {header}. Expected {validators.HEADER} or legacy {LEGACY_HEADER}."
-    )
+    if header != validators.HEADER:
+        raise SizeReportError(f"Unexpected report header {header}. Expected {validators.HEADER}.")
+    validators.ensure_rows(rows)
+    return _rows_to_entries(rows)
 
 
 def _rows_to_entries(rows: List[Dict[str, str]]) -> List[SnapshotEntry]:
@@ -221,78 +214,6 @@ def _rows_to_entries(rows: List[Dict[str, str]]) -> List[SnapshotEntry]:
             except ValueError as exc:  # pragma: no cover - validated earlier
                 raise SizeReportError(f"Invalid size '{size_field}' for artifact '{file_name}'") from exc
             current.artifacts.append(Artifact(file_name=file_name, size_bytes=size_value))
-    branch_map: Dict[str, str] = {}
-    for entry in entries:
-        if entry.kind == "branch":
-            branch_name = entry.branch or (entry.message if entry.message != PLACEHOLDER_MESSAGE else None)
-            if branch_name:
-                entry.branch = branch_name
-                branch_map[entry.sha] = branch_name
-
-    for entry in entries:
-        if entry.kind == "head":
-            if entry.branch is None and entry.sha in branch_map:
-                entry.branch = branch_map[entry.sha]
-        elif entry.kind == "history":
-            if entry.subject is None or entry.subject == PLACEHOLDER_MESSAGE:
-                entry.subject = entry.message if entry.message != PLACEHOLDER_MESSAGE else None
-
-    return entries
-
-
-def convert_legacy_rows(rows: List[Dict[str, str]]) -> List[SnapshotEntry]:
-    order: List[str] = []
-    grouped: Dict[str, SnapshotEntry] = {}
-
-    for row in rows:
-        ref = (row.get("git_ref") or "").strip()
-        sha_value = (row.get("git_sha") or "").strip() or PLACEHOLDER_SHA
-        message_value = (row.get("git_message") or "").strip() or PLACEHOLDER_MESSAGE
-        key = ref
-        kind = "history"
-        if ref == "HEAD":
-            kind = "head"
-            key = "HEAD"
-        elif ref == "MASTER":
-            kind = "master"
-            key = "MASTER"
-        else:
-            key = sha_value
-
-        if key not in grouped:
-            grouped[key] = SnapshotEntry(
-                kind=kind,
-                sha=sha_value,
-                message=message_value,
-                artifacts=[],
-            )
-            order.append(key)
-        entry = grouped[key]
-        entry.sha = sha_value
-        entry.message = message_value
-
-        file_name = (row.get("file_name") or "").strip()
-        size_field = (row.get("size_bytes") or "").strip()
-        if file_name:
-            size_value = int(size_field) if size_field.isdigit() else 0
-            entry.artifacts.append(Artifact(file_name=file_name, size_bytes=size_value))
-
-    for entry in grouped.values():
-        entry.artifacts = sorted(entry.artifacts, key=lambda item: item.file_name)
-
-    # Ensure master entry exists even if absent in legacy data
-    if "MASTER" not in grouped:
-        order.insert(0, "MASTER")
-        grouped["MASTER"] = SnapshotEntry(
-            kind="master",
-            sha=PLACEHOLDER_SHA,
-            message=PLACEHOLDER_MESSAGE,
-            artifacts=[],
-        )
-
-    entries: List[SnapshotEntry] = []
-    for key in order:
-        entries.append(grouped[key])
     return entries
 
 
@@ -303,29 +224,17 @@ def format_entry_label(entry: SnapshotEntry) -> str:
     subject = entry.subject or entry.message or PLACEHOLDER_MESSAGE
 
     if entry.kind == "head":
-        parts = ["HEAD"]
-        if branch:
-            parts.append(branch)
-        parts.append(subject or PLACEHOLDER_MESSAGE)
-        parts.append(display_sha)
+        label_branch = branch or entry.message or PLACEHOLDER_MESSAGE
+        parts = ["HEAD", label_branch, subject or PLACEHOLDER_MESSAGE, display_sha]
         return "-".join(parts)
     if entry.kind == "branch":
-        parts = []
-        if branch:
-            parts.append(branch)
-        parts.append(subject or PLACEHOLDER_MESSAGE)
-        parts.append(display_sha)
-        return "-".join([part for part in parts if part])
+        parts = [branch or PLACEHOLDER_MESSAGE, subject or PLACEHOLDER_MESSAGE, display_sha]
+        return "-".join(parts)
     if entry.kind == "master":
         parts = ["MASTER", subject or PLACEHOLDER_MESSAGE, display_sha]
         return "-".join(parts)
-
-    parts = []
-    if branch:
-        parts.append(branch)
-    parts.append(subject or PLACEHOLDER_MESSAGE)
-    parts.append(display_sha)
-    return "-".join([part for part in parts if part])
+    parts = [subject or PLACEHOLDER_MESSAGE, display_sha]
+    return "-".join(parts)
 
 
 def write_report_entries(report_path: Path, entries: List[SnapshotEntry]) -> None:
@@ -379,7 +288,6 @@ def update_head_snapshot(
         existing_entries = []
     master_entry: SnapshotEntry | None = None
     history_entries: List[SnapshotEntry] = []
-    previous_head: SnapshotEntry | None = None
 
     for entry in existing_entries:
         if entry.kind == "master":
@@ -406,12 +314,10 @@ def update_head_snapshot(
                     )
                 )
         elif entry.kind == "head":
-            previous_head = entry
-        else:
-            history_entries.append(entry)
+            continue
 
     # drop legacy branch placeholders from history
-    history_entries = [entry for entry in history_entries if entry.kind != "branch"]
+    history_entries = []
 
     head_meta = current_head_metadata(repo_root)
     branch_name = head_meta.branch
@@ -456,60 +362,12 @@ def update_head_snapshot(
         if master_map == head_map:
             master_entry = None
 
-    if previous_head and previous_head.sha not in (PLACEHOLDER_SHA, head_entry.sha):
-        history_entries = [entry for entry in history_entries if entry.sha != previous_head.sha]
-        previous_subject = previous_head.subject or metadata_for_ref(repo_root, previous_head.sha).subject
-        history_entries.insert(
-            0,
-            SnapshotEntry(
-                kind="history",
-                sha=previous_head.sha,
-                message=previous_subject or previous_head.message,
-                artifacts=[
-                    Artifact(file_name=a.file_name, size_bytes=a.size_bytes) for a in previous_head.artifacts
-                ],
-                branch=previous_head.branch,
-                subject=previous_subject,
-            ),
-        )
-
-    history_entries = [entry for entry in history_entries if entry.sha not in (None, "", head_entry.sha)]
-
-    deduped_history: List[SnapshotEntry] = []
-    subject_cache: Dict[str, str] = {}
-    seen_history: set[str] = set()
-    for entry in history_entries:
-        sha = entry.sha or PLACEHOLDER_SHA
-        if sha in seen_history:
-            continue
-        seen_history.add(sha)
-        resolved_subject = entry.subject
-        if not resolved_subject and is_hex_sha(sha):
-            if sha not in subject_cache:
-                try:
-                    subject_cache[sha] = metadata_for_ref(repo_root, sha).subject
-                except SizeReportError:
-                    subject_cache[sha] = entry.message or PLACEHOLDER_MESSAGE
-            resolved_subject = subject_cache.get(sha, entry.message)
-        deduped_history.append(
-            SnapshotEntry(
-                kind="history",
-                sha=sha,
-                message=entry.message,
-                artifacts=[Artifact(file_name=a.file_name, size_bytes=a.size_bytes) for a in entry.artifacts],
-                branch=entry.branch,
-                subject=resolved_subject,
-            )
-        )
-    history_entries = deduped_history
-
     entries_to_write: List[SnapshotEntry] = []
     if master_entry is not None:
         entries_to_write.append(master_entry)
     entries_to_write.append(head_entry)
     if branch_entry is not None:
         entries_to_write.append(branch_entry)
-    entries_to_write.extend(history_entries)
     write_report_entries(report_path, entries_to_write)
     return head_meta
 

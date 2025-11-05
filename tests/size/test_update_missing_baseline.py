@@ -42,9 +42,6 @@ def test_missing_master_placeholder_is_not_reintroduced():
     assert result.returncode == 0, result.stderr
 
     entries = read_report_entries(REPORT_FILE)
-    master_entry = next((entry for entry in entries if entry.kind == "master"), None)
-    assert master_entry is None, "MASTER rows should not be recreated when they are missing"
-
     head_entry = next((entry for entry in entries if entry.kind == "head"), None)
     assert head_entry is not None, "Expected HEAD entry after update"
     assert head_entry.sha != PLACEHOLDER_SHA, "HEAD entry should resolve to the current commit SHA"

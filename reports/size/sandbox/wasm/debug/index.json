@@ -1,16 +1,16 @@
 {
-  "generated_at": "2025-11-05T11:25:49.010469+00:00",
+  "generated_at": "2025-11-05T11:39:54.960473+00:00",
   "folder": "sandbox/wasm/debug",
   "report_path": "sandbox/wasm/debug/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:f139c58cb34afc948264d19db5fa7610c56ba16b",
-      "git_sha": "f139c58cb34afc948264d19db5fa7610c56ba16b",
-      "git_message": "fixed message",
+      "id": "head:81a519de6e1fc896983565a597e81d16af638953",
+      "git_sha": "81a519de6e1fc896983565a597e81d16af638953",
+      "git_message": "fixed build report",
       "branch": "003-add-size-reports",
-      "subject": "fixed message",
-      "label": "HEAD-003-add-size-reports-fixed message-f139c58",
+      "subject": "fixed build report",
+      "label": "HEAD-003-add-size-reports-fixed build report-81a519d",
       "artifacts": [
         {
           "file_name": "index.html",

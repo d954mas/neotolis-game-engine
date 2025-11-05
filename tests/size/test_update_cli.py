@@ -92,11 +92,10 @@ def test_head_snapshot_updates_report_and_manifest(tmp_path):
     assert len(head_commit.get("artifacts", [])) == len(ARTIFACTS)
 
     branch_commit = next((item for item in commits if item.get("kind") == "branch"), None)
-    if branch_commit is not None:
+    if expected_branch:
+        assert branch_commit is not None, "Branch commit should exist when on a named branch"
         assert branch_commit["branch"] == expected_branch
         assert branch_commit["subject"] == commit_message
         assert branch_commit["git_message"] == commit_message
-
-    history_commits = [item for item in commits if item.get("kind") == "history"]
-    for entry in history_commits:
-        assert "git_sha" in entry
+    else:
+        assert branch_commit is None
