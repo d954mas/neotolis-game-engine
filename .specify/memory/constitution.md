@@ -1,15 +1,14 @@
 <!--
 Sync Impact Report
-Version change: 0.0.0 → 1.0.0
+Version change: 2.0.0 → 3.0.0
 Modified principles:
-- PRINCIPLE_1_NAME → I. Binary Budget Supremacy
-- PRINCIPLE_2_NAME → II. Deterministic Memory Discipline
-- PRINCIPLE_3_NAME → III. Performance-Oriented Portability
-- PRINCIPLE_4_NAME → IV. Spec-Led Delivery
-- PRINCIPLE_5_NAME → V. Embedded Feature Isolation
+- I. Simple Surface, Obvious Naming → I. Binary Budget Supremacy
+- II. Straight-Line Implementation → II. Deterministic Memory Discipline
+- III. First-Run Build Simplicity → III. Performance-Oriented Portability
+- IV. Example-Driven Proof → IV. Spec-Led Delivery
+- V. Lightweight Resource Discipline → V. Embedded Feature Isolation
 Added sections:
-- Platform & Build Constraints
-- Quality Gates & Runtime Guardrails
+- None
 Removed sections:
 - None
 Templates requiring updates:
@@ -83,4 +82,4 @@ Maintaining embedded, isolated features preserves portability and minimal footpr
 - Compliance reviews: each PR links CI artifacts for size, memory, and performance; releases are blocked until constitutional gates pass or receive documented waivers.
 - Steering cadence: conduct constitution reviews at least quarterly and ahead of any platform expansion to validate budgets and governance health.
 
-**Version**: 1.0.0 | **Ratified**: 2025-10-22 | **Last Amended**: 2025-10-22
+**Version**: 3.0.0 | **Ratified**: 2025-10-22 | **Last Amended**: 2025-11-05

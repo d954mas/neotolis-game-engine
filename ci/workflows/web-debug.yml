@@ -28,16 +28,16 @@ jobs:
         run: cmake --build --preset ${{ matrix.preset }}
       - name: Test
         run: ctest --preset ${{ matrix.preset }}
-  - name: Check size regression threshold
-    run: |
-      python3 - <<'PY'
-      print('Size regression check placeholder (<2%)')
-      PY
-  - name: Upload size and microbench artifacts
-    if: always()
-    uses: actions/upload-artifact@v4
-    with:
-      name: ${{ matrix.preset }}-reports
-      path: |
-        build/${{ matrix.preset }}/tests/size
-        build/${{ matrix.preset }}/tests/microbench
+      - name: Check size regression threshold
+        run: |
+          python3 - <<'PY'
+          print('Size regression check placeholder (<2%)')
+          PY
+      - name: Upload size and microbench artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.preset }}-reports
+          path: |
+            build/${{ matrix.preset }}/tests/size
+            build/${{ matrix.preset }}/tests/microbench
