@@ -87,6 +87,25 @@ def discover_artifacts(folder: Path) -> List[Path]:
     return sorted(artifacts, key=lambda p: p.name)
 
 
+def worktree_has_changes_outside_reports(repo_root: Path) -> bool:
+    status_output = run_git(["status", "--porcelain"], repo_root)
+    for raw_line in status_output.splitlines():
+        line = raw_line.strip()
+        if not line:
+            continue
+        path_fragment = line[3:] if len(line) > 3 else ""
+        path_fragment = path_fragment.strip()
+        if " -> " in path_fragment:
+            path_fragment = path_fragment.split(" -> ", 1)[1].strip()
+        if path_fragment.startswith('"') and path_fragment.endswith('"'):
+            path_fragment = path_fragment[1:-1]
+        if not path_fragment:
+            continue
+        if not path_fragment.startswith("reports/"):
+            return True
+    return False
+
+
 def read_report_entries(report_path: Path) -> List[SnapshotEntry]:
     if not report_path.exists():
         return []
@@ -205,19 +224,15 @@ def _rows_to_entries(rows: List[Dict[str, str]]) -> List[SnapshotEntry]:
     branch_map: Dict[str, str] = {}
     for entry in entries:
         if entry.kind == "branch":
-            branch_name = entry.message if entry.message != PLACEHOLDER_MESSAGE else entry.branch
+            branch_name = entry.branch or (entry.message if entry.message != PLACEHOLDER_MESSAGE else None)
             if branch_name:
                 entry.branch = branch_name
                 branch_map[entry.sha] = branch_name
-            if entry.subject is None or entry.subject == PLACEHOLDER_MESSAGE:
-                entry.subject = entry.message if entry.message != PLACEHOLDER_MESSAGE else None
 
     for entry in entries:
         if entry.kind == "head":
             if entry.branch is None and entry.sha in branch_map:
                 entry.branch = branch_map[entry.sha]
-            if entry.subject is None or entry.subject == PLACEHOLDER_MESSAGE:
-                entry.subject = entry.message if entry.message != PLACEHOLDER_MESSAGE else None
         elif entry.kind == "history":
             if entry.subject is None or entry.subject == PLACEHOLDER_MESSAGE:
                 entry.subject = entry.message if entry.message != PLACEHOLDER_MESSAGE else None
@@ -321,14 +336,16 @@ def write_report_entries(report_path: Path, entries: List[SnapshotEntry]) -> Non
             if entry.sha in (None, "", PLACEHOLDER_SHA) and not entry.artifacts:
                 # Skip placeholder rows that carry no useful data.
                 continue
+            if entry.kind == "head":
+                metadata_message = entry.branch or PLACEHOLDER_MESSAGE
+            elif entry.kind == "branch":
+                metadata_message = entry.branch or entry.message or PLACEHOLDER_MESSAGE
+            else:
+                metadata_message = entry.subject or entry.message or PLACEHOLDER_MESSAGE
             writer.writerow(
                 {
                     "git_sha": entry.sha or PLACEHOLDER_SHA,
-                    "git_message": (
-                        entry.message
-                        if entry.kind in {"head", "branch"} and entry.message
-                        else (entry.subject or entry.message or PLACEHOLDER_MESSAGE)
-                    ),
+                    "git_message": metadata_message,
                     "file_name": entry.kind.upper(),
                     "size_bytes": "",
                 }
@@ -413,11 +430,11 @@ def update_head_snapshot(
     )
 
     branch_entry: SnapshotEntry | None = None
-    if branch_name:
+    if branch_name and not worktree_has_changes_outside_reports(repo_root):
         branch_entry = SnapshotEntry(
             kind="branch",
             sha=head_meta.sha,
-            message=branch_name,
+            message=head_meta.subject,
             artifacts=[Artifact(file_name=a.file_name, size_bytes=a.size_bytes) for a in head_artifacts],
             branch=branch_name,
             subject=head_meta.subject,

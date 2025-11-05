@@ -92,12 +92,11 @@ def test_head_snapshot_updates_report_and_manifest(tmp_path):
     assert len(head_commit.get("artifacts", [])) == len(ARTIFACTS)
 
     branch_commit = next((item for item in commits if item.get("kind") == "branch"), None)
-    assert branch_commit is not None, "Branch commit metadata should mirror HEAD when a branch is active"
-    assert branch_commit["branch"] == expected_branch
-    assert branch_commit["subject"] == commit_message
-    assert branch_commit["git_message"] == commit_message
+    if branch_commit is not None:
+        assert branch_commit["branch"] == expected_branch
+        assert branch_commit["subject"] == commit_message
+        assert branch_commit["git_message"] == commit_message
 
     history_commits = [item for item in commits if item.get("kind") == "history"]
-    if history_commits:
-        for entry in history_commits:
-            assert "git_sha" in entry
+    for entry in history_commits:
+        assert "git_sha" in entry

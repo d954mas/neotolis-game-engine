@@ -1,7 +1,7 @@
 {
   "generated_at": "2025-11-05T11:25:49.010469+00:00",
-  "folder": "sandbox/wasm/release",
-  "report_path": "sandbox/wasm/release/report.txt",
+  "folder": "sandbox/windows/debug",
+  "report_path": "sandbox/windows/debug/report.txt",
   "commits": [
     {
       "kind": "head",
@@ -13,16 +13,8 @@
       "label": "HEAD-003-add-size-reports-fixed message-f139c58",
       "artifacts": [
         {
-          "file_name": "index.html",
-          "size_bytes": 19602
-        },
-        {
-          "file_name": "nt_sandbox.js",
-          "size_bytes": 9115
-        },
-        {
-          "file_name": "nt_sandbox.wasm",
-          "size_bytes": 1647
+          "file_name": "engine.exe",
+          "size_bytes": 19968
         }
       ]
     }

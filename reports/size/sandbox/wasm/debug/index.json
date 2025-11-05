@@ -1,7 +1,7 @@
 {
   "generated_at": "2025-11-05T11:25:49.010469+00:00",
-  "folder": "sandbox/wasm/release",
-  "report_path": "sandbox/wasm/release/report.txt",
+  "folder": "sandbox/wasm/debug",
+  "report_path": "sandbox/wasm/debug/report.txt",
   "commits": [
     {
       "kind": "head",
@@ -14,15 +14,19 @@
       "artifacts": [
         {
           "file_name": "index.html",
-          "size_bytes": 19602
+          "size_bytes": 22190
         },
         {
           "file_name": "nt_sandbox.js",
-          "size_bytes": 9115
+          "size_bytes": 65533
         },
         {
           "file_name": "nt_sandbox.wasm",
-          "size_bytes": 1647
+          "size_bytes": 1200419
+        },
+        {
+          "file_name": "nt_sandbox.wasm.map",
+          "size_bytes": 90100
         }
       ]
     }
