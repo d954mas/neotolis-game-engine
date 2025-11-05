@@ -1,16 +1,16 @@
 {
-  "generated_at": "2025-11-05T11:57:49.452165+00:00",
+  "generated_at": "2025-11-05T12:18:03.085896+00:00",
   "folder": "sandbox/windows/debug",
   "report_path": "sandbox/windows/debug/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:24e25478ff34de03c5f364d84be0d76c32893b18",
-      "git_sha": "24e25478ff34de03c5f364d84be0d76c32893b18",
-      "git_message": "fixed report",
+      "id": "head:770eff9c36a449f5bda8cae1f374f445cc46d5f8",
+      "git_sha": "770eff9c36a449f5bda8cae1f374f445cc46d5f8",
+      "git_message": "fixed reports",
       "branch": "003-add-size-reports",
-      "subject": "fixed report",
-      "label": "HEAD-003-add-size-reports-fixed report-24e2547",
+      "subject": "fixed reports",
+      "label": "HEAD-003-add-size-reports-fixed reports-770eff9",
       "artifacts": [
         {
           "file_name": "engine.exe",
@@ -20,12 +20,12 @@
     },
     {
       "kind": "branch",
-      "id": "branch:24e25478ff34de03c5f364d84be0d76c32893b18",
-      "git_sha": "24e25478ff34de03c5f364d84be0d76c32893b18",
-      "git_message": "fixed report",
+      "id": "branch:770eff9c36a449f5bda8cae1f374f445cc46d5f8",
+      "git_sha": "770eff9c36a449f5bda8cae1f374f445cc46d5f8",
+      "git_message": "fixed reports",
       "branch": "003-add-size-reports",
-      "subject": "fixed report",
-      "label": "003-add-size-reports-fixed report-24e2547",
+      "subject": "fixed reports",
+      "label": "003-add-size-reports-fixed reports-770eff9",
       "artifacts": [
         {
           "file_name": "engine.exe",

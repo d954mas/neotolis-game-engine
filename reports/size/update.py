@@ -51,6 +51,18 @@ class SizeReportError(RuntimeError):
     """Raised when the size-report workflow encounters a blocking issue."""
 
 
+def clone_entry(entry: SnapshotEntry, *, kind: str | None = None) -> SnapshotEntry:
+    """Return a deep copy of a snapshot entry, optionally overriding the kind."""
+    return SnapshotEntry(
+        kind=kind or entry.kind,
+        sha=entry.sha,
+        message=entry.message,
+        artifacts=[Artifact(file_name=a.file_name, size_bytes=a.size_bytes) for a in entry.artifacts],
+        branch=entry.branch,
+        subject=entry.subject,
+    )
+
+
 def is_hex_sha(candidate: str) -> bool:
     return len(candidate) == 40 and all(ch in "0123456789abcdef" for ch in candidate.lower())
 
@@ -292,33 +304,19 @@ def update_head_snapshot(
 
     for entry in existing_entries:
         if entry.kind == "master":
-            if accept_master:
-                if entry.sha == PLACEHOLDER_SHA and not entry.artifacts:
-                    continue
-                master_entry = SnapshotEntry(
-                    kind="master",
-                    sha=entry.sha,
-                    message=entry.message,
-                    artifacts=[Artifact(file_name=a.file_name, size_bytes=a.size_bytes) for a in entry.artifacts],
-                    branch=entry.branch,
-                    subject=entry.subject,
-                )
-            elif entry.sha not in (None, "", PLACEHOLDER_SHA):
-                history_entries.append(
-                    SnapshotEntry(
-                        kind="history",
-                        sha=entry.sha,
-                        message=entry.message,
-                        artifacts=[Artifact(file_name=a.file_name, size_bytes=a.size_bytes) for a in entry.artifacts],
-                        branch=entry.branch,
-                        subject=entry.subject,
-                    )
-                )
+            entry_copy = clone_entry(entry, kind="master")
+            if master_entry is None and entry.sha not in (None, "", PLACEHOLDER_SHA):
+                master_entry = entry_copy
+            else:
+                history_entries.append(clone_entry(entry, kind="history"))
+        elif entry.kind == "branch":
+            history_entries.append(clone_entry(entry, kind="history"))
+        elif entry.kind == "history":
+            history_entries.append(clone_entry(entry))
         elif entry.kind == "head":
             continue
-
-    # drop legacy branch placeholders from history
-    history_entries = []
+        else:
+            history_entries.append(clone_entry(entry, kind="history"))
 
     head_meta = current_head_metadata(repo_root)
     branch_name = head_meta.branch
@@ -347,6 +345,7 @@ def update_head_snapshot(
             subject=head_meta.subject,
         )
 
+    previous_master_entry = master_entry
     if accept_master:
         master_meta = metadata_for_ref(repo_root, accept_master)
         master_entry = SnapshotEntry(
@@ -356,6 +355,9 @@ def update_head_snapshot(
             artifacts=[Artifact(file_name=a.file_name, size_bytes=a.size_bytes) for a in head_artifacts],
             subject=master_meta.subject,
         )
+    if previous_master_entry is not None and previous_master_entry is not master_entry:
+        if previous_master_entry.sha not in (None, "", PLACEHOLDER_SHA) or previous_master_entry.artifacts:
+            history_entries.insert(0, clone_entry(previous_master_entry, kind="history"))
 
     if master_entry is not None and master_entry.sha == head_entry.sha:
         master_map = {artifact.file_name: artifact.size_bytes for artifact in master_entry.artifacts}
@@ -369,6 +371,17 @@ def update_head_snapshot(
     entries_to_write.append(head_entry)
     if branch_entry is not None:
         entries_to_write.append(branch_entry)
+    deduped_history: List[SnapshotEntry] = []
+    seen_history_keys: set[tuple[str, str, str | None]] = set()
+    for history_entry in history_entries:
+        if history_entry.sha in (None, "", PLACEHOLDER_SHA) and not history_entry.artifacts:
+            continue
+        key = (history_entry.kind, history_entry.sha, history_entry.branch)
+        if key in seen_history_keys:
+            continue
+        seen_history_keys.add(key)
+        deduped_history.append(history_entry)
+    entries_to_write.extend(deduped_history)
     write_report_entries(report_path, entries_to_write)
     return head_meta
 
@@ -407,9 +420,14 @@ def compute_deltas(master_artifacts: Sequence[Artifact], head_artifacts: Sequenc
     return deltas
 
 
-def regenerate_manifest(root: Path, repo_root: Path) -> Dict[str, object]:
+def regenerate_manifest(
+    root: Path, repo_root: Path, updated_folder: Path | None = None
+) -> Dict[str, object]:
     generated_at = datetime.now(timezone.utc).isoformat()
     summary_entries: List[Dict[str, object]] = []
+    updated_relative: Path | None = None
+    if updated_folder is not None:
+        updated_relative = Path(updated_folder)
 
     for report_path in sorted(root.glob("**/report.txt")):
         entries = read_report_entries(report_path)
@@ -455,13 +473,26 @@ def regenerate_manifest(root: Path, repo_root: Path) -> Dict[str, object]:
             )
 
         folder_relative = report_path.parent.relative_to(root)
+        folder_index_path = report_path.parent / "index.json"
+        existing_generated_at: str | None = None
+        if folder_index_path.exists():
+            try:
+                with folder_index_path.open(encoding="utf-8") as existing_fp:
+                    existing_index = json.load(existing_fp)
+                existing_generated_at = str(existing_index.get("generated_at") or "")
+                if not existing_generated_at:
+                    existing_generated_at = None
+            except (json.JSONDecodeError, OSError, TypeError):
+                existing_generated_at = None
+
+        folder_is_updated = updated_relative is None or folder_relative == updated_relative
+        folder_generated_at = generated_at if folder_is_updated else (existing_generated_at or generated_at)
         folder_index = {
-            "generated_at": generated_at,
+            "generated_at": folder_generated_at,
             "folder": folder_relative.as_posix(),
             "report_path": report_path.relative_to(root).as_posix(),
             "commits": commits_payload,
         }
-        folder_index_path = report_path.parent / "index.json"
         with folder_index_path.open("w", encoding="utf-8") as folder_fp:
             json.dump(folder_index, folder_fp, indent=2)
 
@@ -629,7 +660,7 @@ def main(argv: List[str] | None = None) -> int:
             repo_root,
             accept_master=args.accept_master,
         )
-        manifest = regenerate_manifest(root, repo_root)
+        manifest = regenerate_manifest(root, repo_root, output_label)
         print(
             f"Updated HEAD snapshot for {output_label}: {head_meta.sha} — {head_meta.subject}",
             file=sys.stdout,
