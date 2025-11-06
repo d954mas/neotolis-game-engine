@@ -60,15 +60,16 @@ The dashboard consumes the existing manifest at `reports/size/index.json`, which
 ### HistorySeries
 - **Description**: Maintains active window state for rendering.
 - **Fields**:
-  - `samples` (`HistorySample[]`) — Max 180 entries (newest first).
+  - `samples` (`HistorySample[]`) — Visible entries after window slicing (newest first).
+  - `allSamples` (`HistorySample[]`) — Full history (capped at 180 commits).
   - `windowMode` (`'30' | '90' | '180'`) — Active window length.
   - `minSizeBytes` / `maxSizeBytes` (`number`) — Computed bounds; if `samples` < 1, both set to 0.
-  - `trendline` (`number[]`) — Simple moving average (window=3) derived from `samples`.
   - `gaps` (`number`) — Count of missing sample positions caused by dataset omissions.
+  - `truncated` (`boolean`) — Indicates whether the history was capped at 180 commits.
 - **State Transitions**:
   1. **Init** → Build empty series with default window `'90'`.
   2. **Hydrate** → Parse folder commits into `HistorySample[]`, sorted ascending by `committedAtEpochMs`.
-  3. **Window Apply** → Slice to requested window, recompute aggregates + trendline.
+  3. **Window Apply** → Slice to requested window and recompute aggregates.
   4. **Render** → Chart reads immutable snapshot for drawing.
 
 ### HistoryPrefs
@@ -82,11 +83,10 @@ The dashboard consumes the existing manifest at `reports/size/index.json`, which
 - Manifest and folder indexes must be fetched relative to `report.html`; cross-origin requests are disallowed.
 - Folder commit lists must be normalized to chronological order before charting; out-of-order entries trigger a console warning and are sorted client-side.
 - History window selection persists per session; invalid stored values are ignored with a console warning.
-- When fewer than 5 samples available, chart container persists but displays "More history needed" banner and suppresses trendline line stroke.
+- When fewer than 5 samples available, chart container persists but displays "More history needed" messaging while still plotting available points.
 - Tooltip formatter converts bytes to KB with one decimal place and includes commit label + localized timestamp.
 
 ## Derived Data
 - `totalSizeBytes` calculated as the sum of all artifact `size_bytes` per commit; commits missing artifacts count as 0 and increment `missingCommits`.
 - Axis tick spacing computed with `(maxSizeBytes - minSizeBytes)` rounded to the nearest 10 KB to reduce label jitter.
-- Trendline smoothing uses a simple moving average with window size 3; endpoints reuse nearest valid average to maintain array length.
 - Gap markers inserted when dataset indicates missing commits between samples (difference in dates > 24h when commit count suggests more history).

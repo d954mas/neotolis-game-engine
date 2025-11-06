@@ -90,6 +90,7 @@
             role="img"
             aria-label="Line chart showing total artifact size per commit"
         ></canvas>
+        <div id="history-tooltip" class="history-tooltip" aria-live="polite"></div>
         <p id="history-empty-state" class="empty-state" hidden>History data not available for this folder.</p>
     </section>
 
@@ -98,7 +99,7 @@
     </footer>
 
     <script src="lib/chart.min.js"></script>
-    <script src="dashboard.js" type="module"></script>
-    <script src="history-chart.js" type="module"></script>
+    <script src="history-chart.js"></script>
+    <script src="dashboard.js"></script>
 </body>
 </html>

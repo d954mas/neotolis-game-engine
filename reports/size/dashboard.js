@@ -1,10 +1,4 @@
-import {
-    hydrateHistorySeries,
-    renderHistoryChart,
-    attachHistoryControls,
-    __historyChartScaffold,
-} from './history-chart.js';
-
+(() => {
 const SUMMARY_URL = 'index.json';
 const TABLE_BODY = document.querySelector('#artifact-table tbody');
 const EMPTY_STATE = document.getElementById('empty-state');
@@ -26,6 +20,16 @@ const HISTORY_SECTION = document.getElementById('history-section');
 const HISTORY_CANVAS = document.getElementById('history-chart');
 const HISTORY_CONTROLS = document.getElementById('history-controls');
 const HISTORY_EMPTY_STATE = document.getElementById('history-empty-state');
+const HISTORY_TOOLTIP = document.getElementById('history-tooltip');
+
+let historyChartAPI = window.historyChart || {};
+let {
+    hydrateHistorySeries,
+    renderHistoryChart,
+    attachHistoryControls,
+    updateHistoryTooltip,
+    __historyChartScaffold,
+} = historyChartAPI;
 
 const state = {
     summary: null,
@@ -46,6 +50,9 @@ function highlightHistoryPoint(index) {
         return;
     }
     const chart = state.historyChart;
+    if (typeof chart.getDatasetMeta !== 'function' || typeof chart.setActiveElements !== 'function') {
+        return;
+    }
     const datasetIndex = 0;
     const meta = chart.getDatasetMeta(datasetIndex);
     const element = meta?.data?.[index];
@@ -53,31 +60,42 @@ function highlightHistoryPoint(index) {
         return;
     }
     chart.setActiveElements([{ datasetIndex, index }]);
-    chart.tooltip.setActiveElements([{ datasetIndex, index }], {
-        x: element.x,
-        y: element.y,
-    });
     chart.update();
     state.historyActiveIndex = index;
+    updateHistoryTooltip(state.historySeries, HISTORY_TOOLTIP, index);
 }
 
 function clearHistoryPoint() {
     if (!state.historyChart) {
         return;
     }
-    state.historyChart.setActiveElements([]);
-    state.historyChart.tooltip.setActiveElements([], { x: 0, y: 0 });
+    if (typeof state.historyChart.setActiveElements === 'function') {
+        state.historyChart.setActiveElements([]);
+    }
     state.historyChart.update();
     state.historyActiveIndex = null;
+    updateHistoryTooltip(
+        state.historySeries,
+        HISTORY_TOOLTIP,
+        state.historySeries.samples.length - 1,
+    );
 }
 
 function renderHistoryView() {
     if (!HISTORY_CANVAS || !HISTORY_CONTROLS) {
         return;
     }
+    if (
+        typeof hydrateHistorySeries !== 'function' ||
+        typeof renderHistoryChart !== 'function'
+    ) {
+        console.error('history-chart: required APIs not available');
+        return;
+    }
 
     const chart = renderHistoryChart(state.historySeries, HISTORY_CANVAS, {
         emptyStateElement: HISTORY_EMPTY_STATE,
+        tooltipElement: HISTORY_TOOLTIP,
     });
     state.historyChart = chart;
     state.historyActiveIndex = null;
@@ -93,6 +111,11 @@ function renderHistoryView() {
             renderHistoryView();
         },
     });
+    updateHistoryTooltip(
+        state.historySeries,
+        HISTORY_TOOLTIP,
+        state.historySeries.samples.length - 1,
+    );
 }
 
 function formatNumber(value) {
@@ -457,6 +480,9 @@ async function selectFolder(index) {
 
 async function bootstrap() {
     try {
+        if (!hydrateHistorySeries) {
+            throw new Error('History chart module failed to load');
+        }
         const summary = await fetchSummary();
         if (!summary.folders || summary.folders.length === 0) {
             throw new Error('No folders available in manifest');
@@ -493,3 +519,5 @@ COMMIT_TARGET_SELECT.addEventListener('change', (event) => {
 window.addEventListener('DOMContentLoaded', () => {
     bootstrap().catch((error) => console.error(error));
 });
+
+})();
