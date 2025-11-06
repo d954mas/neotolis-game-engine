@@ -1,3 +1,4 @@
+(() => {
 const SUMMARY_URL = 'index.json';
 const TABLE_BODY = document.querySelector('#artifact-table tbody');
 const EMPTY_STATE = document.getElementById('empty-state');
@@ -15,6 +16,20 @@ const ALERT_COUNT = document.getElementById('alert-count');
 const BASE_HEADER = document.getElementById('commit-base-column');
 const TARGET_HEADER = document.getElementById('commit-target-column');
 const CHART_CANVAS = document.getElementById('size-chart');
+const HISTORY_SECTION = document.getElementById('history-section');
+const HISTORY_CANVAS = document.getElementById('history-chart');
+const HISTORY_CONTROLS = document.getElementById('history-controls');
+const HISTORY_EMPTY_STATE = document.getElementById('history-empty-state');
+const HISTORY_TOOLTIP = document.getElementById('history-tooltip');
+
+let historyChartAPI = window.historyChart || {};
+let {
+    hydrateHistorySeries,
+    renderHistoryChart,
+    attachHistoryControls,
+    updateHistoryTooltip,
+    __historyChartScaffold,
+} = historyChartAPI;
 
 const state = {
     summary: null,
@@ -24,7 +39,76 @@ const state = {
     selectedBaseId: null,
     selectedTargetId: null,
     chart: null,
+    historySeries: __historyChartScaffold.createEmptySeries(),
+    historyChart: null,
+    historyControlsAttached: false,
+    historyActiveIndex: null,
 };
+
+function highlightHistoryPoint(index) {
+    if (!state.historyChart) {
+        return;
+    }
+    const chart = state.historyChart;
+    if (typeof chart.getDatasetMeta !== 'function' || typeof chart.setActiveElements !== 'function') {
+        return;
+    }
+    const datasetIndex = 0;
+    const meta = chart.getDatasetMeta(datasetIndex);
+    const element = meta?.data?.[index];
+    if (!element) {
+        return;
+    }
+    chart.setActiveElements([{ datasetIndex, index }]);
+    chart.update();
+    state.historyActiveIndex = index;
+    updateHistoryTooltip(state.historySeries, HISTORY_TOOLTIP, index);
+}
+
+function clearHistoryPoint() {
+    // No-op: keep the last selected history sample active unless a new selection is made.
+}
+
+function renderHistoryView() {
+    if (!HISTORY_CANVAS || !HISTORY_CONTROLS) {
+        return;
+    }
+    if (
+        typeof hydrateHistorySeries !== 'function' ||
+        typeof renderHistoryChart !== 'function'
+    ) {
+        console.error('history-chart: required APIs not available');
+        return;
+    }
+
+    const chart = renderHistoryChart(state.historySeries, HISTORY_CANVAS, {
+        emptyStateElement: HISTORY_EMPTY_STATE,
+        tooltipElement: HISTORY_TOOLTIP,
+    });
+    state.historyChart = chart;
+    state.historyActiveIndex = null;
+
+    const controlsApi = attachHistoryControls(state.historySeries, HISTORY_CONTROLS, {
+        onSampleFocus: (index) => {
+            highlightHistoryPoint(index);
+        },
+        onSampleBlur: () => {
+            clearHistoryPoint();
+        },
+        onWindowChange: () => {
+            renderHistoryView();
+        },
+    });
+    const lastIndex = state.historySeries.samples.length - 1;
+    if (controlsApi && typeof controlsApi.focus === 'function' && lastIndex >= 0) {
+        controlsApi.focus(lastIndex);
+    } else if (lastIndex >= 0) {
+        highlightHistoryPoint(lastIndex);
+        updateHistoryTooltip(state.historySeries, HISTORY_TOOLTIP, lastIndex);
+    } else {
+        updateHistoryTooltip(state.historySeries, HISTORY_TOOLTIP, -1);
+    }
+}
 
 function formatNumber(value) {
     return new Intl.NumberFormat('en-US').format(value);
@@ -317,9 +401,9 @@ async function fetchSummary() {
     return response.json();
 }
 
-async function ensureCommits(entry) {
+async function ensureFolderData(entry) {
     if (!entry) {
-        return [];
+        return { commits: [], indexData: null };
     }
     if (state.folderCache.has(entry.folder)) {
         return state.folderCache.get(entry.folder);
@@ -328,10 +412,11 @@ async function ensureCommits(entry) {
     if (!response.ok) {
         throw new Error(`Failed to load ${entry.index}: ${response.status}`);
     }
-    const data = await response.json();
-    const commits = data.commits || [];
-    state.folderCache.set(entry.folder, commits);
-    return commits;
+    const indexData = await response.json();
+    const commits = Array.isArray(indexData.commits) ? indexData.commits : [];
+    const cacheValue = { indexData, commits };
+    state.folderCache.set(entry.folder, cacheValue);
+    return cacheValue;
 }
 
 function renderDashboard() {
@@ -350,6 +435,8 @@ function renderDashboard() {
             state.chart.destroy();
             state.chart = null;
         }
+        state.historySeries = __historyChartScaffold.createEmptySeries();
+        renderHistoryView();
         return;
     }
 
@@ -366,6 +453,7 @@ function renderDashboard() {
     updateSummary(baseCommit, targetCommit, comparison.alertCount);
     renderTable(comparison.rows, baseCommit, targetCommit);
     renderChart(comparison.rows, baseCommit, targetCommit);
+    renderHistoryView();
 }
 
 async function selectFolder(index) {
@@ -374,14 +462,19 @@ async function selectFolder(index) {
         return;
     }
     state.currentFolderIndex = index;
-    const commits = await ensureCommits(entry);
+    const { commits, indexData } = await ensureFolderData(entry);
     state.currentCommits = commits;
+    state.currentFolderManifest = indexData;
+    state.historySeries = hydrateHistorySeries(state.summary, indexData);
     populateCommitSelectors(commits);
     renderDashboard();
 }
 
 async function bootstrap() {
     try {
+        if (!hydrateHistorySeries) {
+            throw new Error('History chart module failed to load');
+        }
         const summary = await fetchSummary();
         if (!summary.folders || summary.folders.length === 0) {
             throw new Error('No folders available in manifest');
@@ -418,3 +511,5 @@ COMMIT_TARGET_SELECT.addEventListener('change', (event) => {
 window.addEventListener('DOMContentLoaded', () => {
     bootstrap().catch((error) => console.error(error));
 });
+
+})();

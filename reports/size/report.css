@@ -199,6 +199,200 @@ body {
     gap: 1rem;
 }
 
+.history-controls {
+    display: inline-flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: flex-start;
+}
+
+.history-controls button {
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.history-controls button[aria-pressed='true'] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: 0 6px 18px -10px rgba(37, 99, 235, 0.7);
+}
+
+.history-controls button:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.55);
+    outline-offset: 3px;
+}
+
+.history-controls__windows {
+    display: inline-flex;
+    gap: 0.5rem;
+}
+
+.history-controls__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+.history-controls__hint {
+    font-style: italic;
+}
+
+.history-controls__points {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    gap: 0.4rem;
+    max-width: 100%;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+    touch-action: pan-y;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(37, 99, 235, 0.35) rgba(37, 99, 235, 0.08);
+}
+
+.history-controls__points::-webkit-scrollbar {
+    height: 6px;
+}
+
+.history-controls__points::-webkit-scrollbar-thumb {
+    background: rgba(37, 99, 235, 0.35);
+    border-radius: 999px;
+}
+
+.history-controls__points::-webkit-scrollbar-track {
+    background: rgba(37, 99, 235, 0.08);
+    border-radius: 999px;
+}
+
+.history-controls__points--dragging {
+    cursor: grabbing;
+}
+
+.history-controls__point {
+    display: inline-flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex: 0 0 auto;
+    min-width: 160px;
+    max-width: 200px;
+    padding: 0.35rem 0.6rem;
+    font-weight: 500;
+    background: rgba(37, 99, 235, 0.08);
+    border-color: rgba(37, 99, 235, 0.45);
+    color: inherit;
+    text-align: left;
+    line-height: 1.3;
+}
+
+.history-controls__point--active,
+.history-controls__point:focus-visible {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+.history-controls__point-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.1rem;
+    overflow: hidden;
+}
+
+.history-controls__point-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    max-width: 100%;
+}
+
+.history-controls__point-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.1rem 0.45rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.16);
+    color: var(--accent);
+    border: 1px solid rgba(37, 99, 235, 0.35);
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.history-controls__point-date {
+    font-size: 0.82rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.history-controls__point-message {
+    font-size: 0.78rem;
+    color: var(--muted);
+    max-width: 100%;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.history-controls__point--active .history-controls__point-date,
+.history-controls__point--active .history-controls__point-message {
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.history-controls__point--active .history-controls__point-badge {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #fff;
+}
+
+#history-chart {
+    border-radius: 0.75rem;
+    border: 1px solid var(--border);
+    background: #fff;
+}
+
+.history-controls__message {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--muted);
+}
+
+.history-tooltip {
+    margin-top: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(37, 99, 235, 0.3);
+    background: rgba(37, 99, 235, 0.08);
+    color: inherit;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    box-shadow: 0 18px 28px -20px rgba(15, 23, 42, 0.35);
+}
+
+.history-tooltip[hidden] {
+    display: none;
+}
+
 #size-chart {
     max-width: 100%;
     border: 1px solid var(--border);
