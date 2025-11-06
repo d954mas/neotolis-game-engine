@@ -440,6 +440,30 @@ def regenerate_manifest(
         if not entries:
             continue
 
+        folder_relative = report_path.parent.relative_to(root)
+        folder_index_path = report_path.parent / "index.json"
+        existing_generated_at: str | None = None
+        existing_commits_by_id: Dict[str, Mapping[str, Any]] = {}
+        if folder_index_path.exists():
+            try:
+                with folder_index_path.open(encoding="utf-8") as existing_fp:
+                    existing_index = json.load(existing_fp)
+                existing_generated_at = str(existing_index.get("generated_at") or "")
+                if not existing_generated_at:
+                    existing_generated_at = None
+                existing_commits = existing_index.get("commits")
+                if isinstance(existing_commits, list):
+                    for commit in existing_commits:
+                        if isinstance(commit, Mapping):
+                            commit_id = str(commit.get("id") or "")
+                            if commit_id:
+                                existing_commits_by_id[commit_id] = commit
+            except (json.JSONDecodeError, OSError, TypeError):
+                existing_generated_at = None
+                existing_commits_by_id = {}
+
+        folder_is_updated = updated_relative is None or folder_relative == updated_relative
+
         for entry in entries:
             meta: GitMetadata | None = None
             if is_hex_sha(entry.sha):
@@ -461,27 +485,50 @@ def regenerate_manifest(
             if entry.kind == "head":
                 if entry.branch is None:
                     entry.branch = entry.message if entry.message != PLACEHOLDER_MESSAGE else entry.branch
-                entry.date_iso = generated_at
+                if folder_is_updated:
+                    entry.date_iso = generated_at
             elif entry.kind == "branch":
                 if entry.branch is None:
                     entry.branch = entry.message if entry.message != PLACEHOLDER_MESSAGE else None
                 if entry.date_iso is None and meta is not None:
                     entry.date_iso = meta.date_iso
 
-        commits_payload = []
+        commits_payload: List[Dict[str, Any]] = []
         for entry in entries:
             if is_ignored_commit_message(entry.subject) or is_ignored_commit_message(entry.message):
                 continue
             branch_fragment = entry.branch or "NO_BRANCH"
+            commit_id = f"{entry.kind}:{branch_fragment}:{entry.sha or PLACEHOLDER_SHA}"
+            existing_commit = existing_commits_by_id.get(commit_id)
+
+            commit_date: str | None = entry.date_iso if isinstance(entry.date_iso, str) else None
+            if not folder_is_updated:
+                if isinstance(existing_commit, Mapping):
+                    existing_date = existing_commit.get("date")
+                    if isinstance(existing_date, str) and existing_date:
+                        commit_date = existing_date
+                if commit_date is None and existing_generated_at:
+                    commit_date = existing_generated_at
+            else:
+                if entry.kind == "head":
+                    commit_date = generated_at
+                if commit_date is None and isinstance(existing_commit, Mapping):
+                    existing_date = existing_commit.get("date")
+                    if isinstance(existing_date, str) and existing_date:
+                        commit_date = existing_date
+            if commit_date is None:
+                commit_date = generated_at
+            entry.date_iso = commit_date
+
             commits_payload.append(
                 {
                     "kind": entry.kind,
-                    "id": f"{entry.kind}:{branch_fragment}:{entry.sha or PLACEHOLDER_SHA}",
+                    "id": commit_id,
                     "git_sha": entry.sha or PLACEHOLDER_SHA,
                     "git_message": entry.subject or entry.message or PLACEHOLDER_MESSAGE,
                     "branch": entry.branch,
                     "subject": entry.subject or entry.message or PLACEHOLDER_MESSAGE,
-                    "date": entry.date_iso or generated_at,
+                    "date": commit_date,
                     "label": format_entry_label(entry),
                     "artifacts": [
                         {
@@ -493,20 +540,6 @@ def regenerate_manifest(
                 }
             )
 
-        folder_relative = report_path.parent.relative_to(root)
-        folder_index_path = report_path.parent / "index.json"
-        existing_generated_at: str | None = None
-        if folder_index_path.exists():
-            try:
-                with folder_index_path.open(encoding="utf-8") as existing_fp:
-                    existing_index = json.load(existing_fp)
-                existing_generated_at = str(existing_index.get("generated_at") or "")
-                if not existing_generated_at:
-                    existing_generated_at = None
-            except (json.JSONDecodeError, OSError, TypeError):
-                existing_generated_at = None
-
-        folder_is_updated = updated_relative is None or folder_relative == updated_relative
         folder_generated_at = generated_at if folder_is_updated else (existing_generated_at or generated_at)
         folder_index = {
             "generated_at": folder_generated_at,
