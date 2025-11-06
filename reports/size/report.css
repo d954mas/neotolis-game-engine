@@ -199,6 +199,88 @@ body {
     gap: 1rem;
 }
 
+.history-controls {
+    display: inline-flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: flex-start;
+}
+
+.history-controls button {
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.history-controls button[aria-pressed='true'] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: 0 6px 18px -10px rgba(37, 99, 235, 0.7);
+}
+
+.history-controls button:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.55);
+    outline-offset: 3px;
+}
+
+.history-controls__windows {
+    display: inline-flex;
+    gap: 0.5rem;
+}
+
+.history-controls__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+.history-controls__hint {
+    font-style: italic;
+}
+
+.history-controls__points {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.history-controls__point {
+    font-weight: 500;
+    background: rgba(37, 99, 235, 0.08);
+    border-color: rgba(37, 99, 235, 0.45);
+    color: inherit;
+}
+
+.history-controls__point--active,
+.history-controls__point:focus-visible {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+#history-chart {
+    border-radius: 0.75rem;
+    border: 1px solid var(--border);
+    background: #fff;
+}
+
+.history-controls__message {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--muted);
+}
+
 #size-chart {
     max-width: 100%;
     border: 1px solid var(--border);

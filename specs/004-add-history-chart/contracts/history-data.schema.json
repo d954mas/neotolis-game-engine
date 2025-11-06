@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Size Report Folder Index",
+  "type": "object",
+  "required": ["generated_at", "folder", "commits"],
+  "additionalProperties": false,
+  "properties": {
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when this folder snapshot was produced"
+    },
+    "folder": {
+      "type": "string",
+      "description": "Folder identifier (e.g., sandbox/wasm/release)"
+    },
+    "report_path": {
+      "type": "string",
+      "description": "Relative path to the human-readable report (optional)"
+    },
+    "commits": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 180,
+      "items": {
+        "type": "object",
+        "required": ["id", "git_sha", "date", "artifacts"],
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "description": "Commit classification (head, branch, etc.)"
+          },
+          "id": {
+            "type": "string",
+            "description": "Unique identifier used across dashboard selections"
+          },
+          "git_sha": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{7,40}$",
+            "description": "Full commit SHA"
+          },
+          "git_message": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "branch": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Commit timestamp"
+          },
+          "label": {
+            "type": "string"
+          },
+          "artifacts": {
+            "type": "array",
+            "minItems": 0,
+            "items": {
+              "type": "object",
+              "required": ["file_name", "size_bytes"],
+              "additionalProperties": false,
+              "properties": {
+                "file_name": {
+                  "type": "string"
+                },
+                "size_bytes": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

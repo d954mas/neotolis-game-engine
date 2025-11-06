@@ -69,11 +69,36 @@
         <canvas id="size-chart" width="960" height="420" role="img" aria-label="Bar chart comparing selected commits"></canvas>
     </section>
 
+    <section id="history-section" class="chart-section" aria-labelledby="history-title">
+        <h2 id="history-title">Size History</h2>
+        <div id="history-controls" class="history-controls" aria-live="polite">
+            <div class="history-controls__intro">
+                <span id="history-window-label">Review window:</span>
+                <span class="history-controls__hint">Use the buttons to switch between recent, quarterly, or extended history.</span>
+            </div>
+            <div class="history-controls__windows" data-role="history-windows" role="group" aria-labelledby="history-window-label">
+                <button type="button" data-window="30" aria-pressed="false">30 commits</button>
+                <button type="button" data-window="90" aria-pressed="true">90 commits</button>
+                <button type="button" data-window="180" aria-pressed="false">180 commits</button>
+            </div>
+            <div class="history-controls__points" data-role="history-points" aria-label="Focus history commits"></div>
+        </div>
+        <canvas
+            id="history-chart"
+            width="960"
+            height="420"
+            role="img"
+            aria-label="Line chart showing total artifact size per commit"
+        ></canvas>
+        <p id="history-empty-state" class="empty-state" hidden>History data not available for this folder.</p>
+    </section>
+
     <footer class="page-footer">
         <p>Data source: <code>reports/size/index.json</code>. Refresh via <code>python reports/size/update.py --input &lt;build-output&gt; --output &lt;folder&gt;</code>.</p>
     </footer>
 
     <script src="lib/chart.min.js"></script>
     <script src="dashboard.js" type="module"></script>
+    <script src="history-chart.js" type="module"></script>
 </body>
 </html>

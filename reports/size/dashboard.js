@@ -1,3 +1,10 @@
+import {
+    hydrateHistorySeries,
+    renderHistoryChart,
+    attachHistoryControls,
+    __historyChartScaffold,
+} from './history-chart.js';
+
 const SUMMARY_URL = 'index.json';
 const TABLE_BODY = document.querySelector('#artifact-table tbody');
 const EMPTY_STATE = document.getElementById('empty-state');
@@ -15,6 +22,10 @@ const ALERT_COUNT = document.getElementById('alert-count');
 const BASE_HEADER = document.getElementById('commit-base-column');
 const TARGET_HEADER = document.getElementById('commit-target-column');
 const CHART_CANVAS = document.getElementById('size-chart');
+const HISTORY_SECTION = document.getElementById('history-section');
+const HISTORY_CANVAS = document.getElementById('history-chart');
+const HISTORY_CONTROLS = document.getElementById('history-controls');
+const HISTORY_EMPTY_STATE = document.getElementById('history-empty-state');
 
 const state = {
     summary: null,
@@ -24,7 +35,65 @@ const state = {
     selectedBaseId: null,
     selectedTargetId: null,
     chart: null,
+    historySeries: __historyChartScaffold.createEmptySeries(),
+    historyChart: null,
+    historyControlsAttached: false,
+    historyActiveIndex: null,
 };
+
+function highlightHistoryPoint(index) {
+    if (!state.historyChart) {
+        return;
+    }
+    const chart = state.historyChart;
+    const datasetIndex = 0;
+    const meta = chart.getDatasetMeta(datasetIndex);
+    const element = meta?.data?.[index];
+    if (!element) {
+        return;
+    }
+    chart.setActiveElements([{ datasetIndex, index }]);
+    chart.tooltip.setActiveElements([{ datasetIndex, index }], {
+        x: element.x,
+        y: element.y,
+    });
+    chart.update();
+    state.historyActiveIndex = index;
+}
+
+function clearHistoryPoint() {
+    if (!state.historyChart) {
+        return;
+    }
+    state.historyChart.setActiveElements([]);
+    state.historyChart.tooltip.setActiveElements([], { x: 0, y: 0 });
+    state.historyChart.update();
+    state.historyActiveIndex = null;
+}
+
+function renderHistoryView() {
+    if (!HISTORY_CANVAS || !HISTORY_CONTROLS) {
+        return;
+    }
+
+    const chart = renderHistoryChart(state.historySeries, HISTORY_CANVAS, {
+        emptyStateElement: HISTORY_EMPTY_STATE,
+    });
+    state.historyChart = chart;
+    state.historyActiveIndex = null;
+
+    attachHistoryControls(state.historySeries, HISTORY_CONTROLS, {
+        onSampleFocus: (index) => {
+            highlightHistoryPoint(index);
+        },
+        onSampleBlur: () => {
+            clearHistoryPoint();
+        },
+        onWindowChange: () => {
+            renderHistoryView();
+        },
+    });
+}
 
 function formatNumber(value) {
     return new Intl.NumberFormat('en-US').format(value);
@@ -317,9 +386,9 @@ async function fetchSummary() {
     return response.json();
 }
 
-async function ensureCommits(entry) {
+async function ensureFolderData(entry) {
     if (!entry) {
-        return [];
+        return { commits: [], indexData: null };
     }
     if (state.folderCache.has(entry.folder)) {
         return state.folderCache.get(entry.folder);
@@ -328,10 +397,11 @@ async function ensureCommits(entry) {
     if (!response.ok) {
         throw new Error(`Failed to load ${entry.index}: ${response.status}`);
     }
-    const data = await response.json();
-    const commits = data.commits || [];
-    state.folderCache.set(entry.folder, commits);
-    return commits;
+    const indexData = await response.json();
+    const commits = Array.isArray(indexData.commits) ? indexData.commits : [];
+    const cacheValue = { indexData, commits };
+    state.folderCache.set(entry.folder, cacheValue);
+    return cacheValue;
 }
 
 function renderDashboard() {
@@ -350,6 +420,8 @@ function renderDashboard() {
             state.chart.destroy();
             state.chart = null;
         }
+        state.historySeries = __historyChartScaffold.createEmptySeries();
+        renderHistoryView();
         return;
     }
 
@@ -366,6 +438,7 @@ function renderDashboard() {
     updateSummary(baseCommit, targetCommit, comparison.alertCount);
     renderTable(comparison.rows, baseCommit, targetCommit);
     renderChart(comparison.rows, baseCommit, targetCommit);
+    renderHistoryView();
 }
 
 async function selectFolder(index) {
@@ -374,8 +447,10 @@ async function selectFolder(index) {
         return;
     }
     state.currentFolderIndex = index;
-    const commits = await ensureCommits(entry);
+    const { commits, indexData } = await ensureFolderData(entry);
     state.currentCommits = commits;
+    state.currentFolderManifest = indexData;
+    state.historySeries = hydrateHistorySeries(state.summary, indexData);
     populateCommitSelectors(commits);
     renderDashboard();
 }
