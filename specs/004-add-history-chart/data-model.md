@@ -55,12 +55,13 @@ The dashboard consumes the existing manifest at `reports/size/index.json`, which
   - `committedAtEpochMs` (`number`) — Parsed epoch milliseconds from `FolderCommit.date`.
   - `label` (`string`) — Human-readable tooltip label (short SHA + message).
   - `missingArtifacts` (`boolean`) — Flag when artifacts array empty or data missing.
+  - `metadata` (`object`) — Includes `gitSha`, `date`, `message`, `kind`, and `branch` for tooltip/control rendering.
 - **Relationships**: Collected within `HistorySeries.samples`.
 
 ### HistorySeries
 - **Description**: Maintains active window state for rendering.
 - **Fields**:
-  - `samples` (`HistorySample[]`) — Visible entries after window slicing (newest first).
+  - `samples` (`HistorySample[]`) — Visible entries after window slicing (oldest to newest).
   - `allSamples` (`HistorySample[]`) — Full history (capped at 180 commits).
   - `windowMode` (`'30' | '90' | '180'`) — Active window length.
   - `minSizeBytes` / `maxSizeBytes` (`number`) — Computed bounds; if `samples` < 1, both set to 0.
@@ -76,8 +77,7 @@ The dashboard consumes the existing manifest at `reports/size/index.json`, which
 - **Description**: Session preference stored via `sessionStorage`.
 - **Fields**:
   - `windowMode` (`'30' | '90' | '180'`)
-  - `updatedAtEpochMs` (`number`)
-- **Validation**: Values outside accepted set fallback to `'90'`.
+- **Validation**: Values outside the accepted set fallback to `'90'`.
 
 ## Validation Rules
 - Manifest and folder indexes must be fetched relative to `report.html`; cross-origin requests are disallowed.
@@ -88,5 +88,5 @@ The dashboard consumes the existing manifest at `reports/size/index.json`, which
 
 ## Derived Data
 - `totalSizeBytes` calculated as the sum of all artifact `size_bytes` per commit; commits missing artifacts count as 0 and increment `missingCommits`.
-- Axis tick spacing computed with `(maxSizeBytes - minSizeBytes)` rounded to the nearest 10 KB to reduce label jitter.
-- Gap markers inserted when dataset indicates missing commits between samples (difference in dates > 24h when commit count suggests more history).
+- Axis tick labels display in KB by default and swap to MB when values exceed 1024 KB.
+- Missing commit counts are surfaced via console warnings; visual gaps are not rendered in the lightweight chart stub.

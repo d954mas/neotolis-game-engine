@@ -66,19 +66,7 @@ function highlightHistoryPoint(index) {
 }
 
 function clearHistoryPoint() {
-    if (!state.historyChart) {
-        return;
-    }
-    if (typeof state.historyChart.setActiveElements === 'function') {
-        state.historyChart.setActiveElements([]);
-    }
-    state.historyChart.update();
-    state.historyActiveIndex = null;
-    updateHistoryTooltip(
-        state.historySeries,
-        HISTORY_TOOLTIP,
-        state.historySeries.samples.length - 1,
-    );
+    // No-op: keep the last selected history sample active unless a new selection is made.
 }
 
 function renderHistoryView() {
@@ -100,7 +88,7 @@ function renderHistoryView() {
     state.historyChart = chart;
     state.historyActiveIndex = null;
 
-    attachHistoryControls(state.historySeries, HISTORY_CONTROLS, {
+    const controlsApi = attachHistoryControls(state.historySeries, HISTORY_CONTROLS, {
         onSampleFocus: (index) => {
             highlightHistoryPoint(index);
         },
@@ -111,11 +99,15 @@ function renderHistoryView() {
             renderHistoryView();
         },
     });
-    updateHistoryTooltip(
-        state.historySeries,
-        HISTORY_TOOLTIP,
-        state.historySeries.samples.length - 1,
-    );
+    const lastIndex = state.historySeries.samples.length - 1;
+    if (controlsApi && typeof controlsApi.focus === 'function' && lastIndex >= 0) {
+        controlsApi.focus(lastIndex);
+    } else if (lastIndex >= 0) {
+        highlightHistoryPoint(lastIndex);
+        updateHistoryTooltip(state.historySeries, HISTORY_TOOLTIP, lastIndex);
+    } else {
+        updateHistoryTooltip(state.historySeries, HISTORY_TOOLTIP, -1);
+    }
 }
 
 function formatNumber(value) {

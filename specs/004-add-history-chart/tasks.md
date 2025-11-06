@@ -54,8 +54,8 @@
 
 ## Phase 4: User Story 2 – Inspect commit context (Priority: P2)
 
-**Goal**: Provide hover and keyboard focus interactions that reveal commit hash, timestamp, and formatted KB size for each data point.  
-**Independent Test**: Hover and keyboard-focus multiple points; confirm tooltips/focus banners display commit hash, localized timestamp, and KB size, and that focus changes do not scroll the page.
+**Goal**: Provide click and keyboard activation that reveal commit hash, timestamp, message, and formatted size without relying on hover.  
+**Independent Test**: Click and keyboard-activate multiple history buttons; confirm the tooltip panel updates with commit details and that focus changes alone do not alter selection.
 
 ### Implementation Tasks
 
@@ -63,7 +63,7 @@
 - [X] T012 [US2] Add keyboard navigation hooks and focus management for chart points in `reports/size/history-chart.js`
 - [X] T013 [US2] Expand tooltip and focus styling (contrast, focus ring, banner positioning) in `reports/size/report.css`
 - [X] T014 [US2] Document keyboard navigation test steps and accessibility expectations in `reports/size/README.md`
-- [X] T015 [US2] Log tooltip and focus interactions (commit id + window) to the console for validation in `reports/size/history-chart.js`
+- [X] T015 [US2] Keep tooltip state stable on blur and ensure selection persists until explicitly changed in `reports/size/history-chart.js`
 
 ---
 
@@ -76,7 +76,7 @@
 - [X] T017 [US3] Implement window switching, data slicing, and `sessionStorage` persistence in `reports/size/history-chart.js`
 - [X] T018 [US3] Update chart subtitle and truncation messaging (including gap counts) in `reports/size/history-chart.js`
 - [X] T019 [US3] Add window persistence regression checklist to `reports/size/README.md`
-- [X] T020 [US3] Log window selection changes (commit count + samples rendered) to the console in `reports/size/history-chart.js`
+- [X] T020 [US3] Surface truncation and missing-commit warnings plus render duration logs in `reports/size/history-chart.js`
 
 ---
 

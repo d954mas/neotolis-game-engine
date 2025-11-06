@@ -6,11 +6,11 @@
   - Unlimited history: rejected due to unbounded browser memory and rendering cost.  
   - Fixed 90-commit window only: rejected because release engineers explicitly need short- and long-range comparisons.
 
-## Decision: Tooltip accessibility pattern (hover + keyboard focus banners)
-- **Rationale**: Delivers parity between mouse and keyboard navigation, satisfies WCAG focus requirements, and matches existing dashboard interaction models without altering engine code.
+## Decision: Tooltip accessibility pattern (click + keyboard activation with persistent panel)
+- **Rationale**: Keeps selection stable (no hover dependency), supports keyboard activation, and mirrors existing dashboard layout by updating the dedicated tooltip panel below the chart.
 - **Alternatives considered**:  
-  - Hover-only tooltips: rejected for lack of keyboard support.  
-  - Separate detail panel: adds layout complexity without added insight.
+  - Hover-only tooltips: rejected for lack of keyboard support and accidental selection changes.  
+  - Separate detail panel per point: adds layout complexity without added insight.
 
 ## Decision: Preference persistence scope (sessionStorage)
 - **Rationale**: Reuses existing dashboard preference helper, satisfies "persist within session" requirement, and avoids cross-device state or backend changes.
@@ -19,7 +19,7 @@
   - No persistence: rejected because spec mandates session persistence.
 
 ## Decision: Instrumentation via console logging and performance marks
-- **Rationale**: Performance marks provide measurable render timing while console logs capture window changes and missing commit gaps without requiring backend changes.
+- **Rationale**: Performance marks provide measurable render timing while console logs report render completion, truncation, and missing commit gaps without requiring backend changes.
 - **Alternatives considered**:  
   - Restoring telemetry counters: rejected due to lack of backend support.  
   - Omitting instrumentation: rejected because render timing must remain observable.

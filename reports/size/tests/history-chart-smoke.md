@@ -15,9 +15,10 @@
 
 ## User Story 2 – Inspect commit context
 
-- [ ] Hover a point to ensure the tooltip lists size (KB), commit hash, and localized timestamp.
-- [ ] Use <kbd>Tab</kbd> to focus the first commit button, then <kbd>Arrow</kbd> keys / <kbd>Home</kbd> / <kbd>End</kbd> to navigate the history list; confirm the chart highlights the focused point.
-- [ ] Validate the console logs focus/blur events with commit IDs and window mode.
+- [ ] Click a history button to ensure the tooltip lists size (KB/MB), commit hash, localized timestamp, and commit message without changing selection on hover.
+- [ ] Verify HEAD and MASTER commits show labeled badges in the button rail.
+- [ ] Use the mouse wheel (or trackpad vertical scroll) to move horizontally across the commit buttons, and drag the button rail with the pointer to pan; confirm interactions feel smooth and buttons remain clickable.
+- [ ] Use <kbd>Tab</kbd> to focus the first commit button, then <kbd>Arrow</kbd> keys / <kbd>Home</kbd> / <kbd>End</kbd> to navigate the history list; press <kbd>Enter</kbd> / <kbd>Space</kbd> to activate a selection and confirm the chart highlights the commit only after activation.
 - [ ] Run an accessibility checker (axe or Lighthouse) to verify focus rings and ARIA labels meet WCAG AA expectations.
 
 ## User Story 3 – Segment review windows
@@ -25,7 +26,7 @@
 - [ ] Click 30/90/180 commit buttons and check the chart updates with the correct number of samples.
 - [ ] Reload the page and confirm the last selected window persists for the session.
 - [ ] Open a new tab during the same session; confirm the stored window mode applies automatically.
-- [ ] Inspect the console for `history-chart: window selection change` messages reflecting the new commit count.
+- [ ] Inspect the console for `history-chart: render complete` and truncation/missing-commit warnings to confirm instrumentation remains active.
 
 ## Edge Cases & Messaging
 
