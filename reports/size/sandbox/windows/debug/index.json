@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-11-06T12:04:40.989697+00:00",
+  "generated_at": "2025-11-07T11:15:23.945516+00:00",
   "folder": "sandbox/windows/debug",
   "report_path": "sandbox/windows/debug/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:cdb57b98cb6c9f6c710a89ed6daa626d67a73c6e",
-      "git_sha": "cdb57b98cb6c9f6c710a89ed6daa626d67a73c6e",
-      "git_message": "004 add history chart (#4)",
-      "branch": "master",
-      "subject": "004 add history chart (#4)",
-      "date": "2025-11-06T12:04:41.129383+00:00",
-      "label": "HEAD-master-004 add history chart (#4)-cdb57b9",
+      "id": "head:005-publish-web-report:2877ef53c7d08f5b5d6b401723a7b69ceb2c25a3",
+      "git_sha": "2877ef53c7d08f5b5d6b401723a7b69ceb2c25a3",
+      "git_message": "web page",
+      "branch": "005-publish-web-report",
+      "subject": "web page",
+      "date": "2025-11-07T11:15:23.945516+00:00",
+      "label": "HEAD-005-publish-web-report-web page-2877ef5",
       "artifacts": [
         {
           "file_name": "engine.exe",
