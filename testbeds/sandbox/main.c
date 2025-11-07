@@ -2,14 +2,10 @@
 #include "engine/core/nt_engine.h"
 
 int main(void) {
-  
-
     if (nt_engine_init() != NT_RESULT_OK){
         fprintf(stderr, "Failed to initialize engine\n");
         return 1;
     }
-
-      int a = 0;
 
     nt_engine_shutdown();
     printf("Sandbox lifecycle complete\n");

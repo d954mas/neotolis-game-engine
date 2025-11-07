@@ -79,7 +79,6 @@
       "url": "http://localhost:9010/report.html",
       "webRoot": "${workspaceFolder}/reports/size",
       "preLaunchTask": "Open size dashboard",
-      "justMyCode": false
     }
   ]
 }
