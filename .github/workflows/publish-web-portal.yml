@@ -115,7 +115,8 @@ jobs:
             --throttling-method=provided \
             --output=json \
             --output-path=portal-lh.json \
-            --quiet
+            --quiet \
+            --chrome-flags="--headless=new --no-sandbox --disable-dev-shm-usage"
           npx --prefix web/portal broken-link-checker http://127.0.0.1:4173 --ordered --recursive
 
       - name: Record manifest summary
