@@ -156,3 +156,10 @@ jobs:
           git add reports/size
           git commit -m "chore: update sandbox size reports"
           git push
+      - name: Upload size report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: size-report-dashboard
+          path: reports/size
+          retention-days: 3
