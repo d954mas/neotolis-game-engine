@@ -21,11 +21,12 @@ target_include_directories(nt_sandbox
         ${CMAKE_SOURCE_DIR}
 )
 
-# Use consistent compile flags for size-sensitive builds
-if(CMAKE_C_COMPILER_ID MATCHES "Clang")
-    target_compile_options(nt_sandbox PRIVATE -Wall -Wextra -Werror)
-else()
-    target_compile_options(nt_sandbox PRIVATE /W4 /WX)
+if(DEFINED NT_FAILFAST_ENFORCEMENT_TARGET AND TARGET ${NT_FAILFAST_ENFORCEMENT_TARGET})
+    target_link_libraries(nt_sandbox PRIVATE ${NT_FAILFAST_ENFORCEMENT_TARGET})
+endif()
+
+if(DEFINED NT_THIRD_PARTY_HEADERS_TARGET AND TARGET ${NT_THIRD_PARTY_HEADERS_TARGET})
+    target_link_libraries(nt_sandbox PRIVATE ${NT_THIRD_PARTY_HEADERS_TARGET})
 endif()
 
 # Export packaged artifacts for downstream consumers

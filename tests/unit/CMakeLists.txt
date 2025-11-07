@@ -13,6 +13,13 @@ target_include_directories(test_engine_lifecycle
         ${CMAKE_SOURCE_DIR}
 )
 
+if(DEFINED NT_FAILFAST_ENFORCEMENT_TARGET AND TARGET ${NT_FAILFAST_ENFORCEMENT_TARGET})
+    target_link_libraries(test_engine_lifecycle PRIVATE ${NT_FAILFAST_ENFORCEMENT_TARGET})
+endif()
+if(DEFINED NT_THIRD_PARTY_HEADERS_TARGET AND TARGET ${NT_THIRD_PARTY_HEADERS_TARGET})
+    target_link_libraries(test_engine_lifecycle PRIVATE ${NT_THIRD_PARTY_HEADERS_TARGET})
+endif()
+
 add_test(NAME US1_engine_lifecycle COMMAND test_engine_lifecycle)
 
 add_executable(test_feature_sample
@@ -25,5 +32,12 @@ target_include_directories(test_feature_sample
     PRIVATE
         ${CMAKE_SOURCE_DIR}
 )
+
+if(DEFINED NT_FAILFAST_ENFORCEMENT_TARGET AND TARGET ${NT_FAILFAST_ENFORCEMENT_TARGET})
+    target_link_libraries(test_feature_sample PRIVATE ${NT_FAILFAST_ENFORCEMENT_TARGET})
+endif()
+if(DEFINED NT_THIRD_PARTY_HEADERS_TARGET AND TARGET ${NT_THIRD_PARTY_HEADERS_TARGET})
+    target_link_libraries(test_feature_sample PRIVATE ${NT_THIRD_PARTY_HEADERS_TARGET})
+endif()
 
 add_test(NAME US2_feature_sample COMMAND test_feature_sample)

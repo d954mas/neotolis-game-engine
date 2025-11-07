@@ -13,6 +13,12 @@ target_include_directories(test_microbench_stub
         ${CMAKE_SOURCE_DIR}
 )
 
+if(DEFINED NT_FAILFAST_ENFORCEMENT_TARGET AND TARGET ${NT_FAILFAST_ENFORCEMENT_TARGET})
+    target_link_libraries(test_microbench_stub PRIVATE ${NT_FAILFAST_ENFORCEMENT_TARGET})
+endif()
+if(DEFINED NT_THIRD_PARTY_HEADERS_TARGET AND TARGET ${NT_THIRD_PARTY_HEADERS_TARGET})
+    target_link_libraries(test_microbench_stub PRIVATE ${NT_THIRD_PARTY_HEADERS_TARGET})
+endif()
 add_test(NAME US3_microbench_stub COMMAND test_microbench_stub)
 
 add_executable(qa_failfast_policy_microbench
@@ -25,5 +31,11 @@ target_include_directories(qa_failfast_policy_microbench
         ${CMAKE_SOURCE_DIR}
 )
 
+if(DEFINED NT_FAILFAST_ENFORCEMENT_TARGET AND TARGET ${NT_FAILFAST_ENFORCEMENT_TARGET})
+    target_link_libraries(qa_failfast_policy_microbench PRIVATE ${NT_FAILFAST_ENFORCEMENT_TARGET})
+endif()
+if(DEFINED NT_THIRD_PARTY_HEADERS_TARGET AND TARGET ${NT_THIRD_PARTY_HEADERS_TARGET})
+    target_link_libraries(qa_failfast_policy_microbench PRIVATE ${NT_THIRD_PARTY_HEADERS_TARGET})
+endif()
 add_test(NAME qa_failfast_policy_microbench COMMAND qa_failfast_policy_microbench)
 set_tests_properties(qa_failfast_policy_microbench PROPERTIES LABELS "failfast")
