@@ -12,6 +12,14 @@ if(NT_FAILFAST_WARNING_FLAGS)
     set_tests_properties(failfast_warning_gate PROPERTIES LABELS "failfast")
 endif()
 
+if(EXISTS "${CMAKE_SOURCE_DIR}/tests/ci/test_clang_tidy_gate.sh")
+    add_test(NAME failfast_clang_tidy_gate
+        COMMAND ${CMAKE_SOURCE_DIR}/tests/ci/test_clang_tidy_gate.sh
+                ${CMAKE_SOURCE_DIR}/tests/fixtures/clang_tidy/null_deref.c
+    )
+    set_tests_properties(failfast_clang_tidy_gate PROPERTIES LABELS "failfast")
+endif()
+
 add_subdirectory(unit)
 add_subdirectory(microbench)
 add_subdirectory(size)
