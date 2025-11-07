@@ -11,5 +11,12 @@
         "nt_engine.h": "c",
         "windows.h": "c",
         "assert.h": "c"
-    }
+    },
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "C_Cpp.errorSquiggles": "Enabled",
+    "C_Cpp.default.intelliSenseMode": "windows-clang-x64",
+    "C_Cpp.default.compilerPath": "clang-cl.exe",
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/build/win-debug/compile_commands.json",
+    "cmake.configureOnOpen": true,
+    "cmake.buildTask": true
 }

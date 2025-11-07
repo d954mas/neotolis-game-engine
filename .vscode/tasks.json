@@ -187,7 +187,30 @@
             "group": "build",
             "dependsOn": "Configure win-debug",
             "problemMatcher": [
-                "$msCompile"
+                {
+                    "owner": "clang",
+                    "fileLocation": "absolute",
+                    "severity": "error",
+                    "pattern": {
+                        "regexp": "^(.*)\\((\\d+)(?:,(\\d+))?\\):\\s+(?:fatal\\s+error|error):\\s+(.*)$",
+                        "file": 1,
+                        "line": 2,
+                        "column": 3,
+                        "message": 4
+                    }
+                },
+                {
+                    "owner": "clang",
+                    "fileLocation": "absolute",
+                    "severity": "warning",
+                    "pattern": {
+                        "regexp": "^(.*)\\((\\d+)(?:,(\\d+))?\\):\\s+(?:warning|note):\\s+(.*)$",
+                        "file": 1,
+                        "line": 2,
+                        "column": 3,
+                        "message": 4
+                    }
+                }
             ],
             "windows": {
                 "command": "powershell",
@@ -213,7 +236,30 @@
             "group": "build",
             "dependsOn": "Configure win-release",
             "problemMatcher": [
-                "$msCompile"
+                {
+                    "owner": "clang",
+                    "fileLocation": "absolute",
+                    "severity": "error",
+                    "pattern": {
+                        "regexp": "^(.*)\\((\\d+)(?:,(\\d+))?\\):\\s+(?:fatal\\s+error|error):\\s+(.*)$",
+                        "file": 1,
+                        "line": 2,
+                        "column": 3,
+                        "message": 4
+                    }
+                },
+                {
+                    "owner": "clang",
+                    "fileLocation": "absolute",
+                    "severity": "warning",
+                    "pattern": {
+                        "regexp": "^(.*)\\((\\d+)(?:,(\\d+))?\\):\\s+(?:warning|note):\\s+(.*)$",
+                        "file": 1,
+                        "line": 2,
+                        "column": 3,
+                        "message": 4
+                    }
+                }
             ],
             "windows": {
                 "command": "powershell",
@@ -250,7 +296,30 @@
             "group": "build",
             "dependsOn": "Configure win-debug-tests",
             "problemMatcher": [
-                "$msCompile"
+                {
+                    "owner": "clang",
+                    "fileLocation": "absolute",
+                    "severity": "error",
+                    "pattern": {
+                        "regexp": "^(.*)\\((\\d+)(?:,(\\d+))?\\):\\s+(?:fatal\\s+error|error):\\s+(.*)$",
+                        "file": 1,
+                        "line": 2,
+                        "column": 3,
+                        "message": 4
+                    }
+                },
+                {
+                    "owner": "clang",
+                    "fileLocation": "absolute",
+                    "severity": "warning",
+                    "pattern": {
+                        "regexp": "^(.*)\\((\\d+)(?:,(\\d+))?\\):\\s+(?:warning|note):\\s+(.*)$",
+                        "file": 1,
+                        "line": 2,
+                        "column": 3,
+                        "message": 4
+                    }
+                }
             ]
         },
         {
