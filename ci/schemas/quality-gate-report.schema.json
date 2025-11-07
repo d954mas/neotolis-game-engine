@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nt-engine.local/schemas/quality-gate-report.schema.json",
+  "title": "Quality Gate Report",
+  "type": "object",
+  "required": [
+    "preset",
+    "workflow",
+    "artifact_version",
+    "metadata",
+    "compiler_flags",
+    "linker_guards",
+    "third_party_whitelist",
+    "sanitizer_matrix",
+    "static_analysis",
+    "formatting",
+    "binary_budget",
+    "memory_policy",
+    "microbench",
+    "security_review_hours"
+  ],
+  "properties": {
+    "preset": {
+      "type": "string",
+      "description": "CMake/CI preset identifier (e.g., web-debug, win-release)."
+    },
+    "workflow": {
+      "type": "string",
+      "description": "CI workflow name responsible for generating this report."
+    },
+    "artifact_version": {
+      "type": "string",
+      "description": "Version of the report schema implementation."
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["commit", "timestamp", "build_url"],
+      "properties": {
+        "commit": {"type": "string", "pattern": "^[0-9a-fA-F]{7,40}$"},
+        "timestamp": {"type": "string", "format": "date-time"},
+        "build_url": {"type": "string", "format": "uri"}
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pass", "fail"],
+      "description": "Overall gate status."
+    },
+    "compiler_flags": {
+      "type": "object",
+      "required": ["warnings_as_errors", "flags", "violations"],
+      "properties": {
+        "warnings_as_errors": {"type": "boolean"},
+        "flags": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "violations": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "linker_guards": {
+      "type": "object",
+      "required": ["flags", "stack_protector", "status"],
+      "properties": {
+        "flags": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "stack_protector": {"type": "boolean"},
+        "status": {"type": "string", "enum": ["pass", "fail"]},
+        "notes": {"type": "string"}
+      }
+    },
+    "third_party_whitelist": {
+      "type": "object",
+      "required": ["entries"],
+      "properties": {
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path", "reason"],
+            "properties": {
+              "path": {"type": "string"},
+              "reason": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "sanitizer_matrix": {
+      "type": "object",
+      "required": ["enabled", "components", "coverage_pct"],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "components": {"type": "array", "items": {"type": "string"}},
+        "coverage_pct": {"type": "number", "minimum": 0, "maximum": 100}
+      }
+    },
+    "static_analysis": {
+      "type": "object",
+      "required": ["violations", "new_violations", "status"],
+      "properties": {
+        "violations": {"type": "integer", "minimum": 0},
+        "new_violations": {"type": "integer", "minimum": 0},
+        "status": {"type": "string", "enum": ["pass", "fail"]}
+      }
+    },
+    "formatting": {
+      "type": "object",
+      "required": ["drift_files", "status"],
+      "properties": {
+        "drift_files": {"type": "integer", "minimum": 0},
+        "status": {"type": "string", "enum": ["pass", "fail"]}
+      }
+    },
+    "binary_budget": {
+      "type": "object",
+      "required": ["wasm_delta_kb", "native_delta_kb", "status"],
+      "properties": {
+        "wasm_delta_kb": {"type": "number"},
+        "native_delta_kb": {"type": "number"},
+        "status": {"type": "string", "enum": ["pass", "fail"]}
+      }
+    },
+    "memory_policy": {
+      "type": "object",
+      "required": ["ram_peak_bytes", "shadow_bytes", "status"],
+      "properties": {
+        "ram_peak_bytes": {"type": "integer", "minimum": 0},
+        "shadow_bytes": {"type": "integer", "minimum": 0},
+        "status": {"type": "string", "enum": ["pass", "fail"]}
+      }
+    },
+    "microbench": {
+      "type": "object",
+      "required": ["median_ms", "regression_pct", "status"],
+      "properties": {
+        "median_ms": {"type": "number", "minimum": 0},
+        "regression_pct": {"type": "number"},
+        "status": {"type": "string", "enum": ["pass", "fail"]}
+      }
+    },
+    "security_review_hours": {
+      "type": "object",
+      "required": ["current", "baseline", "status"],
+      "properties": {
+        "current": {"type": "number", "minimum": 0},
+        "baseline": {"type": "number", "minimum": 0},
+        "status": {"type": "string", "enum": ["pass", "fail"]},
+        "history": {
+          "type": "array",
+          "items": {"type": "number", "minimum": 0}
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}
