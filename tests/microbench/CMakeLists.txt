@@ -14,3 +14,16 @@ target_include_directories(test_microbench_stub
 )
 
 add_test(NAME US3_microbench_stub COMMAND test_microbench_stub)
+
+add_executable(qa_failfast_policy_microbench
+    failfast_policy_stub.c
+)
+
+target_sources(qa_failfast_policy_microbench PRIVATE ${NT_ENGINE_SOURCES})
+target_include_directories(qa_failfast_policy_microbench
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}
+)
+
+add_test(NAME qa_failfast_policy_microbench COMMAND qa_failfast_policy_microbench)
+set_tests_properties(qa_failfast_policy_microbench PROPERTIES LABELS "failfast")

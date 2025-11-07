@@ -22,12 +22,12 @@
 
 **Purpose**: Configure toolchains, warning/linker policies, and microbench hooks. No user story may start until this phase passes.
 
-- [ ] T005 Define zero-warning preset cache variables (e.g., `NT_FAILFAST_WARNING_FLAGS`) in root `CMakePresets.json`, ensuring every preset inherits `/Wall /WX /permissive-` (clang-cl) or `-Wall -Wextra -Wpedantic -Werror -fno-common` (emcc).
-- [ ] T006 [P] Wire sanitizer toggles into `cmake/toolchains/emscripten.cmake` and `cmake/toolchains/clang-cl.cmake`, exposing `NT_FAILFAST_SANITIZER=ON|OFF` options with debug ON and release OFF.
-- [ ] T007 Add skeleton `qa_failfast_policy_microbench` target plus `failfast` label inside `tests/microbench/CMakeLists.txt` referencing `testbeds/sandbox` so later stories can attach measurements.
-- [ ] T008 Add linker-guard preset cache variables (e.g., `NT_FAILFAST_LINK_FLAGS_WIN`, `NT_FAILFAST_LINK_FLAGS_WEB`) covering `/guard:ehcont /DYNAMICBASE /LTCG` and `-Wl,--no-undefined,-z,relro,-z,now` plus stack-protector toggles.
-- [ ] T009 [P] Include the linker-guard variables inside both toolchain files, exposing `NT_FAILFAST_LINK_ENFORCE=ON` by default so every preset inherits the flags.
-- [ ] T010 Establish third-party warning isolation by marking `third_party/cglm` (and other vendor trees) as `SYSTEM` includes and adding an opt-in interface `NT_FAILFAST_SUPPRESS_THIRDPARTY_WARNINGS` in `engine/CMakeLists.txt`, with documentation in `docs/contrib/warnings.md`.
+- [X] T005 Define zero-warning preset cache variables (e.g., `NT_FAILFAST_WARNING_FLAGS`) in root `CMakePresets.json`, ensuring every preset inherits `/Wall /WX /permissive-` (clang-cl) or `-Wall -Wextra -Wpedantic -Werror -fno-common` (emcc).
+- [X] T006 [P] Wire sanitizer toggles into `cmake/toolchains/emscripten.cmake` and `cmake/toolchains/clang-cl.cmake`, exposing `NT_FAILFAST_SANITIZER=ON|OFF` options with debug ON and release OFF.
+- [X] T007 Add skeleton `qa_failfast_policy_microbench` target plus `failfast` label inside `tests/microbench/CMakeLists.txt` referencing `testbeds/sandbox` so later stories can attach measurements.
+- [X] T008 Add linker-guard preset cache variables (e.g., `NT_FAILFAST_LINK_FLAGS_WIN`, `NT_FAILFAST_LINK_FLAGS_WEB`) covering `/guard:ehcont /DYNAMICBASE /LTCG` and `-Wl,--no-undefined,-z,relro,-z,now` plus stack-protector toggles.
+- [X] T009 [P] Include the linker-guard variables inside both toolchain files, exposing `NT_FAILFAST_LINK_ENFORCE=ON` by default so every preset inherits the flags.
+- [X] T010 Establish third-party warning isolation by marking `third_party/cglm` (and other vendor trees) as `SYSTEM` includes and adding an opt-in interface `NT_FAILFAST_SUPPRESS_THIRDPARTY_WARNINGS` in `engine/CMakeLists.txt`, with documentation in `docs/contrib/warnings.md`.
 
 **Checkpoint**: Tools, presets, microbench scaffolding, linker guard hooks, and third-party warning isolation in place.
 

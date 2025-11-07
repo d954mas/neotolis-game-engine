@@ -11,7 +11,9 @@
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
-        "CMAKE_TARGET_PLATFORM": "wasm"
+        "CMAKE_TARGET_PLATFORM": "wasm",
+        "NT_FAILFAST_WARNING_FLAGS": "-Wall;-Wextra;-Wpedantic;-Werror;-fno-common",
+        "NT_FAILFAST_LINK_FLAGS": "-sERROR_ON_UNDEFINED_SYMBOLS=1;-sSTACK_OVERFLOW_CHECK=2;-sSAFE_HEAP=1"
       }
     },
     {
@@ -22,7 +24,9 @@
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
-        "CMAKE_TARGET_PLATFORM": "windows"
+        "CMAKE_TARGET_PLATFORM": "windows",
+        "NT_FAILFAST_WARNING_FLAGS": "/Wall;/WX;/permissive-",
+        "NT_FAILFAST_LINK_FLAGS": "/guard:ehcont;/DYNAMICBASE;/LTCG;/Brepro"
       },
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
     },
@@ -33,7 +37,8 @@
       "inherits": "base-web",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "WEB_SOURCE_MAP_BASE": "http://localhost:8000/"
+        "WEB_SOURCE_MAP_BASE": "http://localhost:8000/",
+        "NT_FAILFAST_SANITIZER": true
       }
     },
     {
@@ -42,7 +47,8 @@
       "inherits": "base-web",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "WEB_SOURCE_MAP_BASE": "http://localhost:8001/"
+        "WEB_SOURCE_MAP_BASE": "http://localhost:8001/",
+        "NT_FAILFAST_SANITIZER": false
       }
     },
 
@@ -50,13 +56,19 @@
       "name": "win-debug",
       "displayName": "Windows Debug",
       "inherits": "base-win",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "NT_FAILFAST_SANITIZER": true
+      }
     },
     {
       "name": "win-release",
       "displayName": "Windows Release",
       "inherits": "base-win",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "NT_FAILFAST_SANITIZER": false
+      }
     },
 
     {
@@ -67,7 +79,8 @@
         "CMAKE_BUILD_TYPE": "Debug",
         "WEB_SOURCE_MAP_BASE": "http://localhost:8000/",
         "NT_ENABLE_TESTS": true,
-        "NT_PROJECT_SANDBOX": false
+        "NT_PROJECT_SANDBOX": false,
+        "NT_FAILFAST_SANITIZER": true
       }
     },
     {
@@ -78,7 +91,8 @@
         "CMAKE_BUILD_TYPE": "Release",
         "WEB_SOURCE_MAP_BASE": "http://localhost:8001/",
         "NT_ENABLE_TESTS": true,
-        "NT_PROJECT_SANDBOX": false
+        "NT_PROJECT_SANDBOX": false,
+        "NT_FAILFAST_SANITIZER": false
       }
     },
 
@@ -89,7 +103,8 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "NT_ENABLE_TESTS": true,
-        "NT_PROJECT_SANDBOX": false
+        "NT_PROJECT_SANDBOX": false,
+        "NT_FAILFAST_SANITIZER": true
       },
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
     },
@@ -100,7 +115,8 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "NT_ENABLE_TESTS": true,
-        "NT_PROJECT_SANDBOX": false
+        "NT_PROJECT_SANDBOX": false,
+        "NT_FAILFAST_SANITIZER": false
       },
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
     }

@@ -38,3 +38,39 @@ message(STATUS "Using manifest tool: ${CMAKE_MT}")
 # NOTE:
 # No global warnings, optimizations, or standards here.
 # Handle them per-target or in CMakePresets.
+
+if(NOT DEFINED NT_FAILFAST_SANITIZER)
+  set(_NT_SANITIZER_DEFAULT ON)
+  if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    set(_NT_SANITIZER_DEFAULT OFF)
+  endif()
+  set(NT_FAILFAST_SANITIZER ${_NT_SANITIZER_DEFAULT} CACHE BOOL "Enable fail-fast sanitizer instrumentation" FORCE)
+else()
+  set(NT_FAILFAST_SANITIZER ${NT_FAILFAST_SANITIZER} CACHE BOOL "Enable fail-fast sanitizer instrumentation" FORCE)
+endif()
+
+if(NOT DEFINED NT_FAILFAST_LINK_ENFORCE)
+  set(NT_FAILFAST_LINK_ENFORCE ON CACHE BOOL "Force fail-fast linker guard flags" FORCE)
+else()
+  set(NT_FAILFAST_LINK_ENFORCE ${NT_FAILFAST_LINK_ENFORCE} CACHE BOOL "Force fail-fast linker guard flags" FORCE)
+endif()
+
+if(NOT DEFINED NT_FAILFAST_LINK_FLAGS)
+  set(NT_FAILFAST_LINK_FLAGS "/guard:ehcont;/DYNAMICBASE;/LTCG;/Brepro" CACHE STRING "Fail-fast linker guard flags for Windows targets" FORCE)
+endif()
+
+if(NT_FAILFAST_SANITIZER)
+  set(_NT_SANITIZER_FLAGS "-fsanitize=address -fno-omit-frame-pointer")
+  set(_NT_SANITIZER_LINK_FLAGS "-fsanitize=address")
+  foreach(_lang C CXX)
+    set(CMAKE_${_lang}_FLAGS "${CMAKE_${_lang}_FLAGS} ${_NT_SANITIZER_FLAGS}")
+    set(CMAKE_${_lang}_FLAGS_DEBUG "${CMAKE_${_lang}_FLAGS_DEBUG} ${_NT_SANITIZER_FLAGS}")
+    set(CMAKE_${_lang}_FLAGS_RELEASE "${CMAKE_${_lang}_FLAGS_RELEASE} ${_NT_SANITIZER_FLAGS}")
+  endforeach()
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${_NT_SANITIZER_LINK_FLAGS}")
+endif()
+
+if(NT_FAILFAST_LINK_ENFORCE)
+  string(REPLACE ";" " " _nt_link_guard_str "${NT_FAILFAST_LINK_FLAGS}")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${_nt_link_guard_str}")
+endif()
