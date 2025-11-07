@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-11-07T11:32:15.487648+00:00",
+  "generated_at": "2025-11-07T11:40:21.875093+00:00",
   "folder": "sandbox/wasm/release",
   "report_path": "sandbox/wasm/release/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:e01504a2d68aa6edb7af940a133f9d7495252d55",
-      "git_sha": "e01504a2d68aa6edb7af940a133f9d7495252d55",
-      "git_message": "005 publish web report (#5)",
+      "id": "head:master:0686229e62cdb9e0ef564913edb32402a8c10f92",
+      "git_sha": "0686229e62cdb9e0ef564913edb32402a8c10f92",
+      "git_message": "try fix",
       "branch": "master",
-      "subject": "005 publish web report (#5)",
-      "date": "2025-11-07T11:32:15.487648+00:00",
-      "label": "HEAD-master-005 publish web report (#5)-e01504a",
+      "subject": "try fix",
+      "date": "2025-11-07T11:40:21.875093+00:00",
+      "label": "HEAD-master-try fix-0686229",
       "artifacts": [
         {
           "file_name": "index.html",
