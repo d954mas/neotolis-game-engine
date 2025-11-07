@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-11-07T12:03:55.515242+00:00",
+  "generated_at": "2025-11-07T12:15:00.367941+00:00",
   "folder": "sandbox/wasm/release",
   "report_path": "sandbox/wasm/release/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:bf09e6e56f5dc853545f0979189b59681009f6a7",
-      "git_sha": "bf09e6e56f5dc853545f0979189b59681009f6a7",
-      "git_message": "Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine",
+      "id": "head:master:83de23f9948bd6f502a5b50f4d8b8c03cf8548bf",
+      "git_sha": "83de23f9948bd6f502a5b50f4d8b8c03cf8548bf",
+      "git_message": "fix",
       "branch": "master",
-      "subject": "Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine",
-      "date": "2025-11-07T12:03:55.515242+00:00",
-      "label": "HEAD-master-Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine-bf09e6e",
+      "subject": "fix",
+      "date": "2025-11-07T12:15:00.367941+00:00",
+      "label": "HEAD-master-fix-83de23f",
       "artifacts": [
         {
           "file_name": "index.html",
