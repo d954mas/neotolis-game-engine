@@ -61,8 +61,13 @@ jobs:
           fi
           reports_dir=$(find artifacts/size-report -type d -path '*reports/size' | head -n 1 || true)
           if [ -z "${reports_dir}" ]; then
-            echo "::error::Unable to find reports/size directory in downloaded artifacts."
-            exit 1
+            if [ -f artifacts/size-report/index.json ]; then
+              reports_dir="artifacts/size-report"
+              echo "::warning::reports/size folder not found; using artifact root as reports directory."
+            else
+              echo "::error::Unable to find reports/size directory in downloaded artifacts."
+              exit 1
+            fi
           fi
           echo "sandbox_release=${sandbox_release}" >> "$GITHUB_OUTPUT"
           echo "reports_dir=${reports_dir}" >> "$GITHUB_OUTPUT"
