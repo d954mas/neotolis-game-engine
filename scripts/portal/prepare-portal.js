@@ -167,8 +167,8 @@ async function deriveMetrics(reportRoot, fallbackCommit) {
     const indexPath = path.join(reportRoot, 'index.json');
     let metrics = {
         commitHash: fallbackCommit,
-        wasmDeltaKb: null,
-        microbenchMs: null,
+        commitMessage: null,
+        wasmSizeKb: null,
         status: 'warning',
         statusMessage: 'Metrics derived from artifacts.',
     };
@@ -189,35 +189,18 @@ async function deriveMetrics(reportRoot, fallbackCommit) {
         }
         const releaseIndexPath = path.join(reportRoot, folderEntry.index);
         const releaseIndex = JSON.parse(await fsp.readFile(releaseIndexPath, 'utf8'));
-        const [headCommit, ...restCommits] = releaseIndex.commits ?? [];
+        const [headCommit] = releaseIndex.commits ?? [];
         if (headCommit) {
             metrics.commitHash = headCommit.git_sha ?? fallbackCommit ?? null;
+            metrics.commitMessage = headCommit.subject ?? headCommit.git_message ?? null;
             const wasmEntry = headCommit.artifacts?.find((artifact) =>
                 artifact.file_name?.endsWith('.wasm'),
             );
-            let previousWasm = null;
-            for (const candidate of restCommits) {
-                const match = candidate.artifacts?.find((artifact) => artifact.file_name === wasmEntry?.file_name);
-                if (match) {
-                    previousWasm = match;
-                    break;
-                }
-            }
-            if (wasmEntry && previousWasm) {
-                const deltaBytes = wasmEntry.size_bytes - previousWasm.size_bytes;
-                metrics.wasmDeltaKb = Number((deltaBytes / 1024).toFixed(2));
-            }
-            const microbenchArtifact = headCommit.artifacts?.find((artifact) =>
-                artifact.file_name?.includes('microbench'),
-            );
-            if (typeof headCommit.microbench_ms === 'number') {
-                metrics.microbenchMs = headCommit.microbench_ms;
-            } else if (microbenchArtifact?.size_bytes) {
-                metrics.microbenchMs = Number((microbenchArtifact.size_bytes / 1000).toFixed(2));
+            if (wasmEntry?.size_bytes) {
+                metrics.wasmSizeKb = Number((wasmEntry.size_bytes / 1024).toFixed(2));
             }
         }
-        metrics.status =
-            metrics.wasmDeltaKb != null || metrics.microbenchMs != null ? 'success' : 'warning';
+        metrics.status = metrics.wasmSizeKb != null ? 'success' : 'warning';
         metrics.statusMessage =
             metrics.status === 'success'
                 ? `Metrics derived from ${folderEntry.folder} head commit.`

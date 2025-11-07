@@ -32,6 +32,7 @@ Makefile
 !web/portal/*.js
 !reports/size/dashboard.js
 !reports/size/lib/chart.min.js
+!reports/size/history-chart.js
 __pycache__/
 *.py[cod]
 .venv/

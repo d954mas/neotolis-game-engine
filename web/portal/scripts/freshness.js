@@ -8,10 +8,10 @@
     const reportStatus = document.querySelector('[data-role="report-status"]');
     const metricsStatus = document.querySelector('[data-role="metrics-status"]');
     const metricsFields = {
+        commitMessage: document.querySelector('[data-role="commit-message"]'),
         commitHash: document.querySelector('[data-role="commit-hash"]'),
         generatedAt: document.querySelector('[data-role="generated-at"]'),
-        wasmDelta: document.querySelector('[data-role="wasm-delta"]'),
-        microbench: document.querySelector('[data-role="microbench"]'),
+        wasmSize: document.querySelector('[data-role="wasm-size"]'),
     };
     const deploymentRuntime = document.querySelector('[data-role="deployment-runtime"]');
 
@@ -43,10 +43,9 @@
         return `${(ms / 1000).toFixed(2)} s`;
     }
 
-    function formatDelta(value) {
-        if (typeof value !== 'number' || Number.isNaN(value)) return '—';
-        const sign = value >= 0 ? '+' : '';
-        return `${sign}${value.toFixed(2)}`;
+    function formatSha(value) {
+        if (!value) return '—';
+        return value.length > 12 ? value.slice(0, 12) : value;
     }
 
     async function loadManifest() {
@@ -108,15 +107,16 @@
 
         if (metrics) {
             updateMetricsFields({
+                commitMessage: metrics.commitMessage ?? null,
                 commitHash: metrics.commitHash ?? manifest?.commitHash ?? null,
                 generatedAt: manifest?.generatedAt ?? null,
-                wasmDeltaKb: metrics.wasmDeltaKb,
-                microbenchMs: metrics.microbenchMs,
+                wasmSizeKb: metrics.wasmSizeKb,
                 status: metrics.status ?? undefined,
                 statusMessage: metrics.statusMessage ?? undefined,
             });
         } else {
             updateMetricsFields({
+                commitMessage: null,
                 commitHash: manifest?.commitHash ?? null,
                 generatedAt: manifest?.generatedAt ?? null,
                 status: 'warning',
@@ -127,20 +127,25 @@
         deploymentRuntime.textContent = formatRuntime(manifest?.deploymentRuntimeMs);
     }
 
-    function updateMetricsFields({ commitHash, generatedAt, wasmDeltaKb, microbenchMs, status, statusMessage }) {
+    function updateMetricsFields({ commitMessage, commitHash, generatedAt, wasmSizeKb, status, statusMessage }) {
+        if (commitMessage !== undefined) {
+            metricsFields.commitMessage.textContent = commitMessage ?? '—';
+        }
         if (commitHash !== undefined) {
-            metricsFields.commitHash.textContent = commitHash ?? '—';
+            if (commitHash) {
+                metricsFields.commitHash.textContent = formatSha(commitHash);
+                metricsFields.commitHash.title = commitHash;
+            } else {
+                metricsFields.commitHash.textContent = '—';
+                metricsFields.commitHash.removeAttribute('title');
+            }
         }
         if (generatedAt !== undefined) {
             metricsFields.generatedAt.textContent = formatDate(generatedAt);
         }
-        if (wasmDeltaKb !== undefined) {
-            metricsFields.wasmDelta.textContent =
-                typeof wasmDeltaKb === 'number' && !Number.isNaN(wasmDeltaKb) ? formatDelta(wasmDeltaKb) : '—';
-        }
-        if (microbenchMs !== undefined) {
-            metricsFields.microbench.textContent =
-                typeof microbenchMs === 'number' && !Number.isNaN(microbenchMs) ? microbenchMs.toFixed(2) : '—';
+        if (wasmSizeKb !== undefined) {
+            metricsFields.wasmSize.textContent =
+                typeof wasmSizeKb === 'number' && !Number.isNaN(wasmSizeKb) ? formatSize(wasmSizeKb) : '—';
         }
         if (status !== undefined || statusMessage !== undefined) {
             setStatus(metricsStatus, statusMessage ?? '', status);

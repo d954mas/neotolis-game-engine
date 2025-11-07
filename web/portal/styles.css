@@ -140,6 +140,7 @@ body {
 .metrics-card dd {
     margin: 0.15rem 0 0;
     font-weight: 600;
+    word-break: break-word;
 }
 
 .site-footer {
