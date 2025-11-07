@@ -27,6 +27,9 @@ Makefile
 *.wasm
 *.js
 !scripts/portal/*.js
+!web/portal/scripts/*.js
+!web/portal/scripts/**/*.js
+!web/portal/*.js
 !reports/size/dashboard.js
 !reports/size/lib/chart.min.js
 __pycache__/
