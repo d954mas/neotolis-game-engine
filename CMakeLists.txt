@@ -49,6 +49,14 @@ if(NT_FAILFAST_LINK_FLAGS)
         target_link_options(nt_failfast_enforcement INTERFACE ${flag})
     endforeach()
 endif()
+
+# Allow C17-style declaration mixing even when pedantic warnings are enabled
+if(CMAKE_C_COMPILER_ID MATCHES "Clang")
+    target_compile_options(
+        nt_failfast_enforcement INTERFACE
+        $<$<COMPILE_LANGUAGE:C>:-Wno-declaration-after-statement>
+    )
+endif()
 set(NT_FAILFAST_ENFORCEMENT_TARGET nt_failfast_enforcement CACHE INTERNAL "Fail-fast compile/link enforcement interface")
 
 # Subprojects

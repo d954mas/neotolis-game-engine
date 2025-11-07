@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-11-07T18:44:17.395690+00:00",
+  "generated_at": "2025-11-07T18:48:11.087919+00:00",
   "folder": "sandbox/windows/debug",
   "report_path": "sandbox/windows/debug/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:006-enforce-failfast-quality:98a3253b32306d7edf0b148408190ed92ab13a44",
-      "git_sha": "98a3253b32306d7edf0b148408190ed92ab13a44",
-      "git_message": "fix windows",
+      "id": "head:006-enforce-failfast-quality:7eb81c5ff0fb0953c3e08c7e4c039d279bbf8f3b",
+      "git_sha": "7eb81c5ff0fb0953c3e08c7e4c039d279bbf8f3b",
+      "git_message": "fix vscode error",
       "branch": "006-enforce-failfast-quality",
-      "subject": "fix windows",
-      "date": "2025-11-07T18:44:17.395690+00:00",
-      "label": "HEAD-006-enforce-failfast-quality-fix windows-98a3253",
+      "subject": "fix vscode error",
+      "date": "2025-11-07T18:48:11.087919+00:00",
+      "label": "HEAD-006-enforce-failfast-quality-fix vscode error-7eb81c5",
       "artifacts": [
         {
           "file_name": "engine.exe",
