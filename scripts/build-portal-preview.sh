@@ -21,9 +21,15 @@ EOF
 stage_directory() {
     local source_dir="$1"
     local target_dir="$2"
+    local temp_dir
+    temp_dir=$(mktemp -d)
+    if [[ -d "${target_dir}" ]]; then
+        rm -rf "${target_dir}"
+    fi
+    cp -a "${source_dir}/." "${temp_dir}/"
     rm -rf "${target_dir}"
-    mkdir -p "${target_dir}"
-    cp -a "${source_dir}/." "${target_dir}/"
+    mkdir -p "$(dirname "${target_dir}")"
+    mv "${temp_dir}" "${target_dir}"
 }
 
 enforce_budgets() {
