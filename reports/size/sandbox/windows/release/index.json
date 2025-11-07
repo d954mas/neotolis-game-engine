@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-11-07T12:15:00.648297+00:00",
+  "generated_at": "2025-11-07T12:28:53.363420+00:00",
   "folder": "sandbox/windows/release",
   "report_path": "sandbox/windows/release/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:83de23f9948bd6f502a5b50f4d8b8c03cf8548bf",
-      "git_sha": "83de23f9948bd6f502a5b50f4d8b8c03cf8548bf",
+      "id": "head:master:2f59583e61dd37547e1b79274521a2738bd834ea",
+      "git_sha": "2f59583e61dd37547e1b79274521a2738bd834ea",
       "git_message": "fix",
       "branch": "master",
       "subject": "fix",
-      "date": "2025-11-07T12:15:00.648297+00:00",
-      "label": "HEAD-master-fix-83de23f",
+      "date": "2025-11-07T12:28:53.363420+00:00",
+      "label": "HEAD-master-fix-2f59583",
       "artifacts": [
         {
           "file_name": "engine.exe",
