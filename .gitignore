@@ -3,6 +3,14 @@
 /output/
 /out/
 /dist/
+web/portal/dist/
+/node_modules/
+web/portal/sandbox/*
+!web/portal/sandbox/.gitkeep
+web/portal/reports/size/*
+!web/portal/reports/size/.gitkeep
+web/portal/manifest.json
+web/portal/portal-deploy-manifest.json
 /bin/
 /obj/
 /CMakeFiles/
@@ -27,7 +35,6 @@ venv/
 *.egg-info/
 .env*
 *.log
-
 # IDE and tooling
 .idea/
 *.code-workspace

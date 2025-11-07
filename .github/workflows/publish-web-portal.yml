@@ -1,0 +1,201 @@
+name: publish-web-portal
+
+on:
+  workflow_run:
+    workflows: ["sandbox-size"]
+    types:
+      - completed
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    env:
+      PREVIEW_DIR: /tmp/portal-preview
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Download sandbox artifacts
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          repo: ${{ github.repository }}
+          run_id: ${{ github.event.workflow_run.id }}
+          name: sandbox-wasm
+          path: artifacts/sandbox
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download size report artifact
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          repo: ${{ github.repository }}
+          run_id: ${{ github.event.workflow_run.id }}
+          name: size-report-dashboard
+          path: artifacts/size-report
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Locate artifact directories
+        id: locate
+        run: |
+          set -euo pipefail
+          sandbox_release=$(find artifacts/sandbox -type d -path '*sandbox/wasm/release' | head -n 1 || true)
+          if [ -z "${sandbox_release}" ]; then
+            echo "::error::Unable to find sandbox/wasm/release in downloaded artifacts."
+            exit 1
+          fi
+          reports_dir=$(find artifacts/size-report -type d -path '*reports/size' | head -n 1 || true)
+          if [ -z "${reports_dir}" ]; then
+            echo "::error::Unable to find reports/size directory in downloaded artifacts."
+            exit 1
+          fi
+          echo "sandbox_release=${sandbox_release}" >> "$GITHUB_OUTPUT"
+          echo "reports_dir=${reports_dir}" >> "$GITHUB_OUTPUT"
+
+      - name: Evaluate deployment delay
+        id: runtime
+        run: |
+          set -euo pipefail
+          now=$(date -u +%s)
+          completed=$(date -u -d "${{ github.event.workflow_run.updated_at }}" +%s)
+          delay=$(( now - completed ))
+          echo "delay_s=${delay}" >> "$GITHUB_OUTPUT"
+          echo "delay_ms=$(( delay * 1000 ))" >> "$GITHUB_OUTPUT"
+          if (( delay > 600 )); then
+            echo "::error::Portal deployment triggered ${delay}s after size reports job (SLA 600s)." >&2
+            exit 1
+          fi
+
+      - name: Build portal bundle
+        env:
+          PORTAL_PREVIEW_DIR: ${{ env.PREVIEW_DIR }}
+          PORTAL_DIST_DIR: web/portal/dist
+        run: |
+          set -euo pipefail
+          scripts/build-portal-preview.sh \
+            --ci \
+            --sandbox "${{ steps.locate.outputs.sandbox_release }}" \
+            --report "${{ steps.locate.outputs.reports_dir }}" \
+            --commit "${{ github.event.workflow_run.head_sha }}" \
+            --generated-at "${{ github.event.workflow_run.updated_at }}" \
+            --deployment-runtime "${{ steps.runtime.outputs.delay_ms }}"
+
+      - name: Install portal tooling
+        run: npm install --prefix web/portal
+
+      - name: Run Lighthouse and broken-link checks
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --directory web/portal/dist >/tmp/portal-server.log 2>&1 &
+          server_pid=$!
+          cleanup() { kill "$server_pid" || true; }
+          trap cleanup EXIT
+          npx --prefix web/portal lighthouse http://127.0.0.1:4173 \
+            --only-categories=performance \
+            --throttling-method=provided \
+            --output=json \
+            --output-path=portal-lh.json \
+            --quiet
+          npx --prefix web/portal broken-link-checker http://127.0.0.1:4173 --ordered --recursive
+
+      - name: Record manifest summary
+        id: summary
+        env:
+          DEPLOY_DELAY: ${{ steps.runtime.outputs.delay_s }}
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = 'web/portal/manifest.json';
+          if (!fs.existsSync(path)) {
+            console.error('::error::Manifest missing after build.');
+            process.exit(1);
+          }
+          const manifest = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const sandboxSha = manifest?.sandbox?.sha256 ?? '';
+          const reportSha = manifest?.report?.sha256 ?? '';
+          const commitHash = manifest?.commitHash ?? '';
+          const wasmDelta = manifest?.metrics?.wasmDeltaKb ?? 'n/a';
+          let perfScore = null;
+          let fcpMs = null;
+          if (fs.existsSync('portal-lh.json')) {
+            try {
+              const lh = JSON.parse(fs.readFileSync('portal-lh.json', 'utf8'));
+              if (typeof lh?.categories?.performance?.score === 'number') {
+                perfScore = Math.round(lh.categories.performance.score * 100);
+              }
+              const fcp = lh?.audits?.['first-contentful-paint'];
+              if (typeof fcp?.numericValue === 'number') {
+                fcpMs = fcp.numericValue;
+              }
+            } catch (error) {
+              console.warn('Unable to parse portal-lh.json', error);
+            }
+          }
+          const outputs = [
+            `sandbox_sha=${sandboxSha}`,
+            `report_sha=${reportSha}`,
+            `commit_hash=${commitHash}`,
+            `wasm_delta=${wasmDelta}`,
+          ];
+          if (perfScore !== null) {
+            outputs.push(`performance_score=${perfScore}`);
+          }
+          if (fcpMs !== null) {
+            outputs.push(`fcp_ms=${fcpMs}`);
+          }
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, outputs.join('\n') + '\n');
+          const summary = [
+            '### Portal Deployment Summary',
+            '',
+            `- Commit: \`${commitHash}\``,
+            `- Sandbox checksum: \`${sandboxSha.slice(0, 12)}\``,
+            `- Size report checksum: \`${reportSha.slice(0, 12)}\``,
+            `- WASM Δ (KB): ${wasmDelta}`,
+            `- Deployment delay: ${process.env.DEPLOY_DELAY} seconds`,
+          ];
+          if (perfScore !== null) {
+            summary.push(`- Lighthouse performance score: ${perfScore}`);
+          }
+          if (fcpMs !== null) {
+            summary.push(`- First Contentful Paint: ${(fcpMs / 1000).toFixed(2)} s`);
+          }
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary.join('\n') + '\n');
+          NODE
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/portal/dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Upload audit manifest
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portal-deploy-manifest
+          path: |
+            web/portal/portal-deploy-manifest.json
+            web/portal/manifest.json
+            portal-lh.json

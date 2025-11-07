@@ -1,0 +1,33 @@
+openapi: 3.0.3
+info:
+  title: Speckit Portal Delivery
+  version: 0.1.0
+  description: Static endpoints served from GitHub Pages for sandbox and size report access.
+servers:
+  - url: https://speckit-engine.github.io
+paths:
+  /:
+    get:
+      summary: Portal landing page
+      description: Returns the static landing page with links to sandbox and build report plus freshness metadata.
+      responses:
+        '200':
+          description: Landing page loads successfully.
+        '503':
+          description: Deployment pipeline marked site as unavailable (should not be cached past TTL).
+  /sandbox/index.html:
+    get:
+      summary: Sandbox WebAssembly demo
+      responses:
+        '200':
+          description: Sandbox assets served (HTML + wasm bundle).
+        '404':
+          description: Sandbox bundle missing; portal should surface unavailable state and CI must fail.
+  /reports/size/report.html:
+    get:
+      summary: Engine build report dashboard
+      responses:
+        '200':
+          description: Latest size and performance report content.
+        '404':
+          description: Report not present; deployment blocked until update-size-reports succeeds.

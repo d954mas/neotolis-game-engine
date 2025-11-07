@@ -1,0 +1,19 @@
+{
+  "name": "nt-engine-portal",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tooling and CI utilities for the Speckit Engine portal",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "prepare:artifacts": "node ../../scripts/portal/prepare-portal.js",
+    "preview": "PORTAL_PREVIEW_DIR=${PORTAL_PREVIEW_DIR:-/tmp/portal-preview} ../../scripts/build-portal-preview.sh",
+    "lighthouse": "lighthouse http://localhost:4173 --quiet --chrome-flags='--headless=new'"
+  },
+  "devDependencies": {
+    "broken-link-checker": "^0.7.8",
+    "lighthouse": "^12.0.0",
+    "shasum": "^1.0.2"
+  }
+}
