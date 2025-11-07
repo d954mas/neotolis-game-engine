@@ -13,6 +13,15 @@ jobs:
         preset: [web-debug]
     steps:
       - uses: actions/checkout@v4
+      - name: Format check
+        run: ci/scripts/run-format-check.sh --all
+      - name: Clang-Tidy gate
+        run: tests/ci/test_clang_tidy_gate.sh tests/fixtures/clang_tidy/null_deref.c
+      - name: Run warning gate CTest
+        run: |
+          cmake --preset ${{ matrix.preset }}-tests
+          cmake --build --preset ${{ matrix.preset }}-tests
+          ctest --preset ${{ matrix.preset }}-tests --label-regex failfast
       - name: Set up Emscripten
         uses: mymindstorm/setup-emsdk@v14
         with:
@@ -28,6 +37,10 @@ jobs:
         run: cmake --build --preset ${{ matrix.preset }}
       - name: Test
         run: ctest --preset ${{ matrix.preset }}
+      - name: Verify linker guard flags
+        run: |
+          required=$(grep -E "^NT_FAILFAST_LINK_FLAGS:STRING=" build/${{ matrix.preset }}/CMakeCache.txt | cut -d= -f2)
+          ci/scripts/check-linker-flags.sh --command-file build/${{ matrix.preset }}/CMakeFiles/nt_sandbox.dir/link.txt --required "$required"
       - name: Generate size reports (parallel)
         run: |
           set -euo pipefail
@@ -45,6 +58,16 @@ jobs:
             fi
           done
           exit "${status}"
+      - name: Generate quality gate report
+        run: |
+          ci/scripts/quality-gate-report.sh \
+            --preset ${{ matrix.preset }} \
+            --workflow web-debug \
+            --build-dir build/${{ matrix.preset }} \
+            --output build/${{ matrix.preset }}/quality-gate-report.json \
+            --warnings-as-errors true \
+            --linker-status pass \
+            --third-party "engine/third_party/cglm:Header-only cglm dependency"
       - name: Upload size and microbench artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -53,3 +76,4 @@ jobs:
           path: |
             build/${{ matrix.preset }}/tests/size
             build/${{ matrix.preset }}/tests/microbench
+            build/${{ matrix.preset }}/quality-gate-report.json

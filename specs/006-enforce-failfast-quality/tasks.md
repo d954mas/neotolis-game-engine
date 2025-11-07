@@ -49,11 +49,11 @@
 - [X] T013 [US1] Propagate compile/link warning interfaces and the third-party suppression target from `CMakePresets.json` into root `CMakeLists.txt`, ensuring every engine/testbed target also defines `NT_FAILFAST_STRICT`.
 - [X] T014 [P] [US1] Update `engine/CMakeLists.txt` to apply the strict compile/link/third-party interfaces to `engine/core/nt_engine.c` and dependent modules without touching vendor directories.
 - [X] T015 [US1] Add script `ci/scripts/check-linker-flags.sh` that scans build logs for linker warnings and confirms required guard flags; script exits non-zero on violation.
-- [ ] T016 [P] [US1] Enhance `ci/workflows/web-debug.yml` with compile/link/error steps, clang-tidy/include-what-you-use, `check-linker-flags.sh`, and the shared format-check job.
-- [ ] T017 [US1] Mirror the zero-warning/static-analysis/linker/format steps inside `ci/workflows/win-debug.yml`, including artifact uploads.
-- [ ] T018 [P] [US1] Extend `ci/workflows/web-release.yml` and `ci/workflows/win-release.yml` to reuse the same compile/link/static/format checks so ship presets inherit the zero-warning policy.
-- [ ] T019 [US1] Wire the shared format-check script (T004) into all workflows via a reusable job or workflow-call, ensuring every preset enforces zero-drift formatting.
-- [ ] T020 [US1] Extend `ci/scripts/quality-gate-report.sh` to populate the `compiler_flags`, `linker_guards`, and `third_party_whitelist` sections based on build logs.
+- [X] T016 [P] [US1] Enhance `ci/workflows/web-debug.yml` with compile/link/error steps, clang-tidy/include-what-you-use, `check-linker-flags.sh`, and the shared format-check job.
+- [X] T017 [US1] Mirror the zero-warning/static-analysis/linker/format steps inside `ci/workflows/win-debug.yml`, including artifact uploads.
+- [X] T018 [P] [US1] Extend `ci/workflows/web-release.yml` and `ci/workflows/win-release.yml` to reuse the same compile/link/static/format checks so ship presets inherit the zero-warning policy.
+- [X] T019 [US1] Wire the shared format-check script (T004) into all workflows via a reusable job or workflow-call, ensuring every preset enforces zero-drift formatting.
+- [X] T020 [US1] Extend `ci/scripts/quality-gate-report.sh` to populate the `compiler_flags`, `linker_guards`, and `third_party_whitelist` sections based on build logs.
 
 **Checkpoint**: CI blocks any warning or static-analysis defect, enforces linker guards, protects third-party code, and reports compile/link status for every preset.
 

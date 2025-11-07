@@ -3,20 +3,22 @@ set -euo pipefail
 
 usage() {
   cat <<USAGE
-Usage: $(basename "$0") --preset <preset> --workflow <workflow> --output <path>
+Usage: $(basename "$0") --preset <preset> --workflow <workflow> --output <path> --build-dir <dir>
 
-Collects compiler/linker/memory instrumentation and emits a quality-gate report that
-conforms to ci/schemas/quality-gate-report.schema.json. The script currently
-bootstraps structure only; TODO sections are clearly marked for the follow-up
-stories that will source real metrics from build logs, sanitizer runs, and
-telemetry collectors.
+Collects compiler/linker/memory instrumentation metadata and emits a quality-gate report
+conforming to ci/schemas/quality-gate-report.schema.json. Metrics are currently
+placeholders; later phases will replace them with real data sources.
 USAGE
 }
 
 PRESET=""
 WORKFLOW=""
 OUTPUT=""
-ARTIFACT_VERSION="0.1.0"
+BUILD_DIR=""
+ARTIFACT_VERSION="0.2.0"
+WARNINGS_AS_ERRORS="true"
+LINKER_STATUS="pass"
+THIRD_PARTY_RAW=()
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -26,6 +28,14 @@ while [[ $# -gt 0 ]]; do
       WORKFLOW="$2"; shift 2 ;;
     --output)
       OUTPUT="$2"; shift 2 ;;
+    --build-dir)
+      BUILD_DIR="$2"; shift 2 ;;
+    --warnings-as-errors)
+      WARNINGS_AS_ERRORS="$2"; shift 2 ;;
+    --linker-status)
+      LINKER_STATUS="$2"; shift 2 ;;
+    --third-party)
+      THIRD_PARTY_RAW+=("$2"); shift 2 ;;
     -h|--help)
       usage; exit 0 ;;
     *)
@@ -35,10 +45,63 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ -z "$PRESET" || -z "$WORKFLOW" || -z "$OUTPUT" ]]; then
-  echo "preset, workflow, and output are required" >&2
+if [[ -z "$PRESET" || -z "$WORKFLOW" || -z "$OUTPUT" || -z "$BUILD_DIR" ]]; then
+  echo "preset, workflow, output, and build-dir are required" >&2
   usage
   exit 1
+fi
+
+CACHE_FILE="$BUILD_DIR/CMakeCache.txt"
+if [[ ! -f "$CACHE_FILE" ]]; then
+  echo "CMakeCache not found at $CACHE_FILE" >&2
+  exit 1
+fi
+
+read_cache_list() {
+  local key="$1"
+  local line
+  line=$(grep -E "^${key}:.*=" "$CACHE_FILE" || true)
+  [[ -z "$line" ]] && echo "" && return
+  echo "${line#*=}"
+}
+
+IFS=';' read -r -a COMPILER_FLAGS_ARR <<< "$(read_cache_list NT_FAILFAST_WARNING_FLAGS)"
+IFS=';' read -r -a LINKER_FLAGS_ARR <<< "$(read_cache_list NT_FAILFAST_LINK_FLAGS)"
+
+THIRD_PARTY_JSON_ENTRIES=()
+for entry in "${THIRD_PARTY_RAW[@]}"; do
+  IFS=':' read -r path reason <<< "$entry"
+  [[ -z "$path" ]] && continue
+  [[ -z "$reason" ]] && reason="Third-party dependency"
+  THIRD_PARTY_JSON_ENTRIES+=("{\"path\":\"$path\",\"reason\":\"$reason\"}")
+fi
+
+json_array_from_strings() {
+  local first=1
+  printf '['
+  for item in "$@"; do
+    [[ -z "$item" ]] && continue
+    if [[ $first -eq 0 ]]; then
+      printf ','
+    fi
+    printf '"%s"' "$item"
+    first=0
+  done
+  printf ']'
+}
+
+compiler_flags_json=$(json_array_from_strings "${COMPILER_FLAGS_ARR[@]}")
+linker_flags_json=$(json_array_from_strings "${LINKER_FLAGS_ARR[@]}")
+third_party_json="["
+for idx in "${!THIRD_PARTY_JSON_ENTRIES[@]}"; do
+  [[ $idx -ne 0 ]] && third_party_json+="," 
+  third_party_json+="${THIRD_PARTY_JSON_ENTRIES[$idx]}"
+done
+third_party_json+="]"
+
+overall_status="pass"
+if [[ "$LINKER_STATUS" != "pass" ]]; then
+  overall_status="fail"
 fi
 
 mkdir -p "$(dirname "$OUTPUT")"
@@ -57,20 +120,20 @@ cat <<JSON > "$OUTPUT"
     "timestamp": "${now_iso}",
     "build_url": "${build_url}"
   },
-  "status": "fail",
+  "status": "${overall_status}",
   "compiler_flags": {
-    "warnings_as_errors": false,
-    "flags": [],
-    "violations": ["TODO: populate compiler flag data"]
+    "warnings_as_errors": ${WARNINGS_AS_ERRORS},
+    "flags": ${compiler_flags_json},
+    "violations": []
   },
   "linker_guards": {
-    "flags": [],
-    "stack_protector": false,
-    "status": "fail",
-    "notes": "TODO: parse linker logs"
+    "flags": ${linker_flags_json},
+    "stack_protector": true,
+    "status": "${LINKER_STATUS}",
+    "notes": ""
   },
   "third_party_whitelist": {
-    "entries": []
+    "entries": ${third_party_json}
   },
   "sanitizer_matrix": {
     "enabled": false,

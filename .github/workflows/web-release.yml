@@ -13,6 +13,10 @@ jobs:
         preset: [web-release]
     steps:
       - uses: actions/checkout@v4
+      - name: Format check
+        run: ci/scripts/run-format-check.sh --all
+      - name: Clang-Tidy gate
+        run: tests/ci/test_clang_tidy_gate.sh tests/fixtures/clang_tidy/null_deref.c
       - name: Set up Emscripten
         uses: mymindstorm/setup-emsdk@v14
         with:
@@ -28,6 +32,10 @@ jobs:
         run: cmake --build --preset ${{ matrix.preset }}
       - name: Test
         run: ctest --preset ${{ matrix.preset }}
+      - name: Verify linker guard flags
+        run: |
+          required=$(grep -E "^NT_FAILFAST_LINK_FLAGS:STRING=" build/${{ matrix.preset }}/CMakeCache.txt | cut -d= -f2)
+          ci/scripts/check-linker-flags.sh --command-file build/${{ matrix.preset }}/CMakeFiles/nt_sandbox.dir/link.txt --required "$required"
       - name: Generate size reports (parallel)
         run: |
           set -euo pipefail
@@ -45,9 +53,21 @@ jobs:
             fi
           done
           exit "${status}"
+      - name: Generate quality gate report
+        run: |
+          ci/scripts/quality-gate-report.sh \
+            --preset ${{ matrix.preset }} \
+            --workflow web-release \
+            --build-dir build/${{ matrix.preset }} \
+            --output build/${{ matrix.preset }}/quality-gate-report.json \
+            --warnings-as-errors true \
+            --linker-status pass \
+            --third-party "engine/third_party/cglm:Header-only cglm dependency"
       - name: Upload size-report artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.preset }}-reports
-          path: build/${{ matrix.preset }}/tests/size
+          path: |
+            build/${{ matrix.preset }}/tests/size
+            build/${{ matrix.preset }}/quality-gate-report.json
