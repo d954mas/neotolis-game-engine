@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-11-07T11:40:21.875093+00:00",
+  "generated_at": "2025-11-07T11:50:27.075696+00:00",
   "folder": "sandbox/wasm/release",
   "report_path": "sandbox/wasm/release/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:0686229e62cdb9e0ef564913edb32402a8c10f92",
-      "git_sha": "0686229e62cdb9e0ef564913edb32402a8c10f92",
-      "git_message": "try fix",
+      "id": "head:master:f9c8989c1fac997a90333f98212a8ef686ac4f69",
+      "git_sha": "f9c8989c1fac997a90333f98212a8ef686ac4f69",
+      "git_message": "fix",
       "branch": "master",
-      "subject": "try fix",
-      "date": "2025-11-07T11:40:21.875093+00:00",
-      "label": "HEAD-master-try fix-0686229",
+      "subject": "fix",
+      "date": "2025-11-07T11:50:27.075696+00:00",
+      "label": "HEAD-master-fix-f9c8989",
       "artifacts": [
         {
           "file_name": "index.html",
