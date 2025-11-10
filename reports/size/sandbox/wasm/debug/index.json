@@ -1,33 +1,61 @@
 {
-  "generated_at": "2025-11-07T13:03:50.881770+00:00",
+  "generated_at": "2025-11-10T11:01:51.290061+00:00",
   "folder": "sandbox/wasm/debug",
   "report_path": "sandbox/wasm/debug/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:833cc7bf273a3976bb5510e870980ebfc3f1edb4",
-      "git_sha": "833cc7bf273a3976bb5510e870980ebfc3f1edb4",
-      "git_message": "wip",
+      "id": "head:master:147abdf2599297f0aea3d14963e4bb2f02c88b65",
+      "git_sha": "147abdf2599297f0aea3d14963e4bb2f02c88b65",
+      "git_message": "try fix web tests",
       "branch": "master",
-      "subject": "wip",
-      "date": "2025-11-07T13:03:50.881770+00:00",
-      "label": "HEAD-master-wip-833cc7b",
+      "subject": "try fix web tests",
+      "date": "2025-11-10T11:01:51.290061+00:00",
+      "label": "HEAD-master-try fix web tests-147abdf",
       "artifacts": [
         {
           "file_name": "index.html",
-          "size_bytes": 22270
+          "size_bytes": 22190
         },
         {
           "file_name": "nt_sandbox.js",
-          "size_bytes": 50372
+          "size_bytes": 65533
         },
         {
           "file_name": "nt_sandbox.wasm",
-          "size_bytes": 1206556
+          "size_bytes": 1200419
         },
         {
           "file_name": "nt_sandbox.wasm.map",
-          "size_bytes": 87675
+          "size_bytes": 90100
+        }
+      ]
+    },
+    {
+      "kind": "branch",
+      "id": "branch:master:147abdf2599297f0aea3d14963e4bb2f02c88b65",
+      "git_sha": "147abdf2599297f0aea3d14963e4bb2f02c88b65",
+      "git_message": "try fix web tests",
+      "branch": "master",
+      "subject": "try fix web tests",
+      "date": "2025-11-10T15:51:20+05:00",
+      "label": "master-try fix web tests-147abdf",
+      "artifacts": [
+        {
+          "file_name": "index.html",
+          "size_bytes": 22190
+        },
+        {
+          "file_name": "nt_sandbox.js",
+          "size_bytes": 65533
+        },
+        {
+          "file_name": "nt_sandbox.wasm",
+          "size_bytes": 1200419
+        },
+        {
+          "file_name": "nt_sandbox.wasm.map",
+          "size_bytes": 90100
         }
       ]
     },

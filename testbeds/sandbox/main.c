@@ -3,7 +3,7 @@
 
 int main(void) {
     if (nt_engine_init() != NT_RESULT_OK){
-        fprintf_s(stderr, "Failed to initialize engine\n");
+        fputs("Failed to initialize engine\n", stderr);
         return 1;
     }
     nt_engine_shutdown();

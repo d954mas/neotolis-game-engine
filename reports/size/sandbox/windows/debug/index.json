@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-11-10T10:31:38.198586+00:00",
+  "generated_at": "2025-11-10T11:01:55.921700+00:00",
   "folder": "sandbox/windows/debug",
   "report_path": "sandbox/windows/debug/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:006-enforce-failfast-quality:a2695367066e5302860437f960cd5aa803263879",
-      "git_sha": "a2695367066e5302860437f960cd5aa803263879",
-      "git_message": "fix sanitazees",
-      "branch": "006-enforce-failfast-quality",
-      "subject": "fix sanitazees",
-      "date": "2025-11-10T10:31:38.198586+00:00",
-      "label": "HEAD-006-enforce-failfast-quality-fix sanitazees-a269536",
+      "id": "head:master:147abdf2599297f0aea3d14963e4bb2f02c88b65",
+      "git_sha": "147abdf2599297f0aea3d14963e4bb2f02c88b65",
+      "git_message": "try fix web tests",
+      "branch": "master",
+      "subject": "try fix web tests",
+      "date": "2025-11-10T11:01:55.921700+00:00",
+      "label": "HEAD-master-try fix web tests-147abdf",
       "artifacts": [
         {
           "file_name": "engine.exe",
