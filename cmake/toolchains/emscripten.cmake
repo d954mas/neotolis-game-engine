@@ -34,6 +34,11 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
 include("${CMAKE_CURRENT_LIST_DIR}/../NTFailfastOptions.cmake")
 
+nt_failfast_configure_warning_flags(
+    "-Wall;-Wextra;-Wpedantic;-Werror;-fno-common"
+    "Fail-fast compile warnings for Emscripten targets"
+)
+
 set(_NT_SANITIZER_DEFAULT ON)
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     set(_NT_SANITIZER_DEFAULT OFF)
@@ -42,9 +47,11 @@ nt_failfast_cache_bool(NT_FAILFAST_SANITIZER ${_NT_SANITIZER_DEFAULT} "Enable fa
 
 nt_failfast_cache_bool(NT_FAILFAST_LINK_ENFORCE ON "Force fail-fast linker guard flags")
 
-if(NOT DEFINED NT_FAILFAST_LINK_FLAGS)
-    set(NT_FAILFAST_LINK_FLAGS "-sERROR_ON_UNDEFINED_SYMBOLS=1;-sSTACK_OVERFLOW_CHECK=2;-sSAFE_HEAP=1" CACHE STRING "Fail-fast linker guard flags for Emscripten targets" FORCE)
-endif()
+nt_failfast_configure_link_flags(
+    "-sERROR_ON_UNDEFINED_SYMBOLS=1;-sSTACK_OVERFLOW_CHECK=2;-sSAFE_HEAP=1"
+    "-sERROR_ON_UNDEFINED_SYMBOLS=1"
+    "Fail-fast linker guard flags for Emscripten targets"
+)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/sandbox")
 

@@ -11,9 +11,7 @@
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
-        "CMAKE_TARGET_PLATFORM": "wasm",
-        "NT_FAILFAST_WARNING_FLAGS": "-Wall;-Wextra;-Wpedantic;-Werror;-fno-common",
-        "NT_FAILFAST_LINK_FLAGS": "-sERROR_ON_UNDEFINED_SYMBOLS=1;-sSTACK_OVERFLOW_CHECK=2;-sSAFE_HEAP=1"
+        "CMAKE_TARGET_PLATFORM": "wasm"
       }
     },
     {
@@ -24,9 +22,7 @@
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
-        "CMAKE_TARGET_PLATFORM": "windows",
-        "NT_FAILFAST_WARNING_FLAGS": "/Wall;/WX;/permissive-",
-        "NT_FAILFAST_LINK_FLAGS": "/guard:ehcont;/DYNAMICBASE;/LTCG;/Brepro"
+        "CMAKE_TARGET_PLATFORM": "windows"
       },
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
     },
@@ -48,8 +44,7 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "WEB_SOURCE_MAP_BASE": "http://localhost:8001/",
-        "NT_FAILFAST_SANITIZER": false,
-        "NT_FAILFAST_LINK_FLAGS": "-sERROR_ON_UNDEFINED_SYMBOLS=1"
+        "NT_FAILFAST_SANITIZER": false
       }
     },
 
@@ -93,8 +88,7 @@
         "WEB_SOURCE_MAP_BASE": "http://localhost:8001/",
         "NT_ENABLE_TESTS": true,
         "NT_PROJECT_SANDBOX": false,
-        "NT_FAILFAST_SANITIZER": false,
-        "NT_FAILFAST_LINK_FLAGS": "-sERROR_ON_UNDEFINED_SYMBOLS=1"
+        "NT_FAILFAST_SANITIZER": false
       }
     },
 

@@ -41,6 +41,11 @@ message(STATUS "Using manifest tool: ${CMAKE_MT}")
 
 include("${CMAKE_CURRENT_LIST_DIR}/../NTFailfastOptions.cmake")
 
+nt_failfast_configure_warning_flags(
+  "/Wall;/WX;/permissive-"
+  "Fail-fast compile warnings for Windows targets"
+)
+
 set(_NT_SANITIZER_DEFAULT ON)
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
   set(_NT_SANITIZER_DEFAULT OFF)
@@ -49,9 +54,11 @@ nt_failfast_cache_bool(NT_FAILFAST_SANITIZER ${_NT_SANITIZER_DEFAULT} "Enable fa
 
 nt_failfast_cache_bool(NT_FAILFAST_LINK_ENFORCE ON "Force fail-fast linker guard flags")
 
-if(NOT DEFINED NT_FAILFAST_LINK_FLAGS)
-  set(NT_FAILFAST_LINK_FLAGS "/guard:ehcont;/DYNAMICBASE;/LTCG;/Brepro" CACHE STRING "Fail-fast linker guard flags for Windows targets" FORCE)
-endif()
+nt_failfast_configure_link_flags(
+  "/guard:ehcont;/DYNAMICBASE;/LTCG;/Brepro"
+  "/guard:ehcont;/DYNAMICBASE;/LTCG;/Brepro"
+  "Fail-fast linker guard flags for Windows targets"
+)
 
 if(NT_FAILFAST_SANITIZER)
   message(STATUS "Fail-fast sanitizers are only enabled on Windows release builds using the /MD runtime")
