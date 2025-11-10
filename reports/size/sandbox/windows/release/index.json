@@ -1,21 +1,21 @@
 {
-  "generated_at": "2025-11-10T09:28:21.906004+00:00",
+  "generated_at": "2025-11-10T11:12:45.271086+00:00",
   "folder": "sandbox/windows/release",
   "report_path": "sandbox/windows/release/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:006-enforce-failfast-quality:732df9eed8907d24a4b07c8a7fa7fdba9bb400a1",
-      "git_sha": "732df9eed8907d24a4b07c8a7fa7fdba9bb400a1",
-      "git_message": "remove unused",
-      "branch": "006-enforce-failfast-quality",
-      "subject": "remove unused",
-      "date": "2025-11-10T09:28:21.906004+00:00",
-      "label": "HEAD-006-enforce-failfast-quality-remove unused-732df9e",
+      "id": "head:master:ede8272f2057461eb40dbd10072996bf7306c72e",
+      "git_sha": "ede8272f2057461eb40dbd10072996bf7306c72e",
+      "git_message": "fix web build",
+      "branch": "master",
+      "subject": "fix web build",
+      "date": "2025-11-10T11:12:45.271086+00:00",
+      "label": "HEAD-master-fix web build-ede8272",
       "artifacts": [
         {
           "file_name": "engine.exe",
-          "size_bytes": 9728
+          "size_bytes": 10240
         }
       ]
     },
