@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-11-10T11:25:45.392824+00:00",
+  "generated_at": "2025-11-10T13:18:07.986670+00:00",
   "folder": "sandbox/windows/release",
   "report_path": "sandbox/windows/release/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:abdd171546a3da600cdea28698c6e7d01034c8f5",
-      "git_sha": "abdd171546a3da600cdea28698c6e7d01034c8f5",
-      "git_message": "update readme",
+      "id": "head:master:e500957f0776c1ada168ff1a3ce370dde3cc9ae6",
+      "git_sha": "e500957f0776c1ada168ff1a3ce370dde3cc9ae6",
+      "git_message": "Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine",
       "branch": "master",
-      "subject": "update readme",
-      "date": "2025-11-10T11:25:45.392824+00:00",
-      "label": "HEAD-master-update readme-abdd171",
+      "subject": "Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine",
+      "date": "2025-11-10T13:18:07.986670+00:00",
+      "label": "HEAD-master-Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine-e500957",
       "artifacts": [
         {
           "file_name": "engine.exe",
