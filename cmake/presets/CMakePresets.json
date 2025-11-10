@@ -48,7 +48,8 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "WEB_SOURCE_MAP_BASE": "http://localhost:8001/",
-        "NT_FAILFAST_SANITIZER": false
+        "NT_FAILFAST_SANITIZER": false,
+        "NT_FAILFAST_LINK_FLAGS": "-sERROR_ON_UNDEFINED_SYMBOLS=1"
       }
     },
 
@@ -92,7 +93,8 @@
         "WEB_SOURCE_MAP_BASE": "http://localhost:8001/",
         "NT_ENABLE_TESTS": true,
         "NT_PROJECT_SANDBOX": false,
-        "NT_FAILFAST_SANITIZER": false
+        "NT_FAILFAST_SANITIZER": false,
+        "NT_FAILFAST_LINK_FLAGS": "-sERROR_ON_UNDEFINED_SYMBOLS=1"
       }
     },
 
