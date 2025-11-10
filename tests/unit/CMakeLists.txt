@@ -20,7 +20,12 @@ if(DEFINED NT_THIRD_PARTY_HEADERS_TARGET AND TARGET ${NT_THIRD_PARTY_HEADERS_TAR
     target_link_libraries(test_engine_lifecycle PRIVATE ${NT_THIRD_PARTY_HEADERS_TARGET})
 endif()
 
-add_test(NAME US1_engine_lifecycle COMMAND test_engine_lifecycle)
+set(_nt_engine_lifecycle_command $<TARGET_FILE:test_engine_lifecycle>)
+if(CMAKE_TARGET_PLATFORM STREQUAL "wasm")
+    set_target_properties(test_engine_lifecycle PROPERTIES SUFFIX ".js")
+    set(_nt_engine_lifecycle_command node $<TARGET_FILE:test_engine_lifecycle>)
+endif()
+add_test(NAME US1_engine_lifecycle COMMAND ${_nt_engine_lifecycle_command})
 
 add_executable(test_feature_sample
     test_feature_sample.c
@@ -40,4 +45,9 @@ if(DEFINED NT_THIRD_PARTY_HEADERS_TARGET AND TARGET ${NT_THIRD_PARTY_HEADERS_TAR
     target_link_libraries(test_feature_sample PRIVATE ${NT_THIRD_PARTY_HEADERS_TARGET})
 endif()
 
-add_test(NAME US2_feature_sample COMMAND test_feature_sample)
+set(_nt_feature_sample_command $<TARGET_FILE:test_feature_sample>)
+if(CMAKE_TARGET_PLATFORM STREQUAL "wasm")
+    set_target_properties(test_feature_sample PROPERTIES SUFFIX ".js")
+    set(_nt_feature_sample_command node $<TARGET_FILE:test_feature_sample>)
+endif()
+add_test(NAME US2_feature_sample COMMAND ${_nt_feature_sample_command})
