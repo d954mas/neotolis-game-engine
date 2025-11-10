@@ -35,19 +35,17 @@ message(STATUS "Configuring ${CMAKE_PROJECT_NAME} in ${CMAKE_BUILD_TYPE} mode ($
 option(NT_PROJECT_SANDBOX "Build the sandbox testbed project" ON)
 option(NT_ENABLE_TESTS "Build nt_engine tests" OFF)
 
+# debug flags from presets
 set(NT_FAILFAST_WARNING_FLAGS "${NT_FAILFAST_WARNING_FLAGS}" CACHE STRING "Fail-fast compile warnings for all targets")
 set(NT_FAILFAST_LINK_FLAGS "${NT_FAILFAST_LINK_FLAGS}" CACHE STRING "Fail-fast linker guard flags for all targets")
 
 add_library(nt_failfast_enforcement INTERFACE)
 if(NT_FAILFAST_WARNING_FLAGS)
-    foreach(flag IN LISTS NT_FAILFAST_WARNING_FLAGS)
-        target_compile_options(nt_failfast_enforcement INTERFACE $<$<COMPILE_LANGUAGE:C>:${flag}>)
-    endforeach()
+    target_compile_options(nt_failfast_enforcement INTERFACE
+        $<$<COMPILE_LANGUAGE:C>:${NT_FAILFAST_WARNING_FLAGS}>)
 endif()
 if(NT_FAILFAST_LINK_FLAGS)
-    foreach(flag IN LISTS NT_FAILFAST_LINK_FLAGS)
-        target_link_options(nt_failfast_enforcement INTERFACE ${flag})
-    endforeach()
+    target_link_options(nt_failfast_enforcement INTERFACE ${NT_FAILFAST_LINK_FLAGS})
 endif()
 
 # Allow C17-style declaration mixing even when pedantic warnings are enabled

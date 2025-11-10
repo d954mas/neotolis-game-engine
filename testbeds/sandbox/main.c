@@ -6,7 +6,7 @@ int main(void) {
         fprintf(stderr, "Failed to initialize engine\n");
         return 1;
     }
-
+    int a = 1;
     nt_engine_shutdown();
     printf("Sandbox lifecycle complete\n");
     return 0;

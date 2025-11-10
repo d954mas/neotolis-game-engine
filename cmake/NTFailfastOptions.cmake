@@ -1,0 +1,12 @@
+if(DEFINED _NT_FAILFAST_OPTIONS_INCLUDED)
+    return()
+endif()
+set(_NT_FAILFAST_OPTIONS_INCLUDED ON)
+
+function(nt_failfast_cache_bool var default doc)
+    if(NOT DEFINED ${var})
+        set(${var} ${default} CACHE BOOL "${doc}" FORCE)
+    else()
+        set(${var} ${${var}} CACHE BOOL "${doc}" FORCE)
+    endif()
+endfunction()

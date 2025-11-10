@@ -39,21 +39,15 @@ message(STATUS "Using manifest tool: ${CMAKE_MT}")
 # No global warnings, optimizations, or standards here.
 # Handle them per-target or in CMakePresets.
 
-if(NOT DEFINED NT_FAILFAST_SANITIZER)
-  set(_NT_SANITIZER_DEFAULT ON)
-  if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    set(_NT_SANITIZER_DEFAULT OFF)
-  endif()
-  set(NT_FAILFAST_SANITIZER ${_NT_SANITIZER_DEFAULT} CACHE BOOL "Enable fail-fast sanitizer instrumentation" FORCE)
-else()
-  set(NT_FAILFAST_SANITIZER ${NT_FAILFAST_SANITIZER} CACHE BOOL "Enable fail-fast sanitizer instrumentation" FORCE)
-endif()
+include("${CMAKE_CURRENT_LIST_DIR}/../NTFailfastOptions.cmake")
 
-if(NOT DEFINED NT_FAILFAST_LINK_ENFORCE)
-  set(NT_FAILFAST_LINK_ENFORCE ON CACHE BOOL "Force fail-fast linker guard flags" FORCE)
-else()
-  set(NT_FAILFAST_LINK_ENFORCE ${NT_FAILFAST_LINK_ENFORCE} CACHE BOOL "Force fail-fast linker guard flags" FORCE)
+set(_NT_SANITIZER_DEFAULT ON)
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+  set(_NT_SANITIZER_DEFAULT OFF)
 endif()
+nt_failfast_cache_bool(NT_FAILFAST_SANITIZER ${_NT_SANITIZER_DEFAULT} "Enable fail-fast sanitizer instrumentation")
+
+nt_failfast_cache_bool(NT_FAILFAST_LINK_ENFORCE ON "Force fail-fast linker guard flags")
 
 if(NOT DEFINED NT_FAILFAST_LINK_FLAGS)
   set(NT_FAILFAST_LINK_FLAGS "/guard:ehcont;/DYNAMICBASE;/LTCG;/Brepro" CACHE STRING "Fail-fast linker guard flags for Windows targets" FORCE)
@@ -62,11 +56,6 @@ endif()
 if(NT_FAILFAST_SANITIZER)
   message(STATUS "Fail-fast sanitizers are only enabled on Windows release builds using the /MD runtime")
   set(NT_FAILFAST_SANITIZER OFF CACHE BOOL "Enable fail-fast sanitizer instrumentation" FORCE)
-endif()
-
-if(NT_FAILFAST_LINK_ENFORCE)
-  string(REPLACE ";" " " _nt_link_guard_str "${NT_FAILFAST_LINK_FLAGS}")
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${_nt_link_guard_str}")
 endif()
 
 if(NT_FAILFAST_LINK_ENFORCE)
