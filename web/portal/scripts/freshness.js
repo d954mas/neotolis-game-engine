@@ -11,7 +11,7 @@
         commitMessage: document.querySelector('[data-role="commit-message"]'),
         commitHash: document.querySelector('[data-role="commit-hash"]'),
         generatedAt: document.querySelector('[data-role="generated-at"]'),
-        wasmSize: document.querySelector('[data-role="wasm-size"]'),
+        artifactTable: document.querySelector('[data-role="artifact-table"]'),
     };
     const deploymentRuntime = document.querySelector('[data-role="deployment-runtime"]');
 
@@ -106,11 +106,25 @@
         }
 
         if (metrics) {
+            let manifestArtifacts;
+            if (Array.isArray(metrics.artifacts)) {
+                manifestArtifacts = metrics.artifacts.map((artifact) => ({
+                    name: artifact.name ?? artifact.file ?? 'artifact',
+                    sizeKb: artifact.sizeKb ?? artifact.size_kb ?? null,
+                }));
+            } else if (typeof metrics.wasmSizeKb === 'number') {
+                manifestArtifacts = [
+                    {
+                        name: metrics.artifactLabel ?? 'sandbox/wasm/release',
+                        sizeKb: metrics.wasmSizeKb,
+                    },
+                ];
+            }
             updateMetricsFields({
                 commitMessage: metrics.commitMessage ?? null,
                 commitHash: metrics.commitHash ?? manifest?.commitHash ?? null,
                 generatedAt: manifest?.generatedAt ?? null,
-                wasmSizeKb: metrics.wasmSizeKb,
+                artifacts: manifestArtifacts,
                 status: metrics.status ?? undefined,
                 statusMessage: metrics.statusMessage ?? undefined,
             });
@@ -119,6 +133,7 @@
                 commitMessage: null,
                 commitHash: manifest?.commitHash ?? null,
                 generatedAt: manifest?.generatedAt ?? null,
+                artifacts: undefined,
                 status: 'warning',
                 statusMessage: 'Metrics unavailable.',
             });
@@ -127,7 +142,7 @@
         deploymentRuntime.textContent = formatRuntime(manifest?.deploymentRuntimeMs);
     }
 
-    function updateMetricsFields({ commitMessage, commitHash, generatedAt, wasmSizeKb, status, statusMessage }) {
+    function updateMetricsFields({ commitMessage, commitHash, generatedAt, artifacts, status, statusMessage }) {
         if (commitMessage !== undefined) {
             metricsFields.commitMessage.textContent = commitMessage ?? '—';
         }
@@ -143,13 +158,43 @@
         if (generatedAt !== undefined) {
             metricsFields.generatedAt.textContent = formatDate(generatedAt);
         }
-        if (wasmSizeKb !== undefined) {
-            metricsFields.wasmSize.textContent =
-                typeof wasmSizeKb === 'number' && !Number.isNaN(wasmSizeKb) ? formatSize(wasmSizeKb) : '—';
+        if (artifacts !== undefined) {
+            renderArtifactTable(artifacts);
         }
         if (status !== undefined || statusMessage !== undefined) {
             setStatus(metricsStatus, statusMessage ?? '', status);
         }
+    }
+
+    function renderArtifactTable(artifacts) {
+        const tbody = metricsFields.artifactTable;
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        if (!Array.isArray(artifacts) || artifacts.length === 0) {
+            const row = document.createElement('tr');
+            const cell = document.createElement('td');
+            cell.colSpan = 2;
+            cell.textContent = 'No artifact data.';
+            row.appendChild(cell);
+            tbody.appendChild(row);
+            return;
+        }
+
+        artifacts.forEach(({ name, sizeKb }) => {
+            const row = document.createElement('tr');
+
+            const nameCell = document.createElement('td');
+            nameCell.textContent = name || '—';
+            row.appendChild(nameCell);
+
+            const sizeCell = document.createElement('td');
+            sizeCell.textContent =
+                typeof sizeKb === 'number' && !Number.isNaN(sizeKb) ? formatSize(sizeKb) : '—';
+            row.appendChild(sizeCell);
+
+            tbody.appendChild(row);
+        });
     }
 
     async function hydrateMetricsFromReports() {
@@ -174,28 +219,34 @@
         if (!headCommit) {
             throw new Error('Release index missing head commit.');
         }
-        const wasmEntry =
-            headCommit.artifacts?.find((artifact) => artifact.file_name?.endsWith('.wasm')) ?? null;
-        let prevWasm = null;
-        if (wasmEntry && previousCommit) {
-            prevWasm = previousCommit.artifacts?.find((artifact) => artifact.file_name === wasmEntry.file_name) ?? null;
-        }
-        const deltaBytes =
-            wasmEntry && prevWasm && typeof wasmEntry.size_bytes === 'number' && typeof prevWasm.size_bytes === 'number'
-                ? wasmEntry.size_bytes - prevWasm.size_bytes
-                : null;
-        const wasmDeltaKb = deltaBytes != null ? deltaBytes / 1024 : null;
-        const microbenchMs =
-            typeof headCommit.microbench_ms === 'number' ? headCommit.microbench_ms : undefined;
+        const artifactMetrics = buildArtifactMetrics(headCommit, previousCommit);
 
         updateMetricsFields({
             commitHash: headCommit.git_sha ?? headCommit.label ?? null,
             generatedAt: headCommit.date ?? releaseIndex.generated_at ?? indexManifest.generated_at ?? null,
-            wasmDeltaKb,
-            microbenchMs,
+            artifacts: artifactMetrics,
             status: 'success',
             statusMessage: `Metrics derived from ${targetFolder.folder}`,
         });
+    }
+
+    function buildArtifactMetrics(headCommit, previousCommit) {
+        if (!headCommit?.artifacts) {
+            return [];
+        }
+        return headCommit.artifacts
+            .map((artifact) => {
+                const sizeBytes = typeof artifact.size_bytes === 'number' ? artifact.size_bytes : null;
+                return {
+                    name: artifact.file_name || artifact.label || 'artifact',
+                    sizeKb: sizeBytes != null ? sizeBytes / 1024 : null,
+                };
+            })
+            .sort((a, b) => {
+                if (!a.name) return -1;
+                if (!b.name) return 1;
+                return a.name.localeCompare(b.name);
+            });
     }
 
     loadManifest().catch((error) => {

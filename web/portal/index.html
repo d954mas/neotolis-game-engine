@@ -48,9 +48,23 @@
                         <dt>Generated</dt>
                         <dd data-role="generated-at">—</dd>
                     </div>
-                    <div>
-                        <dt>WASM Size (KB)</dt>
-                        <dd data-role="wasm-size">—</dd>
+                    <div class="artifact-metrics">
+                        <dt>Artifacts (KB)</dt>
+                        <dd>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Size</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-role="artifact-table">
+                                    <tr>
+                                        <td colspan="2">—</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </dd>
                     </div>
                 </dl>
                 <p class="status-message" data-role="metrics-status"></p>
