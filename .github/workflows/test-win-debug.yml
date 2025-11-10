@@ -1,0 +1,27 @@
+name: test-win-debug
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure tests preset
+        shell: pwsh
+        run: cmake --preset win-debug-tests
+      - name: Build tests
+        shell: pwsh
+        run: cmake --build --preset win-debug-tests
+      - name: Run tests
+        shell: pwsh
+        run: ctest --preset win-debug-tests --output-on-failure
+      - name: Configure sandbox preset
+        shell: pwsh
+        run: cmake --preset win-debug
+      - name: Build sandbox preset
+        shell: pwsh
+        run: cmake --build --preset win-debug

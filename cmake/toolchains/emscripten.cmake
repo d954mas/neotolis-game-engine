@@ -32,6 +32,26 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
+include("${CMAKE_CURRENT_LIST_DIR}/../NTFailfastOptions.cmake")
+
+nt_failfast_configure_warning_flags(
+    "-Wall;-Wextra;-Wpedantic;-Werror;-fno-common"
+    "Fail-fast compile warnings for Emscripten targets"
+)
+
+nt_failfast_configure_sanitizer(
+    ON
+    OFF
+    "Enable fail-fast sanitizer instrumentation"
+)
+
+nt_failfast_cache_bool(NT_FAILFAST_LINK_ENFORCE ON "Force fail-fast linker guard flags")
+
+nt_failfast_configure_link_flags(
+    "-sERROR_ON_UNDEFINED_SYMBOLS=1;-sSTACK_OVERFLOW_CHECK=2;-sSAFE_HEAP=1"
+    "-sERROR_ON_UNDEFINED_SYMBOLS=1"
+    "Fail-fast linker guard flags for Emscripten targets"
+)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/sandbox")
 
@@ -78,3 +98,20 @@ if(_NT_SOURCE_MAP_FLAGS)
     string(APPEND _NT_RELEASE_LINK_FLAGS " ${_NT_SOURCE_MAP_FLAGS}")
 endif()
 set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${_NT_RELEASE_LINK_FLAGS}" CACHE STRING "" FORCE)
+
+if(NT_FAILFAST_SANITIZER)
+    set(_NT_SANITIZER_FLAGS "-fsanitize=address,undefined -fno-omit-frame-pointer")
+    set(_NT_SANITIZER_LINK_FLAGS "-fsanitize=address,undefined")
+    foreach(_conf DEBUG RELEASE)
+        set(CMAKE_C_FLAGS_${_conf} "${CMAKE_C_FLAGS_${_conf}} ${_NT_SANITIZER_FLAGS}" CACHE STRING "" FORCE)
+        set(CMAKE_CXX_FLAGS_${_conf} "${CMAKE_CXX_FLAGS_${_conf}} ${_NT_SANITIZER_FLAGS}" CACHE STRING "" FORCE)
+        set(CMAKE_EXE_LINKER_FLAGS_${_conf} "${CMAKE_EXE_LINKER_FLAGS_${_conf}} ${_NT_SANITIZER_LINK_FLAGS}" CACHE STRING "" FORCE)
+    endforeach()
+endif()
+
+if(NT_FAILFAST_LINK_ENFORCE)
+    string(REPLACE ";" " " _nt_link_guard_str "${NT_FAILFAST_LINK_FLAGS}")
+    foreach(_conf DEBUG RELEASE)
+        set(CMAKE_EXE_LINKER_FLAGS_${_conf} "${CMAKE_EXE_LINKER_FLAGS_${_conf}} ${_nt_link_guard_str}" CACHE STRING "" FORCE)
+    endforeach()
+endif()

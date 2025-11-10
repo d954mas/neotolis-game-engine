@@ -1,4 +1,4 @@
-Checks: 'clang-analyzer-*,bugprone-*,modernize-use-nullptr,readability-*'
+Checks: 'clang-analyzer-*,bugprone-*,modernize-use-nullptr,readability-*,-readability-identifier-length'
 WarningsAsErrors: '*'
-HeaderFilterRegex: 'engine/.*'
+HeaderFilterRegex: '(engine|testbeds|tests)/.*'
 FormatStyle: none

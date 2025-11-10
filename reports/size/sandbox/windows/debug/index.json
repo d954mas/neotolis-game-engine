@@ -1,17 +1,33 @@
 {
-  "generated_at": "2025-11-07T13:03:51.183746+00:00",
+  "generated_at": "2025-11-10T10:31:38.198586+00:00",
   "folder": "sandbox/windows/debug",
   "report_path": "sandbox/windows/debug/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:833cc7bf273a3976bb5510e870980ebfc3f1edb4",
-      "git_sha": "833cc7bf273a3976bb5510e870980ebfc3f1edb4",
+      "id": "head:006-enforce-failfast-quality:a2695367066e5302860437f960cd5aa803263879",
+      "git_sha": "a2695367066e5302860437f960cd5aa803263879",
+      "git_message": "fix sanitazees",
+      "branch": "006-enforce-failfast-quality",
+      "subject": "fix sanitazees",
+      "date": "2025-11-10T10:31:38.198586+00:00",
+      "label": "HEAD-006-enforce-failfast-quality-fix sanitazees-a269536",
+      "artifacts": [
+        {
+          "file_name": "engine.exe",
+          "size_bytes": 19968
+        }
+      ]
+    },
+    {
+      "kind": "branch",
+      "id": "branch:006-enforce-failfast-quality:6f8f8db00048b236986799c57277c2e9d8d5fb74",
+      "git_sha": "6f8f8db00048b236986799c57277c2e9d8d5fb74",
       "git_message": "wip",
-      "branch": "master",
+      "branch": "006-enforce-failfast-quality",
       "subject": "wip",
-      "date": "2025-11-07T13:03:51.183746+00:00",
-      "label": "HEAD-master-wip-833cc7b",
+      "date": "2025-11-07T23:00:16+05:00",
+      "label": "006-enforce-failfast-quality-wip-6f8f8db",
       "artifacts": [
         {
           "file_name": "engine.exe",

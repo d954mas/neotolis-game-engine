@@ -18,6 +18,15 @@ set(CMAKE_C_EXTENSIONS OFF)
 # Tooling
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+find_program(NT_CLANG_TIDY_EXE NAMES clang-tidy)
+if(NT_CLANG_TIDY_EXE)
+    set(CMAKE_C_CLANG_TIDY
+        "${NT_CLANG_TIDY_EXE};-warnings-as-errors=*;--config-file=${CMAKE_SOURCE_DIR}/.clang-tidy"
+    )
+else()
+    message(STATUS "clang-tidy not found; static analysis disabled")
+endif()
+
 # Platform detection
 if(CMAKE_TARGET_PLATFORM STREQUAL "windows")
     add_compile_definitions(NT_PLATFORM_WINDOWS)
@@ -34,6 +43,28 @@ message(STATUS "Configuring ${CMAKE_PROJECT_NAME} in ${CMAKE_BUILD_TYPE} mode ($
 # Project toggles
 option(NT_PROJECT_SANDBOX "Build the sandbox testbed project" ON)
 option(NT_ENABLE_TESTS "Build nt_engine tests" OFF)
+
+# debug flags from presets
+set(NT_FAILFAST_WARNING_FLAGS "${NT_FAILFAST_WARNING_FLAGS}" CACHE STRING "Fail-fast compile warnings for all targets")
+set(NT_FAILFAST_LINK_FLAGS "${NT_FAILFAST_LINK_FLAGS}" CACHE STRING "Fail-fast linker guard flags for all targets")
+
+add_library(nt_failfast_enforcement INTERFACE)
+if(NT_FAILFAST_WARNING_FLAGS)
+    target_compile_options(nt_failfast_enforcement INTERFACE
+        $<$<COMPILE_LANGUAGE:C>:${NT_FAILFAST_WARNING_FLAGS}>)
+endif()
+if(NT_FAILFAST_LINK_FLAGS)
+    target_link_options(nt_failfast_enforcement INTERFACE ${NT_FAILFAST_LINK_FLAGS})
+endif()
+
+# Allow C17-style declaration mixing even when pedantic warnings are enabled
+if(CMAKE_C_COMPILER_ID MATCHES "Clang")
+    target_compile_options(
+        nt_failfast_enforcement INTERFACE
+        $<$<COMPILE_LANGUAGE:C>:-Wno-declaration-after-statement>
+    )
+endif()
+set(NT_FAILFAST_ENFORCEMENT_TARGET nt_failfast_enforcement CACHE INTERNAL "Fail-fast compile/link enforcement interface")
 
 # Subprojects
 add_subdirectory(engine)
