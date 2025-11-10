@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-11-10T11:01:55.921700+00:00",
+  "generated_at": "2025-11-10T11:10:27.670141+00:00",
   "folder": "sandbox/windows/debug",
   "report_path": "sandbox/windows/debug/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:147abdf2599297f0aea3d14963e4bb2f02c88b65",
-      "git_sha": "147abdf2599297f0aea3d14963e4bb2f02c88b65",
-      "git_message": "try fix web tests",
+      "id": "head:master:e086699d1a4d801bbc743aba2799a1d8a5821cfe",
+      "git_sha": "e086699d1a4d801bbc743aba2799a1d8a5821cfe",
+      "git_message": "fix build",
       "branch": "master",
-      "subject": "try fix web tests",
-      "date": "2025-11-10T11:01:55.921700+00:00",
-      "label": "HEAD-master-try fix web tests-147abdf",
+      "subject": "fix build",
+      "date": "2025-11-10T11:10:27.670141+00:00",
+      "label": "HEAD-master-fix build-e086699",
       "artifacts": [
         {
           "file_name": "engine.exe",

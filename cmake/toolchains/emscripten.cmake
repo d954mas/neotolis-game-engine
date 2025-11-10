@@ -48,7 +48,7 @@ nt_failfast_configure_sanitizer(
 nt_failfast_cache_bool(NT_FAILFAST_LINK_ENFORCE ON "Force fail-fast linker guard flags")
 
 nt_failfast_configure_link_flags(
-    "-sERROR_ON_UNDEFINED_SYMBOLS=1;-sSTACK_OVERFLOW_CHECK=2;-sSAFE_HEAP=1"
+    "-sERROR_ON_UNDEFINED_SYMBOLS=1;-sSTACK_OVERFLOW_CHECK=2"
     "-sERROR_ON_UNDEFINED_SYMBOLS=1"
     "Fail-fast linker guard flags for Emscripten targets"
 )
@@ -78,7 +78,10 @@ set(NT_WASM_EMIT_SOURCE_MAPS ${_NT_EMIT_SOURCE_MAPS_DEFAULT} CACHE INTERNAL "Whe
 
 set(CMAKE_C_FLAGS_DEBUG           "-O0 -g" CACHE STRING "" FORCE)
 set(CMAKE_CXX_FLAGS_DEBUG         "-O0 -g" CACHE STRING "" FORCE)
-set(_NT_DEBUG_LINK_FLAGS          "-g -sASSERTIONS=2 -sSAFE_HEAP=1 -sSTACK_OVERFLOW_CHECK=2 -sDEMANGLE_SUPPORT=1 --profiling-funcs")
+set(_NT_DEBUG_LINK_FLAGS          "-g -sASSERTIONS=2 -sSTACK_OVERFLOW_CHECK=2 -sDEMANGLE_SUPPORT=1 --profiling-funcs")
+if(NOT NT_FAILFAST_SANITIZER)
+    string(APPEND _NT_DEBUG_LINK_FLAGS " -sSAFE_HEAP=1")
+endif()
 if(_NT_SOURCE_MAP_FLAGS)
     string(APPEND _NT_DEBUG_LINK_FLAGS " ${_NT_SOURCE_MAP_FLAGS}")
 endif()
@@ -110,7 +113,11 @@ if(NT_FAILFAST_SANITIZER)
 endif()
 
 if(NT_FAILFAST_LINK_ENFORCE)
-    string(REPLACE ";" " " _nt_link_guard_str "${NT_FAILFAST_LINK_FLAGS}")
+    set(_nt_link_guard_list ${NT_FAILFAST_LINK_FLAGS})
+    if(NT_FAILFAST_SANITIZER)
+        list(FILTER _nt_link_guard_list EXCLUDE REGEX "^-sSAFE_HEAP=1$")
+    endif()
+    string(REPLACE ";" " " _nt_link_guard_str "${_nt_link_guard_list}")
     foreach(_conf DEBUG RELEASE)
         set(CMAKE_EXE_LINKER_FLAGS_${_conf} "${CMAKE_EXE_LINKER_FLAGS_${_conf}} ${_nt_link_guard_str}" CACHE STRING "" FORCE)
     endforeach()
