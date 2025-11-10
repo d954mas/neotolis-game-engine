@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-11-10T09:27:03.828029+00:00",
+  "generated_at": "2025-11-10T10:31:38.198586+00:00",
   "folder": "sandbox/windows/debug",
   "report_path": "sandbox/windows/debug/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:006-enforce-failfast-quality:732df9eed8907d24a4b07c8a7fa7fdba9bb400a1",
-      "git_sha": "732df9eed8907d24a4b07c8a7fa7fdba9bb400a1",
-      "git_message": "remove unused",
+      "id": "head:006-enforce-failfast-quality:a2695367066e5302860437f960cd5aa803263879",
+      "git_sha": "a2695367066e5302860437f960cd5aa803263879",
+      "git_message": "fix sanitazees",
       "branch": "006-enforce-failfast-quality",
-      "subject": "remove unused",
-      "date": "2025-11-10T09:27:03.828029+00:00",
-      "label": "HEAD-006-enforce-failfast-quality-remove unused-732df9e",
+      "subject": "fix sanitazees",
+      "date": "2025-11-10T10:31:38.198586+00:00",
+      "label": "HEAD-006-enforce-failfast-quality-fix sanitazees-a269536",
       "artifacts": [
         {
           "file_name": "engine.exe",

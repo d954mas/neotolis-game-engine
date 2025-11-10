@@ -16,6 +16,11 @@
     "C_Cpp.default.intelliSenseMode": "windows-clang-x64",
     "C_Cpp.default.compilerPath": "clang-cl.exe",
     "C_Cpp.default.compileCommands": "${workspaceFolder}/build/win-debug/compile_commands.json",
+    "C_Cpp.codeAnalysis.runAutomatically": true,
+    "C_Cpp.codeAnalysis.clangTidy.enabled": true,
+    "C_Cpp.codeAnalysis.clangTidy.path": "clang-tidy",
+    "C_Cpp.codeAnalysis.clangTidy.configFile": "${workspaceFolder}/.clang-tidy",
+    "C_Cpp.codeAnalysis.runOnSave": true,
     "cmake.configureOnOpen": true,
     "cmake.buildTask": true,
     "cSpell.words": [

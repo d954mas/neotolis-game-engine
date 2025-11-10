@@ -18,6 +18,15 @@ set(CMAKE_C_EXTENSIONS OFF)
 # Tooling
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+find_program(NT_CLANG_TIDY_EXE NAMES clang-tidy)
+if(NT_CLANG_TIDY_EXE)
+    set(CMAKE_C_CLANG_TIDY
+        "${NT_CLANG_TIDY_EXE};-warnings-as-errors=*;--config-file=${CMAKE_SOURCE_DIR}/.clang-tidy"
+    )
+else()
+    message(STATUS "clang-tidy not found; static analysis disabled")
+endif()
+
 # Platform detection
 if(CMAKE_TARGET_PLATFORM STREQUAL "windows")
     add_compile_definitions(NT_PLATFORM_WINDOWS)
