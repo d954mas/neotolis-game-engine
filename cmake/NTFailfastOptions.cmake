@@ -36,3 +36,13 @@ function(nt_failfast_configure_link_flags debug_flags release_flags doc)
 
     set(NT_FAILFAST_LINK_FLAGS "${_nt_link_flags_active}" CACHE STRING "${doc}" FORCE)
 endfunction()
+
+function(nt_failfast_configure_sanitizer debug_default release_default doc)
+    set(_nt_sanitizer_default ${debug_default})
+    if(CMAKE_BUILD_TYPE)
+        if(CMAKE_BUILD_TYPE MATCHES "^(Release|RelWithDebInfo|MinSizeRel)$")
+            set(_nt_sanitizer_default ${release_default})
+        endif()
+    endif()
+    nt_failfast_cache_bool(NT_FAILFAST_SANITIZER ${_nt_sanitizer_default} "${doc}")
+endfunction()

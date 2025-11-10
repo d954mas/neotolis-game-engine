@@ -46,11 +46,11 @@ nt_failfast_configure_warning_flags(
   "Fail-fast compile warnings for Windows targets"
 )
 
-set(_NT_SANITIZER_DEFAULT ON)
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-  set(_NT_SANITIZER_DEFAULT OFF)
-endif()
-nt_failfast_cache_bool(NT_FAILFAST_SANITIZER ${_NT_SANITIZER_DEFAULT} "Enable fail-fast sanitizer instrumentation")
+nt_failfast_configure_sanitizer(
+  ON
+  OFF
+  "Enable fail-fast sanitizer instrumentation"
+)
 
 nt_failfast_cache_bool(NT_FAILFAST_LINK_ENFORCE ON "Force fail-fast linker guard flags")
 
