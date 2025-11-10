@@ -1,33 +1,33 @@
 {
-  "generated_at": "2025-11-10T11:10:18.197352+00:00",
+  "generated_at": "2025-11-10T11:12:44.756521+00:00",
   "folder": "sandbox/wasm/debug",
   "report_path": "sandbox/wasm/debug/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:e086699d1a4d801bbc743aba2799a1d8a5821cfe",
-      "git_sha": "e086699d1a4d801bbc743aba2799a1d8a5821cfe",
-      "git_message": "fix build",
+      "id": "head:master:ede8272f2057461eb40dbd10072996bf7306c72e",
+      "git_sha": "ede8272f2057461eb40dbd10072996bf7306c72e",
+      "git_message": "fix web build",
       "branch": "master",
-      "subject": "fix build",
-      "date": "2025-11-10T11:10:18.197352+00:00",
-      "label": "HEAD-master-fix build-e086699",
+      "subject": "fix web build",
+      "date": "2025-11-10T11:12:44.756521+00:00",
+      "label": "HEAD-master-fix web build-ede8272",
       "artifacts": [
         {
           "file_name": "index.html",
-          "size_bytes": 22190
+          "size_bytes": 22270
         },
         {
           "file_name": "nt_sandbox.js",
-          "size_bytes": 170046
+          "size_bytes": 137239
         },
         {
           "file_name": "nt_sandbox.wasm",
-          "size_bytes": 3491627
+          "size_bytes": 3512054
         },
         {
           "file_name": "nt_sandbox.wasm.map",
-          "size_bytes": 191367
+          "size_bytes": 186579
         }
       ]
     },
