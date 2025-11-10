@@ -1,5 +1,10 @@
 # nt_engine
 
+![Test web debug](https://github.com/d954mas/neotolis-game-engine/actions/workflows/test-web-debug.yml/badge.svg?branch=master)
+![Test web release](https://github.com/d954mas/neotolis-game-engine/actions/workflows/test-web-release.yml/badge.svg?branch=master)
+![Test win debug](https://github.com/d954mas/neotolis-game-engine/actions/workflows/test-win-debug.yml/badge.svg?branch=master)
+![Test win release](https://github.com/d954mas/neotolis-game-engine/actions/workflows/test-win-release.yml/badge.svg?branch=master)
+
 Bootstrap repository for the Speckit engine. This branch seeds the project structure, toolchain presets, sandbox testbed, and CI workflows.
 
 ## Build Presets

@@ -1,0 +1,29 @@
+name: test-win-release
+
+on:
+  push:
+    branches: [ "master" ]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure tests preset
+        shell: pwsh
+        run: cmake --preset win-release-tests
+      - name: Build tests
+        shell: pwsh
+        run: cmake --build --preset win-release-tests
+      - name: Run tests
+        shell: pwsh
+        run: ctest --preset win-release-tests --output-on-failure
+      - name: Configure sandbox preset
+        shell: pwsh
+        run: cmake --preset win-release
+      - name: Build sandbox preset
+        shell: pwsh
+        run: cmake --build --preset win-release

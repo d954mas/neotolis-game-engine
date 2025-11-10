@@ -1,0 +1,26 @@
+name: test-web-debug
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 3.1.57
+      - name: Configure tests preset
+        run: cmake --preset web-debug-tests
+      - name: Build tests
+        run: cmake --build --preset web-debug-tests
+      - name: Run tests
+        run: ctest --preset web-debug-tests --output-on-failure
+      - name: Configure sandbox preset
+        run: cmake --preset web-debug
+      - name: Build sandbox preset
+        run: cmake --build --preset web-debug
