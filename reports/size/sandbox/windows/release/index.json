@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-11-11T12:49:38.257731+00:00",
+  "generated_at": "2025-11-11T13:06:11.473856+00:00",
   "folder": "sandbox/windows/release",
   "report_path": "sandbox/windows/release/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:6f2674b074f23ac6abe5b57b267c929bf7232111",
-      "git_sha": "6f2674b074f23ac6abe5b57b267c929bf7232111",
-      "git_message": "fixed alert in dashboard",
+      "id": "head:master:ab579300bf91f5c9878ac8e67a463db2b17dda25",
+      "git_sha": "ab579300bf91f5c9878ac8e67a463db2b17dda25",
+      "git_message": "fix dashboard alert",
       "branch": "master",
-      "subject": "fixed alert in dashboard",
-      "date": "2025-11-11T12:49:38.257731+00:00",
-      "label": "HEAD-master-fixed alert in dashboard-6f2674b",
+      "subject": "fix dashboard alert",
+      "date": "2025-11-11T13:06:11.473856+00:00",
+      "label": "HEAD-master-fix dashboard alert-ab57930",
       "artifacts": [
         {
           "file_name": "engine.exe",
