@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Speckit Engine Portal</title>
+    <title>Neotolis Engine Portal</title>
     <link rel="stylesheet" href="styles.css" />
     <script defer src="scripts/freshness.js"></script>
 </head>
@@ -25,12 +25,11 @@
                 <a id="sandbox-link" class="cta" href="#" aria-disabled="true">Loading…</a>
                 <p class="status-message" data-role="sandbox-status"></p>
                 <div class="artifact-metrics">
-                    <h3>Artifacts (KB)</h3>
                     <table>
                         <thead>
                             <tr>
                                 <th scope="col">Name</th>
-                                <th scope="col">Size</th>
+                                <th scope="col">Size(KB)</th>
                             </tr>
                         </thead>
                         <tbody data-role="artifact-table">
@@ -54,16 +53,14 @@
                 <dl>
                     <div>
                         <dt>Commit</dt>
-                        <dd>
-                            <div data-role="commit-message">—</div>
-                            <div class="commit-hash-line">
-                                <span>SHA</span>
-                                <code data-role="commit-hash">—</code>
-                            </div>
-                        </dd>
+                        <dd data-role="commit-message">—</dd>
                     </div>
                     <div>
-                        <dt>Generated</dt>
+                        <dt>SHA</dt>
+                        <dd data-role="commit-hash">—</dd>
+                    </div>
+                    <div>
+                        <dt>Date</dt>
                         <dd data-role="generated-at">—</dd>
                     </div>
                 </dl>
