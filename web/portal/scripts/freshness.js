@@ -226,7 +226,6 @@
             generatedAt: headCommit.date ?? releaseIndex.generated_at ?? indexManifest.generated_at ?? null,
             artifacts: artifactMetrics,
             status: 'success',
-            statusMessage: `Metrics derived from ${targetFolder.folder}`,
         });
     }
 
