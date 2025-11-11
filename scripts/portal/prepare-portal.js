@@ -203,7 +203,7 @@ async function deriveMetrics(reportRoot, fallbackCommit) {
         metrics.status = metrics.wasmSizeKb != null ? 'success' : 'warning';
         metrics.statusMessage =
             metrics.status === 'success'
-                ? `Metrics derived from ${folderEntry.folder} head commit.`
+                ? ``
                 : 'Metrics incomplete; showing placeholders.';
     } catch (error) {
         metrics.status = 'error';
