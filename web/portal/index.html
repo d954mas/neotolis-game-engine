@@ -10,7 +10,7 @@
 <body>
     <header class="site-header">
         <div class="container">
-            <h1>Speckit Engine Portal</h1>
+            <h1>Neotolis Engine Portal</h1>
             <p class="lead">
                 Access the latest sandbox build and engine size report generated from the most recent CI pipeline.
             </p>
@@ -24,31 +24,6 @@
                 <p>Launch the WebAssembly sandbox to explore the most recent engine build.</p>
                 <a id="sandbox-link" class="cta" href="#" aria-disabled="true">Loading…</a>
                 <p class="status-message" data-role="sandbox-status"></p>
-            </article>
-
-            <article class="card" id="report-card">
-                <h2>Engine Build Report</h2>
-                <p>Review binary size deltas, performance trends, and commit metadata.</p>
-                <a id="report-link" class="cta" href="#" aria-disabled="true">Loading…</a>
-                <p class="status-message" data-role="report-status"></p>
-            </article>
-
-            <article class="card metrics-card" id="metrics-card">
-                <h2>Latest Metrics</h2>
-                <dl>
-                    <div>
-                        <dt>Commit</dt>
-                        <dd data-role="commit-message">—</dd>
-                    </div>
-                    <div>
-                        <dt>SHA</dt>
-                        <dd data-role="commit-hash">—</dd>
-                    </div>
-                    <div>
-                        <dt>Generated</dt>
-                        <dd data-role="generated-at">—</dd>
-                    </div>
-                </dl>
                 <div class="artifact-metrics">
                     <h3>Artifacts (KB)</h3>
                     <table>
@@ -65,6 +40,33 @@
                         </tbody>
                     </table>
                 </div>
+            </article>
+
+            <article class="card" id="report-card">
+                <h2>Engine Build Report</h2>
+                <p>Review binary size, and commit metadata.</p>
+                <a id="report-link" class="cta" href="#" aria-disabled="true">Loading…</a>
+                <p class="status-message" data-role="report-status"></p>
+            </article>
+
+            <article class="card metrics-card" id="metrics-card">
+                <h2>Latest Metrics</h2>
+                <dl>
+                    <div>
+                        <dt>Commit</dt>
+                        <dd>
+                            <div data-role="commit-message">—</div>
+                            <div class="commit-hash-line">
+                                <span>SHA</span>
+                                <code data-role="commit-hash">—</code>
+                            </div>
+                        </dd>
+                    </div>
+                    <div>
+                        <dt>Generated</dt>
+                        <dd data-role="generated-at">—</dd>
+                    </div>
+                </dl>
                 <p class="status-message" data-role="metrics-status"></p>
             </article>
         </section>
