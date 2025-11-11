@@ -265,8 +265,9 @@ function computeComparison(baseCommit, targetCommit) {
             } else if (targetSize > 0) {
                 deltaPercent = 100;
             }
-            const exceedsBytes = deltaBytes >= 25_000;
-            const exceedsPercent = deltaPercent !== null && deltaPercent >= 2;
+            const increased = deltaBytes > 0;
+            const exceedsBytes = increased && deltaBytes >= 25_000;
+            const exceedsPercent = increased && deltaPercent !== null && deltaPercent >= 2;
             const alert = exceedsBytes || exceedsPercent;
             if (alert) {
                 alertCount += 1;
