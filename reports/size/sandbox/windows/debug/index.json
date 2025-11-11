@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-11-11T13:06:11.314675+00:00",
+  "generated_at": "2025-11-11T13:15:50.962395+00:00",
   "folder": "sandbox/windows/debug",
   "report_path": "sandbox/windows/debug/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:ab579300bf91f5c9878ac8e67a463db2b17dda25",
-      "git_sha": "ab579300bf91f5c9878ac8e67a463db2b17dda25",
-      "git_message": "fix dashboard alert",
+      "id": "head:master:6862d70b1c81d54c69912f1966d24b4ad60fb8d7",
+      "git_sha": "6862d70b1c81d54c69912f1966d24b4ad60fb8d7",
+      "git_message": "fix web portal",
       "branch": "master",
-      "subject": "fix dashboard alert",
-      "date": "2025-11-11T13:06:11.314675+00:00",
-      "label": "HEAD-master-fix dashboard alert-ab57930",
+      "subject": "fix web portal",
+      "date": "2025-11-11T13:15:50.962395+00:00",
+      "label": "HEAD-master-fix web portal-6862d70",
       "artifacts": [
         {
           "file_name": "engine.exe",
