@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-11-11T13:15:50.594834+00:00",
+  "generated_at": "2025-11-11T13:22:26.764446+00:00",
   "folder": "sandbox/wasm/debug",
   "report_path": "sandbox/wasm/debug/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:6862d70b1c81d54c69912f1966d24b4ad60fb8d7",
-      "git_sha": "6862d70b1c81d54c69912f1966d24b4ad60fb8d7",
-      "git_message": "fix web portal",
+      "id": "head:master:d64e1305c566fd03cb860745b108de610bd85c54",
+      "git_sha": "d64e1305c566fd03cb860745b108de610bd85c54",
+      "git_message": "Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine",
       "branch": "master",
-      "subject": "fix web portal",
-      "date": "2025-11-11T13:15:50.594834+00:00",
-      "label": "HEAD-master-fix web portal-6862d70",
+      "subject": "Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine",
+      "date": "2025-11-11T13:22:26.764446+00:00",
+      "label": "HEAD-master-Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine-d64e130",
       "artifacts": [
         {
           "file_name": "index.html",
