@@ -112,13 +112,6 @@
                     name: artifact.name ?? artifact.file ?? 'artifact',
                     sizeKb: artifact.sizeKb ?? artifact.size_kb ?? null,
                 }));
-            } else if (typeof metrics.wasmSizeKb === 'number') {
-                manifestArtifacts = [
-                    {
-                        name: metrics.artifactLabel ?? 'sandbox/wasm/release',
-                        sizeKb: metrics.wasmSizeKb,
-                    },
-                ];
             }
             updateMetricsFields({
                 commitMessage: metrics.commitMessage ?? null,
@@ -226,7 +219,6 @@
             generatedAt: headCommit.date ?? releaseIndex.generated_at ?? indexManifest.generated_at ?? null,
             artifacts: artifactMetrics,
             status: 'success',
-        });
     }
 
     function buildArtifactMetrics(headCommit, previousCommit) {
