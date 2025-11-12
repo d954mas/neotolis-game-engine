@@ -5,6 +5,11 @@ include(FetchContent)
 option(NT_SANDBOX_ENABLE_SIZE_REPORT "Generate size report for the sandbox target" OFF)
 option(NT_SANDBOX_ENABLE_GLFW_SMOKE "Run a glfwInit/glfwTerminate smoke test" OFF)
 
+set(_nt_sandbox_use_emscripten_glfw OFF)
+if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    set(_nt_sandbox_use_emscripten_glfw ON)
+endif()
+
 FetchContent_Declare(glfw
     URL https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.zip
     DOWNLOAD_EXTRACT_TIMESTAMP OFF
@@ -65,7 +70,14 @@ if(DEFINED NT_THIRD_PARTY_HEADERS_TARGET AND TARGET ${NT_THIRD_PARTY_HEADERS_TAR
     target_link_libraries(nt_sandbox PRIVATE ${NT_THIRD_PARTY_HEADERS_TARGET})
 endif()
 
-target_link_libraries(nt_sandbox PRIVATE glfw)
+if(_nt_sandbox_use_emscripten_glfw)
+    set_target_properties(nt_sandbox PROPERTIES LINKER_LANGUAGE CXX)
+    target_link_options(nt_sandbox PUBLIC "--use-port=contrib.glfw3")
+    # WebGL/HTML5 glue provides the emscripten_webgl_* symbols required by the GLFW port
+    target_link_libraries(nt_sandbox PRIVATE html5 GL)
+else()
+    target_link_libraries(nt_sandbox PRIVATE glfw)
+endif()
 
 # Export packaged artifacts for downstream consumers
 nt_configure_packaged_output(
