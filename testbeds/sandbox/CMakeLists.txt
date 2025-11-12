@@ -31,6 +31,9 @@ if(TARGET glfw)
         target_compile_options(glfw PRIVATE -w)
     endif()
     get_target_property(_nt_glfw_system_includes glfw INTERFACE_INCLUDE_DIRECTORIES)
+    if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+        target_compile_definitions(glfw PRIVATE _POSIX_C_SOURCE=199309L)
+    endif()
 endif()
 add_executable(nt_sandbox
     main.c

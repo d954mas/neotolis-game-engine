@@ -11,15 +11,34 @@ find_program(CLANG_CL NAMES clang-cl
 set(CMAKE_C_COMPILER   "${CLANG_CL}")
 set(CMAKE_CXX_COMPILER "${CLANG_CL}")
 
+get_filename_component(_LLVM_BINDIR "${CLANG_CL}" DIRECTORY)
+set(_LLVM_HINT_DIRS "${_LLVM_BINDIR}" "$ENV{LLVM_HOME}/bin" "C:/Program Files/LLVM/bin")
+
+# --- archiver ---
+find_program(LLVM_AR NAMES llvm-ar
+             HINTS ${_LLVM_HINT_DIRS}
+             ENV PATH REQUIRED)
+set(CMAKE_AR "${LLVM_AR}" CACHE FILEPATH "Archiver" FORCE)
+set(CMAKE_C_COMPILER_AR "${LLVM_AR}" CACHE FILEPATH "C archiver" FORCE)
+set(CMAKE_CXX_COMPILER_AR "${LLVM_AR}" CACHE FILEPATH "C++ archiver" FORCE)
+
+# --- ranlib ---
+find_program(LLVM_RANLIB NAMES llvm-ranlib
+             HINTS ${_LLVM_HINT_DIRS}
+             ENV PATH REQUIRED)
+set(CMAKE_RANLIB "${LLVM_RANLIB}" CACHE FILEPATH "ranlib" FORCE)
+set(CMAKE_C_COMPILER_RANLIB "${LLVM_RANLIB}" CACHE FILEPATH "C ranlib" FORCE)
+set(CMAKE_CXX_COMPILER_RANLIB "${LLVM_RANLIB}" CACHE FILEPATH "C++ ranlib" FORCE)
+
 # --- linker ---
 find_program(LLD_LINK NAMES lld-link
-             HINTS "$ENV{LLVM_HOME}/bin" "C:/Program Files/LLVM/bin"
+             HINTS ${_LLVM_HINT_DIRS}
              ENV PATH REQUIRED)
 set(CMAKE_LINKER "${LLD_LINK}")
 
 # --- resource compiler (optional) ---
 find_program(LLVM_RC NAMES llvm-rc rc
-             HINTS "$ENV{LLVM_HOME}/bin" "C:/Program Files/LLVM/bin"
+             HINTS ${_LLVM_HINT_DIRS}
              ENV PATH)
 if(LLVM_RC)
   set(CMAKE_RC_COMPILER "${LLVM_RC}")
@@ -27,7 +46,7 @@ endif()
 
 # --- manifest tool (required) ---
 find_program(CMAKE_MT NAMES llvm-mt mt
-             HINTS "$ENV{LLVM_HOME}/bin" "C:/Program Files/LLVM/bin"
+             HINTS ${_LLVM_HINT_DIRS}
              ENV PATH)
 if(NOT CMAKE_MT)
   message(FATAL_ERROR "Manifest tool (llvm-mt/mt) not found. Install LLVM or Windows SDK and ensure it is in PATH.")
