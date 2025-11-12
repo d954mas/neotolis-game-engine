@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "engine/core/nt_engine.h"
 
+#define GLFW_INCLUDE_NONE  // keep GLFW from pulling in desktop GL headers (required for Emscripten/Web builds)
 #include <GLFW/glfw3.h>
 
 int main(void) {
