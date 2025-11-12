@@ -15,12 +15,29 @@ get_filename_component(_LLVM_BINDIR "${CLANG_CL}" DIRECTORY)
 set(_LLVM_HINT_DIRS "${_LLVM_BINDIR}" "$ENV{LLVM_HOME}/bin" "C:/Program Files/LLVM/bin")
 
 # --- archiver ---
-find_program(LLVM_AR NAMES llvm-ar
+find_program(LLVM_LIB_TOOL NAMES llvm-lib lib
              HINTS ${_LLVM_HINT_DIRS}
-             ENV PATH REQUIRED)
-set(CMAKE_AR "${LLVM_AR}" CACHE FILEPATH "Archiver" FORCE)
-set(CMAKE_C_COMPILER_AR "${LLVM_AR}" CACHE FILEPATH "C archiver" FORCE)
-set(CMAKE_CXX_COMPILER_AR "${LLVM_AR}" CACHE FILEPATH "C++ archiver" FORCE)
+             ENV PATH)
+if(LLVM_LIB_TOOL)
+  set(_nt_archiver "${LLVM_LIB_TOOL}")
+  set(_nt_archiver_is_msvc_style ON)
+else()
+  find_program(LLVM_AR NAMES llvm-ar
+               HINTS ${_LLVM_HINT_DIRS}
+               ENV PATH REQUIRED)
+  set(_nt_archiver "${LLVM_AR}")
+  set(_nt_archiver_is_msvc_style OFF)
+endif()
+
+set(CMAKE_AR "${_nt_archiver}" CACHE FILEPATH "Archiver" FORCE)
+set(CMAKE_C_COMPILER_AR "${_nt_archiver}" CACHE FILEPATH "C archiver" FORCE)
+set(CMAKE_CXX_COMPILER_AR "${_nt_archiver}" CACHE FILEPATH "C++ archiver" FORCE)
+
+if(NOT _nt_archiver_is_msvc_style)
+  set(CMAKE_AR_FLAGS "rcs" CACHE STRING "Default llvm-ar flags" FORCE)
+  set(CMAKE_C_CREATE_STATIC_LIBRARY "<CMAKE_AR> rcs <TARGET> <OBJECTS>" CACHE STRING "" FORCE)
+  set(CMAKE_CXX_CREATE_STATIC_LIBRARY "<CMAKE_AR> rcs <TARGET> <OBJECTS>" CACHE STRING "" FORCE)
+endif()
 
 # --- ranlib ---
 find_program(LLVM_RANLIB NAMES llvm-ranlib
