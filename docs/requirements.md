@@ -4,7 +4,7 @@ The Project Structure & CMake Bootstrap feature depends on the following toolcha
 
 ## Toolchains
 
-- **Emscripten SDK 3.1.x** (tested with 3.1.57) — provides the WebAssembly toolchain used by the `web-*` presets.
+- **Emscripten SDK 4.0.x** (tested with 4.0.19) — provides the WebAssembly toolchain used by the `web-*` presets.
 - **LLVM/Clang 17** (`clang-cl` on Windows) — used for native Windows builds through the `win-*` presets.
 - **CMake 3.27 or newer** — required for preset support and multi-platform configuration management.
 - **Ninja** (optional) — recommended generator for both platforms when using single-config builds.
@@ -15,8 +15,8 @@ The Project Structure & CMake Bootstrap feature depends on the following toolcha
    ```bash
    git clone https://github.com/emscripten-core/emsdk.git
    cd emsdk
-   ./emsdk install 3.1.57
-   ./emsdk activate 3.1.57
+   ./emsdk install 4.0.19
+   ./emsdk activate 4.0.19
    source ./emsdk_env.sh
    ```
 2. Install LLVM/Clang 17:

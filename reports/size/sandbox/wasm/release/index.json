@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-11-12T18:44:41.622214+00:00",
+  "generated_at": "2025-11-12T19:05:25.465728+00:00",
   "folder": "sandbox/wasm/release",
   "report_path": "sandbox/wasm/release/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:008-add-gltf-dep:f8534495f0026442806dc6db87886b707e19f87b",
-      "git_sha": "f8534495f0026442806dc6db87886b707e19f87b",
-      "git_message": "reduce glfw web size",
-      "branch": "008-add-gltf-dep",
-      "subject": "reduce glfw web size",
-      "date": "2025-11-12T18:44:41.622214+00:00",
-      "label": "HEAD-008-add-gltf-dep-reduce glfw web size-f853449",
+      "id": "head:master:d783a6616db8217f9a2518b717cb085a6dfff697",
+      "git_sha": "d783a6616db8217f9a2518b717cb085a6dfff697",
+      "git_message": "try fix ci build",
+      "branch": "master",
+      "subject": "try fix ci build",
+      "date": "2025-11-12T19:05:25.465728+00:00",
+      "label": "HEAD-master-try fix ci build-d783a66",
       "artifacts": [
         {
           "file_name": "index.html",

@@ -6,7 +6,7 @@ This guide summarizes the core steps required to configure and validate the boot
 
 Follow the [requirements checklist](./requirements.md) to install:
 
-- Emscripten SDK 3.1.x (3.1.57 recommended)
+- Emscripten SDK 4.0.x (4.0.19 recommended)
 - LLVM/clang 17 (including `clang-cl` on Windows)
 - CMake 3.27+
 

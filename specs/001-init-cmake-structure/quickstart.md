@@ -2,12 +2,12 @@
 
 ## 1. Install Prerequisites
 
-1. Install **Emscripten SDK 3.1.x**  
+1. Install **Emscripten SDK 4.0.x**  
    ```bash
    git clone https://github.com/emscripten-core/emsdk.git
    cd emsdk
-   ./emsdk install 3.1.57
-   ./emsdk activate 3.1.57
+   ./emsdk install 4.0.19
+   ./emsdk activate 4.0.19
    source ./emsdk_env.sh
    ```
 2. Install **LLVM/Clang 17** with `clang-cl` (Windows) or via your package manager on macOS/Linux.
