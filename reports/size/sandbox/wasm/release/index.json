@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-11-12T19:18:28.693683+00:00",
+  "generated_at": "2025-11-12T19:36:06.416866+00:00",
   "folder": "sandbox/wasm/release",
   "report_path": "sandbox/wasm/release/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:95d3f0b5272eb488eec6b334840ad652483de532",
-      "git_sha": "95d3f0b5272eb488eec6b334840ad652483de532",
-      "git_message": "fix emscripten",
+      "id": "head:master:c5f1e36256413e026c2f115366007cebb9be3a25",
+      "git_sha": "c5f1e36256413e026c2f115366007cebb9be3a25",
+      "git_message": "Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine",
       "branch": "master",
-      "subject": "fix emscripten",
-      "date": "2025-11-12T19:18:28.693683+00:00",
-      "label": "HEAD-master-fix emscripten-95d3f0b",
+      "subject": "Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine",
+      "date": "2025-11-12T19:36:06.416866+00:00",
+      "label": "HEAD-master-Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine-c5f1e36",
       "artifacts": [
         {
           "file_name": "index.html",
