@@ -1,29 +1,29 @@
 {
-  "generated_at": "2025-11-12T16:46:09.066148+00:00",
+  "generated_at": "2025-11-12T18:33:32.983160+00:00",
   "folder": "sandbox/wasm/release",
   "report_path": "sandbox/wasm/release/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:008-add-gltf-dep:f66c00d19e78e8c48f23c862ef6d81b9c4f07d79",
-      "git_sha": "f66c00d19e78e8c48f23c862ef6d81b9c4f07d79",
-      "git_message": "wip",
+      "id": "head:008-add-gltf-dep:1427ddda54ef2aa1471f4b03b2326afad80bc394",
+      "git_sha": "1427ddda54ef2aa1471f4b03b2326afad80bc394",
+      "git_message": "wasm glfw",
       "branch": "008-add-gltf-dep",
-      "subject": "wip",
-      "date": "2025-11-12T16:46:09.066148+00:00",
-      "label": "HEAD-008-add-gltf-dep-wip-f66c00d",
+      "subject": "wasm glfw",
+      "date": "2025-11-12T18:33:32.983160+00:00",
+      "label": "HEAD-008-add-gltf-dep-wasm glfw-1427ddd",
       "artifacts": [
         {
           "file_name": "index.html",
-          "size_bytes": 19602
+          "size_bytes": 19625
         },
         {
           "file_name": "nt_sandbox.js",
-          "size_bytes": 9115
+          "size_bytes": 61522
         },
         {
           "file_name": "nt_sandbox.wasm",
-          "size_bytes": 1647
+          "size_bytes": 59725
         }
       ]
     },

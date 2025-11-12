@@ -1,8 +1,8 @@
 git_sha,git_message,file_name,size_bytes
-f66c00d19e78e8c48f23c862ef6d81b9c4f07d79,008-add-gltf-dep,HEAD,
-,,index.html,19602
-,,nt_sandbox.js,9115
-,,nt_sandbox.wasm,1647
+1427ddda54ef2aa1471f4b03b2326afad80bc394,008-add-gltf-dep,HEAD,
+,,index.html,19625
+,,nt_sandbox.js,61522
+,,nt_sandbox.wasm,59725
 6f8f8db00048b236986799c57277c2e9d8d5fb74,006-enforce-failfast-quality,BRANCH,
 ,,index.html,19602
 ,,nt_sandbox.js,14481
