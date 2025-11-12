@@ -26,8 +26,7 @@ Follow-up TODOs:
 This principle keeps Speckit instantly loadable on bandwidth-constrained devices and preserves our primary competitive differentiator.
 
 ### II. Deterministic Memory Discipline
-- All runtime allocations MUST route through the `nt_alloc_*` interface so that allocators can be swapped and audited centrally.
-- Features MUST preallocate memory via fixed-size arenas or arrays; dynamic resizing (`realloc`, implicit container growth) is forbidden.
+- Features MUST preallocate memory via fixed-size arrays; dynamic resizing (`realloc`, implicit container growth) is forbidden.
 - Resource loading paths MUST reserve required memory up front (e.g., when parsing collection files); steady-state frame loops may not allocate.
 - Standard library facilities that hide heap usage (`std::string`, `std::vector`, `<iostream>`, `<stringstream>`, smart pointers, etc.) are prohibited; custom structs or arena-backed helpers MUST express ownership explicitly.
 - Total runtime memory consumption MUST stay within the 32 MB budget per application; waivers demand explicit instrumentation and rollback plans.

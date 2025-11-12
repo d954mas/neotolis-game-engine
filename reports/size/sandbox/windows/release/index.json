@@ -1,21 +1,21 @@
 {
-  "generated_at": "2025-11-12T14:39:37.695555+00:00",
+  "generated_at": "2025-11-12T18:19:32.266125+00:00",
   "folder": "sandbox/windows/release",
   "report_path": "sandbox/windows/release/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:e58b27292fd8aaa7ed8498b109ac6296bb9fb2e7",
-      "git_sha": "e58b27292fd8aaa7ed8498b109ac6296bb9fb2e7",
-      "git_message": "Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine",
-      "branch": "master",
-      "subject": "Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine",
-      "date": "2025-11-12T14:39:37.695555+00:00",
-      "label": "HEAD-master-Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine-e58b272",
+      "id": "head:008-add-gltf-dep:1427ddda54ef2aa1471f4b03b2326afad80bc394",
+      "git_sha": "1427ddda54ef2aa1471f4b03b2326afad80bc394",
+      "git_message": "wasm glfw",
+      "branch": "008-add-gltf-dep",
+      "subject": "wasm glfw",
+      "date": "2025-11-12T18:19:32.266125+00:00",
+      "label": "HEAD-008-add-gltf-dep-wasm glfw-1427ddd",
       "artifacts": [
         {
           "file_name": "engine.exe",
-          "size_bytes": 10240
+          "size_bytes": 207360
         }
       ]
     },
