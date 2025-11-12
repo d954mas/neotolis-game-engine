@@ -1,21 +1,21 @@
 {
-  "generated_at": "2025-11-12T16:45:55.723667+00:00",
+  "generated_at": "2025-11-12T19:18:28.868601+00:00",
   "folder": "sandbox/windows/debug",
   "report_path": "sandbox/windows/debug/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:008-add-gltf-dep:f66c00d19e78e8c48f23c862ef6d81b9c4f07d79",
-      "git_sha": "f66c00d19e78e8c48f23c862ef6d81b9c4f07d79",
-      "git_message": "wip",
-      "branch": "008-add-gltf-dep",
-      "subject": "wip",
-      "date": "2025-11-12T16:45:55.723667+00:00",
-      "label": "HEAD-008-add-gltf-dep-wip-f66c00d",
+      "id": "head:master:95d3f0b5272eb488eec6b334840ad652483de532",
+      "git_sha": "95d3f0b5272eb488eec6b334840ad652483de532",
+      "git_message": "fix emscripten",
+      "branch": "master",
+      "subject": "fix emscripten",
+      "date": "2025-11-12T19:18:28.868601+00:00",
+      "label": "HEAD-master-fix emscripten-95d3f0b",
       "artifacts": [
         {
           "file_name": "engine.exe",
-          "size_bytes": 285696
+          "size_bytes": 286208
         }
       ]
     },
