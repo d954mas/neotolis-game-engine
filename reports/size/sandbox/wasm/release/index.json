@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-11-12T18:33:32.983160+00:00",
+  "generated_at": "2025-11-12T18:44:41.622214+00:00",
   "folder": "sandbox/wasm/release",
   "report_path": "sandbox/wasm/release/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:008-add-gltf-dep:1427ddda54ef2aa1471f4b03b2326afad80bc394",
-      "git_sha": "1427ddda54ef2aa1471f4b03b2326afad80bc394",
-      "git_message": "wasm glfw",
+      "id": "head:008-add-gltf-dep:f8534495f0026442806dc6db87886b707e19f87b",
+      "git_sha": "f8534495f0026442806dc6db87886b707e19f87b",
+      "git_message": "reduce glfw web size",
       "branch": "008-add-gltf-dep",
-      "subject": "wasm glfw",
-      "date": "2025-11-12T18:33:32.983160+00:00",
-      "label": "HEAD-008-add-gltf-dep-wasm glfw-1427ddd",
+      "subject": "reduce glfw web size",
+      "date": "2025-11-12T18:44:41.622214+00:00",
+      "label": "HEAD-008-add-gltf-dep-reduce glfw web size-f853449",
       "artifacts": [
         {
           "file_name": "index.html",
@@ -19,7 +19,7 @@
         },
         {
           "file_name": "nt_sandbox.js",
-          "size_bytes": 61522
+          "size_bytes": 20138
         },
         {
           "file_name": "nt_sandbox.wasm",
