@@ -35,7 +35,7 @@
 - [ ] **Deterministic Memory Discipline**: Memory usage is preallocated via arenas/fixed buffers and documented allocators; no hidden growth paths remain.
 - [ ] **Performance-Oriented Portability**: Microbench coverage, performance targets, and dual-platform validation steps are captured before implementation.
 - [ ] **Spec-Led Delivery**: An approved spec exists with C API, memory model, binary/RAM impact, and embedding CMake snippet; plan links to it.
-- [ ] **Embedded Feature Isolation**: Tasks map to feature modules with paired `.c/.h` files and keep the engine embedded in consuming testbeds.
+- [ ] **Embedded Minimal Surface**: Tasks map to feature modules with paired `.c/.h` files, keep the engine embedded in consuming testbeds, and justify every file against real user demand.
 
 ## Project Structure
 

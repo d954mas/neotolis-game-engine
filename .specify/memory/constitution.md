@@ -1,20 +1,15 @@
 <!--
 Sync Impact Report
-Version change: 2.0.0 → 3.0.0
+Version change: 3.0.0 → 3.1.0
 Modified principles:
-- I. Simple Surface, Obvious Naming → I. Binary Budget Supremacy
-- II. Straight-Line Implementation → II. Deterministic Memory Discipline
-- III. First-Run Build Simplicity → III. Performance-Oriented Portability
-- IV. Example-Driven Proof → IV. Spec-Led Delivery
-- V. Lightweight Resource Discipline → V. Embedded Feature Isolation
+- II. Deterministic Memory Discipline (explicit bans on STL/streams, upfront load allocation, clarified ownership)
+- V. Embedded Feature Isolation → V. Embedded Minimal Surface
 Added sections:
 - None
 Removed sections:
 - None
 Templates requiring updates:
 - ✅ .specify/templates/plan-template.md
-- ✅ .specify/templates/spec-template.md
-- ✅ .specify/templates/tasks-template.md
 Follow-up TODOs:
 - None
 -->
@@ -33,6 +28,8 @@ This principle keeps Speckit instantly loadable on bandwidth-constrained devices
 ### II. Deterministic Memory Discipline
 - All runtime allocations MUST route through the `nt_alloc_*` interface so that allocators can be swapped and audited centrally.
 - Features MUST preallocate memory via fixed-size arenas or arrays; dynamic resizing (`realloc`, implicit container growth) is forbidden.
+- Resource loading paths MUST reserve required memory up front (e.g., when parsing collection files); steady-state frame loops may not allocate.
+- Standard library facilities that hide heap usage (`std::string`, `std::vector`, `<iostream>`, `<stringstream>`, smart pointers, etc.) are prohibited; custom structs or arena-backed helpers MUST express ownership explicitly.
 - Total runtime memory consumption MUST stay within the 32 MB budget per application; waivers demand explicit instrumentation and rollback plans.
 
 Deterministic memory usage ensures predictable behavior across WebAssembly sandboxes and constrained desktop testbeds.
@@ -51,10 +48,11 @@ This principle guarantees that Speckit stays fast across both primary platforms 
 
 Spec-first delivery prevents accidental scope creep and keeps resource budgets enforceable before implementation starts.
 
-### V. Embedded Feature Isolation
+### V. Embedded Minimal Surface
 - The engine ships as source embedded directly into consuming testbeds; producing standalone library artifacts is prohibited.
 - Headers and sources MUST live side by side per feature module, exposing only `nt_`-prefixed public entry points.
 - External dependencies MUST be header-only or single-file libraries with no hidden allocations, and every dependency is gated behind an explicit feature flag.
+- Apply the rule “If we don’t need it, we don’t use it”: features require documented user demand, minimal scope, and removal of dead code as soon as it loses a consumer.
 
 Maintaining embedded, isolated features preserves portability and minimal footprint across build targets.
 
@@ -73,6 +71,7 @@ Maintaining embedded, isolated features preserves portability and minimal footpr
 - Instrumentation tasks MUST cover binary size, memory usage, and performance metrics; validation steps belong in specs and tasks before implementation starts.
 - Error handling relies on status codes or structs; assertions are restricted to debug builds, and the public API consistently uses the `nt_` prefix.
 - Any third-party addition MUST document memory and size impact, provide knobs to disable unused functionality, and satisfy Principle V’s isolation rules.
+- Defensive programming that merely repeats earlier validation (e.g., redundant pointer checks, setting structs to zero before immediately assigning fields) is banned; ensure assets, build tooling, or spec tasks catch invalid data earlier in the pipeline.
 
 ## Governance
 
@@ -82,4 +81,4 @@ Maintaining embedded, isolated features preserves portability and minimal footpr
 - Compliance reviews: each PR links CI artifacts for size, memory, and performance; releases are blocked until constitutional gates pass or receive documented waivers.
 - Steering cadence: conduct constitution reviews at least quarterly and ahead of any platform expansion to validate budgets and governance health.
 
-**Version**: 3.0.0 | **Ratified**: 2025-10-22 | **Last Amended**: 2025-11-05
+**Version**: 3.1.0 | **Ratified**: 2025-10-22 | **Last Amended**: 2025-11-12
