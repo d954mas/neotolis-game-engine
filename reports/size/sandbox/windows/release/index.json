@@ -1,21 +1,21 @@
 {
-  "generated_at": "2025-11-12T18:19:32.266125+00:00",
+  "generated_at": "2025-11-12T19:18:29.028285+00:00",
   "folder": "sandbox/windows/release",
   "report_path": "sandbox/windows/release/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:008-add-gltf-dep:1427ddda54ef2aa1471f4b03b2326afad80bc394",
-      "git_sha": "1427ddda54ef2aa1471f4b03b2326afad80bc394",
-      "git_message": "wasm glfw",
-      "branch": "008-add-gltf-dep",
-      "subject": "wasm glfw",
-      "date": "2025-11-12T18:19:32.266125+00:00",
-      "label": "HEAD-008-add-gltf-dep-wasm glfw-1427ddd",
+      "id": "head:master:95d3f0b5272eb488eec6b334840ad652483de532",
+      "git_sha": "95d3f0b5272eb488eec6b334840ad652483de532",
+      "git_message": "fix emscripten",
+      "branch": "master",
+      "subject": "fix emscripten",
+      "date": "2025-11-12T19:18:29.028285+00:00",
+      "label": "HEAD-master-fix emscripten-95d3f0b",
       "artifacts": [
         {
           "file_name": "engine.exe",
-          "size_bytes": 207360
+          "size_bytes": 207872
         }
       ]
     },
