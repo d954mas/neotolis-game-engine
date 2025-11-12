@@ -6,7 +6,7 @@ option(NT_SANDBOX_ENABLE_SIZE_REPORT "Generate size report for the sandbox targe
 option(NT_SANDBOX_ENABLE_GLFW_SMOKE "Run a glfwInit/glfwTerminate smoke test" OFF)
 
 FetchContent_Declare(glfw
-    URL https://github.com/glfw/glfw/archive/refs/tags/3.4.0.tar.gz
+    URL https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.zip
     DOWNLOAD_EXTRACT_TIMESTAMP OFF
 )
 message(STATUS "Fetching GLFW 3.4.0 via FetchContent (network required)")
@@ -19,6 +19,19 @@ set(GLFW_INCLUDE_NONE ON CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(glfw)
 
+# Disable clang-tidy for the third-party target so upstream style warnings don't fail our build
+# keep clang-tidy off this third-party target
+set(_nt_glfw_system_includes)
+if(TARGET glfw)
+    set_target_properties(glfw PROPERTIES
+        C_CLANG_TIDY ""
+        COMPILE_WARNING_AS_ERROR OFF
+    )
+    if(CMAKE_C_COMPILER_ID MATCHES "Clang")
+        target_compile_options(glfw PRIVATE -w)
+    endif()
+    get_target_property(_nt_glfw_system_includes glfw INTERFACE_INCLUDE_DIRECTORIES)
+endif()
 add_executable(nt_sandbox
     main.c
 )
@@ -37,6 +50,9 @@ target_include_directories(nt_sandbox
     PRIVATE
         ${CMAKE_SOURCE_DIR}
 )
+if(_nt_glfw_system_includes AND NOT _nt_glfw_system_includes MATCHES "NOTFOUND")
+    target_include_directories(nt_sandbox SYSTEM PRIVATE ${_nt_glfw_system_includes})
+endif()
 
 if(DEFINED NT_FAILFAST_ENFORCEMENT_TARGET AND TARGET ${NT_FAILFAST_ENFORCEMENT_TARGET})
     target_link_libraries(nt_sandbox PRIVATE ${NT_FAILFAST_ENFORCEMENT_TARGET})

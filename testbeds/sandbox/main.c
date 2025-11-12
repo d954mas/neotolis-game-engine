@@ -12,9 +12,8 @@ int main(void) {
     if (!glfwInit()) {
         fputs("GLFW init failed\n", stderr);
         return 1;
-    }else{
-         printf("GLFW init success\n");
     }
+    printf("GLFW init success\n");
     glfwTerminate();
 
     nt_engine_shutdown();
