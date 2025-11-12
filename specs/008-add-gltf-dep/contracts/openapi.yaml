@@ -1,0 +1,8 @@
+openapi: 3.0.3
+info:
+  title: GLFW Dependency Notes
+  version: "1.0.0"
+  description: |
+    Reference placeholder: this feature wires GLFW via CMake FetchContent and does
+    not expose runtime APIs. Consumers can link the upstream target directly.
+paths: {}

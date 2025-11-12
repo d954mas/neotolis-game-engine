@@ -1,6 +1,23 @@
 project(nt_sandbox LANGUAGES C)
 
+include(FetchContent)
+
 option(NT_SANDBOX_ENABLE_SIZE_REPORT "Generate size report for the sandbox target" OFF)
+option(NT_SANDBOX_ENABLE_GLFW_SMOKE "Run a glfwInit/glfwTerminate smoke test" OFF)
+
+FetchContent_Declare(glfw
+    URL https://github.com/glfw/glfw/archive/refs/tags/3.4.0.tar.gz
+    DOWNLOAD_EXTRACT_TIMESTAMP OFF
+)
+message(STATUS "Fetching GLFW 3.4.0 via FetchContent (network required)")
+
+# Keep GLFW lean for our embedded use-case
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_INCLUDE_NONE ON CACHE BOOL "" FORCE)
+
+FetchContent_MakeAvailable(glfw)
 
 add_executable(nt_sandbox
     main.c
@@ -28,6 +45,8 @@ endif()
 if(DEFINED NT_THIRD_PARTY_HEADERS_TARGET AND TARGET ${NT_THIRD_PARTY_HEADERS_TARGET})
     target_link_libraries(nt_sandbox PRIVATE ${NT_THIRD_PARTY_HEADERS_TARGET})
 endif()
+
+target_link_libraries(nt_sandbox PRIVATE glfw)
 
 # Export packaged artifacts for downstream consumers
 nt_configure_packaged_output(
