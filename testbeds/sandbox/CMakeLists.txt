@@ -61,6 +61,7 @@ target_include_directories(nt_sandbox
 if(_nt_glfw_system_includes AND NOT _nt_glfw_system_includes MATCHES "NOTFOUND")
     target_include_directories(nt_sandbox SYSTEM PRIVATE ${_nt_glfw_system_includes})
 endif()
+target_compile_definitions(nt_sandbox PRIVATE GLFW_INCLUDE_NONE)
 
 if(DEFINED NT_FAILFAST_ENFORCEMENT_TARGET AND TARGET ${NT_FAILFAST_ENFORCEMENT_TARGET})
     target_link_libraries(nt_sandbox PRIVATE ${NT_FAILFAST_ENFORCEMENT_TARGET})
