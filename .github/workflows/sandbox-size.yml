@@ -22,11 +22,11 @@ jobs:
         with:
           version: 4.0.19
       - name: Configure web debug
-        run: cmake --preset web-debug
+        run: cmake --preset web-debug -DNT_PROJECT_SANDBOX=ON
       - name: Build web debug
         run: cmake --build --preset web-debug
       - name: Configure web release
-        run: cmake --preset web-release
+        run: cmake --preset web-release -DNT_PROJECT_SANDBOX=ON
       - name: Build web release
         run: cmake --build --preset web-release
       - name: Stage sandbox artifacts
@@ -57,13 +57,13 @@ jobs:
       - uses: actions/checkout@v4
       - name: Configure win debug
         shell: pwsh
-        run: cmake --preset win-debug
+        run: cmake --preset win-debug -DNT_PROJECT_SANDBOX=ON
       - name: Build win debug
         shell: pwsh
         run: cmake --build --preset win-debug
       - name: Configure win release
         shell: pwsh
-        run: cmake --preset win-release
+        run: cmake --preset win-release -DNT_PROJECT_SANDBOX=ON
       - name: Build win release
         shell: pwsh
         run: cmake --build --preset win-release

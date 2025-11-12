@@ -7,7 +7,8 @@
             "command": "cmake",
             "args": [
                 "--preset",
-                "web-debug"
+                "web-debug",
+                "-DNT_PROJECT_SANDBOX=ON"
             ],
             "group": "build",
             "problemMatcher": []
@@ -18,7 +19,8 @@
             "command": "cmake",
             "args": [
                 "--preset",
-                "web-release"
+                "web-release",
+                "-DNT_PROJECT_SANDBOX=ON"
             ],
             "group": "build",
             "problemMatcher": []
@@ -159,7 +161,8 @@
             "command": "cmake",
             "args": [
                 "--preset",
-                "win-debug"
+                "win-debug",
+                "-DNT_PROJECT_SANDBOX=ON"
             ],
             "group": "build",
             "problemMatcher": []
@@ -170,7 +173,8 @@
             "command": "cmake",
             "args": [
                 "--preset",
-                "win-release"
+                "win-release",
+                "-DNT_PROJECT_SANDBOX=ON"
             ],
             "group": "build",
             "problemMatcher": []

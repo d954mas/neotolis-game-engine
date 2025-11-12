@@ -15,14 +15,14 @@ Follow the [requirements checklist](./requirements.md) to install:
 ```bash
 git clone https://github.com/<org>/nt_engine.git
 cd nt_engine
-cmake --preset web-debug
+cmake --preset web-debug -DNT_PROJECT_SANDBOX=ON
 cmake --build --preset web-debug
 ```
 
 For Windows builds, run the configure/build commands from a Developer PowerShell prompt:
 
 ```pwsh
-cmake --preset win-debug
+cmake --preset win-debug -DNT_PROJECT_SANDBOX=ON
 cmake --build --preset win-debug
 ```
 

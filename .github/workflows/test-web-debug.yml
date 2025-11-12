@@ -21,6 +21,6 @@ jobs:
       - name: Run tests
         run: ctest --preset web-debug-tests --output-on-failure
       - name: Configure sandbox preset
-        run: cmake --preset web-debug
+        run: cmake --preset web-debug -DNT_PROJECT_SANDBOX=ON
       - name: Build sandbox preset
         run: cmake --build --preset web-debug

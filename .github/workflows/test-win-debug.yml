@@ -21,7 +21,7 @@ jobs:
         run: ctest --preset win-debug-tests --output-on-failure
       - name: Configure sandbox preset
         shell: pwsh
-        run: cmake --preset win-debug
+        run: cmake --preset win-debug -DNT_PROJECT_SANDBOX=ON
       - name: Build sandbox preset
         shell: pwsh
         run: cmake --build --preset win-debug

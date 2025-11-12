@@ -21,6 +21,6 @@ jobs:
       - name: Run tests
         run: ctest --preset web-release-tests --output-on-failure
       - name: Configure sandbox preset
-        run: cmake --preset web-release
+        run: cmake --preset web-release -DNT_PROJECT_SANDBOX=ON
       - name: Build sandbox preset
         run: cmake --build --preset web-release

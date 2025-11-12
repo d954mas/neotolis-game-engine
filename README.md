@@ -35,7 +35,7 @@ Alternatively, add `-DNT_ENABLE_TESTS=ON` to any `cmake --preset ...` invocation
 
 ## Sandbox Project Toggle
 
-The sandbox testbed can also be enabled/disabled per build. It is on by default for the standard presets, but you can skip it when you only need the engine libraries (or enable it for a custom preset):
+The sandbox testbed is disabled by default so the main presets finish quickly. Enable it explicitly whenever you need sandbox artifacts (CI workflows and VS Code tasks already add this flag):
 
 ```bash
 cmake --preset win-debug -DNT_PROJECT_SANDBOX=OFF   # engine-only build

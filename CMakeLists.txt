@@ -41,7 +41,7 @@ endif()
 message(STATUS "Configuring ${CMAKE_PROJECT_NAME} in ${CMAKE_BUILD_TYPE} mode (${CMAKE_TARGET_PLATFORM})")
 
 # Project toggles
-option(NT_PROJECT_SANDBOX "Build the sandbox testbed project" ON)
+option(NT_PROJECT_SANDBOX "Build the sandbox testbed project" OFF)
 option(NT_ENABLE_TESTS "Build nt_engine tests" OFF)
 
 # debug flags from presets
