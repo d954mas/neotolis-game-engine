@@ -78,12 +78,18 @@ if(_nt_sandbox_use_emscripten_glfw)
     set_target_properties(nt_sandbox PROPERTIES
         LINKER_LANGUAGE CXX
     )
+    set(_nt_glfw3w_patch "${CMAKE_SOURCE_DIR}/engine/render/glfw3w_patch.js")
+    if(NOT EXISTS "${_nt_glfw3w_patch}")
+        message(FATAL_ERROR "Missing required GLFW3 wasm patch: ${_nt_glfw3w_patch}")
+    endif()
     # Trim the contrib.glfw3 port by disabling joystick polling and multi-window support.
     target_link_options(nt_sandbox PUBLIC
         "--use-port=contrib.glfw3:disableJoystick=true:disableMultiWindow=true"
       #  "--use-port=emdawnwebgpu"   # Handle WebGPU symbols
         "-sASYNCIFY"     # Required by WebGPU-C++
+        "--pre-js=${_nt_glfw3w_patch}" # Normalize window positions to integers
     )
+    set_property(TARGET nt_sandbox APPEND PROPERTY LINK_DEPENDS "${_nt_glfw3w_patch}")
     # WebGL/HTML5 glue provides the emscripten_webgl_* symbols required by the GLFW port
     target_link_libraries(nt_sandbox PRIVATE html5 GL)
 else()

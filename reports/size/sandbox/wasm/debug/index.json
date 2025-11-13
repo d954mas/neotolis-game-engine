@@ -1,33 +1,33 @@
 {
-  "generated_at": "2025-11-13T10:57:15.284284+00:00",
+  "generated_at": "2025-11-13T12:55:36.616057+00:00",
   "folder": "sandbox/wasm/debug",
   "report_path": "sandbox/wasm/debug/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:6b129fb7ee23f3287d001dc05881ccf3ea228006",
-      "git_sha": "6b129fb7ee23f3287d001dc05881ccf3ea228006",
-      "git_message": "try fix webgpu for emscripten",
+      "id": "head:master:690753b73b99493cc5ab346541a137ddaa8e0e9f",
+      "git_sha": "690753b73b99493cc5ab346541a137ddaa8e0e9f",
+      "git_message": "fix wasm release",
       "branch": "master",
-      "subject": "try fix webgpu for emscripten",
-      "date": "2025-11-13T10:57:15.284284+00:00",
-      "label": "HEAD-master-try fix webgpu for emscripten-6b129fb",
+      "subject": "fix wasm release",
+      "date": "2025-11-13T12:55:36.616057+00:00",
+      "label": "HEAD-master-fix wasm release-690753b",
       "artifacts": [
         {
           "file_name": "index.html",
-          "size_bytes": 22190
+          "size_bytes": 22216
         },
         {
           "file_name": "nt_sandbox.js",
-          "size_bytes": 170046
+          "size_bytes": 325636
         },
         {
           "file_name": "nt_sandbox.wasm",
-          "size_bytes": 4896819
+          "size_bytes": 7059633
         },
         {
           "file_name": "nt_sandbox.wasm.map",
-          "size_bytes": 250361
+          "size_bytes": 691328
         }
       ]
     },

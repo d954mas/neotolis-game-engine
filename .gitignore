@@ -34,6 +34,7 @@ Makefile
 !reports/size/dashboard.js
 !reports/size/lib/chart.min.js
 !reports/size/history-chart.js
+!engine/render/glfw3w_patch.js
 __pycache__/
 *.py[cod]
 .venv/
