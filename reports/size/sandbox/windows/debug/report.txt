@@ -1,9 +1,13 @@
 git_sha,git_message,file_name,size_bytes
 2833b111a5b356eec916eddb7a9086a1f8f282c3,master,HEAD,
+<<<<<<< HEAD
 ,,engine.exe,286208
 ,,webgpu_dawn.dll,9171968
 2833b111a5b356eec916eddb7a9086a1f8f282c3,master,BRANCH,
 ,,engine.exe,286208
+=======
+,,engine.exe,286720
+>>>>>>> 33d70873bf1e9568dcfc762a5f997555d58be890
 ,,webgpu_dawn.dll,9171968
 6f8f8db00048b236986799c57277c2e9d8d5fb74,006-enforce-failfast-quality,BRANCH,
 ,,engine.exe,19968

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-11-13T14:42:41.251435+00:00",
+  "generated_at": "2025-11-13T14:40:40.963122+00:00",
   "folder": "sandbox/wasm/release",
   "report_path": "sandbox/wasm/release/report.txt",
   "commits": [
@@ -10,7 +10,7 @@
       "git_message": "Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine",
       "branch": "master",
       "subject": "Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine",
-      "date": "2025-11-13T14:42:41.251435+00:00",
+      "date": "2025-11-13T14:40:40.963122+00:00",
       "label": "HEAD-master-Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine-2833b11",
       "artifacts": [
         {
