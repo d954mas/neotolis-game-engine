@@ -11,6 +11,10 @@
 #include <emscripten/html5.h>
 #endif
 
+#ifndef WGPU_INSTANCE_DESCRIPTOR_INIT
+#define WGPU_INSTANCE_DESCRIPTOR_INIT (WGPUInstanceDescriptor){0}
+#endif
+
 typedef struct SandboxApp {
     GLFWwindow* window;
     WGPUInstance instance;
@@ -75,7 +79,6 @@ int main(void) {
         nt_engine_shutdown();
         return 1;
     }
-
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     GLFWwindow* window = glfwCreateWindow(640, 480, "nt_engine WebGPU check", NULL, NULL);
     if (!window) {
@@ -86,9 +89,8 @@ int main(void) {
     }
 
     // Init WebGPU
-	WGPUInstanceDescriptor desc;
-	desc.nextInChain = NULL;
-	WGPUInstance instance = wgpuCreateInstance(&desc);
+    WGPUInstanceDescriptor desc = WGPU_INSTANCE_DESCRIPTOR_INIT;
+    WGPUInstance instance = wgpuCreateInstance(&desc);
     if (!instance) {
         fputs("wgpuCreateInstance failed\n", stderr);
         glfwDestroyWindow(window);

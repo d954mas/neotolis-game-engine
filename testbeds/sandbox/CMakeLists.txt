@@ -86,6 +86,9 @@ if(_nt_sandbox_use_emscripten_glfw)
         "--use-port=contrib.glfw3:disableJoystick=true:disableMultiWindow=true"
       #  "--use-port=emdawnwebgpu"   # Handle WebGPU symbols
         "-sASYNCIFY"     # Required by WebGPU-C++
+        "-sFILESYSTEM=0"
+        "-sENVIRONMENT=web"
+        "-sNO_EXIT_RUNTIME=1"
         "--pre-js=${_nt_glfw3w_patch}" # Normalize window positions to integers
     )
     set_property(TARGET nt_sandbox APPEND PROPERTY LINK_DEPENDS "${_nt_glfw3w_patch}")
