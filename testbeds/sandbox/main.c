@@ -41,7 +41,7 @@ int main(void) {
         return 1;
     }
 
-    WGPUSurface surface = glfwCreateWindowWGPUSurface(instance, window);
+    WGPUSurface  surface = glfwCreateWindowWGPUSurface(instance, window);
     printf("WebGPU surface = %p\n", (void*)surface);
 
     while (!glfwWindowShouldClose(window)) {
