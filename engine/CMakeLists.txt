@@ -2,6 +2,7 @@ set(_NT_ENGINE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/core/nt_engine.c
     ${CMAKE_CURRENT_SOURCE_DIR}/platform/web/nt_platform_web.c
     ${CMAKE_CURRENT_SOURCE_DIR}/platform/win/nt_platform_win.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/platform/web/nt_wasm_noexcept_stub.c
     ${CMAKE_CURRENT_SOURCE_DIR}/features/sample/nt_feature_sample.c
     ${CMAKE_CURRENT_SOURCE_DIR}/render/glfw3webgpu.c
     ${CMAKE_CURRENT_SOURCE_DIR}/render/render.c

@@ -97,8 +97,8 @@ if(_NT_SOURCE_MAP_FLAGS)
 endif()
 set(CMAKE_EXE_LINKER_FLAGS_DEBUG  "${_NT_DEBUG_LINK_FLAGS}" CACHE STRING "" FORCE)
 
-set(_NT_RELEASE_C_FLAGS "-Oz -flto")
-set(_NT_RELEASE_CXX_FLAGS "-Oz -flto")
+set(_NT_RELEASE_C_FLAGS "-Oz -flto -ffunction-sections -fdata-sections")
+set(_NT_RELEASE_CXX_FLAGS "-Oz -flto -ffunction-sections -fdata-sections -fno-exceptions -fno-rtti")
 if(_NT_EMIT_SOURCE_MAPS_DEFAULT)
     string(APPEND _NT_RELEASE_C_FLAGS " -g")
     string(APPEND _NT_RELEASE_CXX_FLAGS " -g")
@@ -110,7 +110,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "${_NT_RELEASE_CXX_FLAGS}" CACHE STRING "" FORCE)
 # WebGPU port still probes during linker setup. Keep it disabled for now to
 # avoid AttributeError: no such setting: 'USE_WEBGPU' when building release
 # wasm targets with WebGPU enabled.
-set(_NT_RELEASE_LINK_FLAGS "-sASSERTIONS=0 -sERROR_ON_UNDEFINED_SYMBOLS=1")
+set(_NT_RELEASE_LINK_FLAGS "-sASSERTIONS=0 -sERROR_ON_UNDEFINED_SYMBOLS=1 --gc-sections -sMALLOC=emmalloc")
 if(_NT_SOURCE_MAP_FLAGS)
     string(APPEND _NT_RELEASE_LINK_FLAGS " ${_NT_SOURCE_MAP_FLAGS}")
 endif()

@@ -11,10 +11,6 @@
 #include <emscripten/html5.h>
 #endif
 
-#ifndef WGPU_INSTANCE_DESCRIPTOR_INIT
-#define WGPU_INSTANCE_DESCRIPTOR_INIT (WGPUInstanceDescriptor){0}
-#endif
-
 typedef struct SandboxApp {
     GLFWwindow* window;
     WGPUInstance instance;
@@ -89,7 +85,7 @@ int main(void) {
     }
 
     // Init WebGPU
-    WGPUInstanceDescriptor desc = WGPU_INSTANCE_DESCRIPTOR_INIT;
+    WGPUInstanceDescriptor desc = (WGPUInstanceDescriptor){0};
     WGPUInstance instance = wgpuCreateInstance(&desc);
     if (!instance) {
         fputs("wgpuCreateInstance failed\n", stderr);
