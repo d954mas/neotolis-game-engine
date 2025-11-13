@@ -100,16 +100,16 @@ add_subdirectory(engine)
 if(NT_ENABLE_WEBGPU)
     if(CMAKE_TARGET_PLATFORM STREQUAL "windows")
         set(WEBGPU_BACKEND "DAWN" CACHE STRING "WebGPU backend implementation" FORCE)
-        set(WEBGPU_BUILD_FROM_SOURCE OFF CACHE BOOL "Build WebGPU backend from source" FORCE)
-        FetchContent_Declare(webgpu_distribution
-            GIT_REPOSITORY https://github.com/eliemichel/WebGPU-distribution.git
-            GIT_TAG ${NT_WEBGPU_DISTRIBUTION_TAG}
-            FIND_PACKAGE_ARGS
-        )
-        FetchContent_MakeAvailable(webgpu_distribution)
     elseif(CMAKE_TARGET_PLATFORM STREQUAL "wasm")
-        message(STATUS "WebGPU enabled: using browser implementation via Emscripten toolchain.")
+        set(WEBGPU_BACKEND "EMSCRIPTEN" CACHE STRING "WebGPU backend implementation" FORCE)
     endif()
+    set(WEBGPU_BUILD_FROM_SOURCE OFF CACHE BOOL "Build WebGPU backend from source" FORCE)
+    FetchContent_Declare(webgpu_distribution
+        GIT_REPOSITORY https://github.com/eliemichel/WebGPU-distribution.git
+        GIT_TAG ${NT_WEBGPU_DISTRIBUTION_TAG}
+        FIND_PACKAGE_ARGS
+    )
+    FetchContent_MakeAvailable(webgpu_distribution)
 else()
     message(STATUS "WebGPU integration disabled (set NT_ENABLE_WEBGPU=ON to fetch Dawn on Windows).")
 endif()
