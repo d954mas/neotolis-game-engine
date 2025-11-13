@@ -51,9 +51,13 @@ endif()
 target_sources(nt_sandbox
     PRIVATE
         ${NT_ENGINE_SOURCES}
+        ${NT_GLFW3WEBGPU_SOURCE}
 )
 if(NT_ENGINE_VENDOR_SHIMS)
     nt_disable_warnings_for_sources(nt_sandbox ${NT_ENGINE_VENDOR_SHIMS})
+endif()
+if(NT_GLFW3WEBGPU_SOURCE)
+    nt_disable_warnings_for_sources(nt_sandbox ${NT_GLFW3WEBGPU_SOURCE})
 endif()
 
 target_include_directories(nt_sandbox

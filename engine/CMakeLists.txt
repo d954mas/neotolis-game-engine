@@ -4,7 +4,6 @@ set(_NT_ENGINE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/platform/win/nt_platform_win.c
     ${CMAKE_CURRENT_SOURCE_DIR}/platform/web/nt_wasm_noexcept_stub.c
     ${CMAKE_CURRENT_SOURCE_DIR}/features/sample/nt_feature_sample.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/render/glfw3webgpu.c
     ${CMAKE_CURRENT_SOURCE_DIR}/render/render.c
 )
 
@@ -21,10 +20,9 @@ set(NT_ENGINE_SOURCES ${_NT_ENGINE_SOURCES} PARENT_SCOPE)
 set(NT_ENGINE_HEADERS ${_NT_ENGINE_HEADERS} PARENT_SCOPE)
 
 # Treat the GLFW WebGPU shim as third-party glue so we do not fail builds on its warnings.
-set(_NT_ENGINE_VENDOR_SHIMS
-    ${CMAKE_CURRENT_SOURCE_DIR}/render/glfw3webgpu.c
-)
+set(_NT_ENGINE_VENDOR_SHIMS)
 set(NT_ENGINE_VENDOR_SHIMS ${_NT_ENGINE_VENDOR_SHIMS} PARENT_SCOPE)
+set(NT_GLFW3WEBGPU_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/render/glfw3webgpu.c" PARENT_SCOPE)
 
 option(NT_FAILFAST_SUPPRESS_THIRDPARTY_WARNINGS "Treat vendor includes as SYSTEM headers" ON)
 
