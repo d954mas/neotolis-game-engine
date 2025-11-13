@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-11-13T12:55:36.616057+00:00",
+  "generated_at": "2025-11-13T12:16:33.219419+00:00",
   "folder": "sandbox/wasm/debug",
   "report_path": "sandbox/wasm/debug/report.txt",
   "commits": [
@@ -10,7 +10,7 @@
       "git_message": "fix wasm release",
       "branch": "master",
       "subject": "fix wasm release",
-      "date": "2025-11-13T12:55:36.616057+00:00",
+      "date": "2025-11-13T12:16:33.219419+00:00",
       "label": "HEAD-master-fix wasm release-690753b",
       "artifacts": [
         {
@@ -19,11 +19,11 @@
         },
         {
           "file_name": "nt_sandbox.js",
-          "size_bytes": 325636
+          "size_bytes": 322359
         },
         {
           "file_name": "nt_sandbox.wasm",
-          "size_bytes": 7059633
+          "size_bytes": 7060902
         },
         {
           "file_name": "nt_sandbox.wasm.map",

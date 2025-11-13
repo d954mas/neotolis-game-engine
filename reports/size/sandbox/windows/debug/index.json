@@ -1,21 +1,25 @@
 {
-  "generated_at": "2025-11-12T19:48:51.658331+00:00",
+  "generated_at": "2025-11-13T12:16:33.564819+00:00",
   "folder": "sandbox/windows/debug",
   "report_path": "sandbox/windows/debug/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:c00efc1a018625002878d691deff89d16d01e81e",
-      "git_sha": "c00efc1a018625002878d691deff89d16d01e81e",
-      "git_message": "fix gl header",
+      "id": "head:master:690753b73b99493cc5ab346541a137ddaa8e0e9f",
+      "git_sha": "690753b73b99493cc5ab346541a137ddaa8e0e9f",
+      "git_message": "fix wasm release",
       "branch": "master",
-      "subject": "fix gl header",
-      "date": "2025-11-12T19:48:51.658331+00:00",
-      "label": "HEAD-master-fix gl header-c00efc1",
+      "subject": "fix wasm release",
+      "date": "2025-11-13T12:16:33.564819+00:00",
+      "label": "HEAD-master-fix wasm release-690753b",
       "artifacts": [
         {
           "file_name": "engine.exe",
-          "size_bytes": 286208
+          "size_bytes": 286720
+        },
+        {
+          "file_name": "webgpu_dawn.dll",
+          "size_bytes": 9171968
         }
       ]
     },

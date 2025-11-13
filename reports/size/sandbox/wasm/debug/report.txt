@@ -1,8 +1,8 @@
 git_sha,git_message,file_name,size_bytes
 690753b73b99493cc5ab346541a137ddaa8e0e9f,master,HEAD,
 ,,index.html,22216
-,,nt_sandbox.js,325636
-,,nt_sandbox.wasm,7059633
+,,nt_sandbox.js,322359
+,,nt_sandbox.wasm,7060902
 ,,nt_sandbox.wasm.map,691328
 e086699d1a4d801bbc743aba2799a1d8a5821cfe,master,BRANCH,
 ,,index.html,22190
