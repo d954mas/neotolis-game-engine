@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-11-13T14:31:30.652672+00:00",
+  "generated_at": "2025-11-13T14:42:41.251435+00:00",
   "folders": [
     {
       "folder": "sandbox/wasm/debug",
@@ -14,7 +14,7 @@
     {
       "folder": "sandbox/windows/debug",
       "index": "sandbox/windows/debug/index.json",
-      "commit_count": 5
+      "commit_count": 6
     },
     {
       "folder": "sandbox/windows/release",
