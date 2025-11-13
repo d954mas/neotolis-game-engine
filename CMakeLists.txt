@@ -37,6 +37,9 @@ if(CMAKE_TARGET_PLATFORM STREQUAL "windows")
 elseif(CMAKE_TARGET_PLATFORM STREQUAL "wasm")
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
     add_compile_definitions(NT_PLATFORM_WASM)
+    # Some third-party CMake scripts rely on the EMSCRIPTEN variable set by emcmake.
+    # Manually set it when driving builds via presets/toolchain files.
+    set(EMSCRIPTEN TRUE CACHE BOOL "Emulate emcmake EMSCRIPTEN flag" FORCE)
 else()
     message(FATAL_ERROR "CMAKE_TARGET_PLATFORM='${CMAKE_TARGET_PLATFORM}' is not supported. Choose from windows, wasm.")
 endif()
@@ -49,7 +52,7 @@ option(NT_PROJECT_SANDBOX "Build the sandbox testbed project" OFF)
 option(NT_ENABLE_TESTS "Build nt_engine tests" OFF)
 option(NT_ENABLE_WEBGPU "Enable WebGPU integration (Dawn on Windows, Emscripten WebGPU on wasm)" ON)
 
-set(NT_WEBGPU_DISTRIBUTION_TAG "wgpu-v24.0.0.2" CACHE STRING "Git tag/commit for WebGPU-distribution")
+set(NT_WEBGPU_DISTRIBUTION_TAG "v0.3.0-gamma" CACHE STRING "Git tag/commit for WebGPU-distribution")
 
 # debug flags from presets
 set(NT_FAILFAST_WARNING_FLAGS "${NT_FAILFAST_WARNING_FLAGS}" CACHE STRING "Fail-fast compile warnings for all targets")

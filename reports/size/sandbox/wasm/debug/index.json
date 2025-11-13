@@ -1,33 +1,33 @@
 {
-  "generated_at": "2025-11-12T19:48:51.324597+00:00",
+  "generated_at": "2025-11-13T10:57:15.284284+00:00",
   "folder": "sandbox/wasm/debug",
   "report_path": "sandbox/wasm/debug/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:c00efc1a018625002878d691deff89d16d01e81e",
-      "git_sha": "c00efc1a018625002878d691deff89d16d01e81e",
-      "git_message": "fix gl header",
+      "id": "head:master:6b129fb7ee23f3287d001dc05881ccf3ea228006",
+      "git_sha": "6b129fb7ee23f3287d001dc05881ccf3ea228006",
+      "git_message": "try fix webgpu for emscripten",
       "branch": "master",
-      "subject": "fix gl header",
-      "date": "2025-11-12T19:48:51.324597+00:00",
-      "label": "HEAD-master-fix gl header-c00efc1",
+      "subject": "try fix webgpu for emscripten",
+      "date": "2025-11-13T10:57:15.284284+00:00",
+      "label": "HEAD-master-try fix webgpu for emscripten-6b129fb",
       "artifacts": [
         {
           "file_name": "index.html",
-          "size_bytes": 22216
+          "size_bytes": 22190
         },
         {
           "file_name": "nt_sandbox.js",
-          "size_bytes": 253297
+          "size_bytes": 170046
         },
         {
           "file_name": "nt_sandbox.wasm",
-          "size_bytes": 4831532
+          "size_bytes": 4896819
         },
         {
           "file_name": "nt_sandbox.wasm.map",
-          "size_bytes": 182404
+          "size_bytes": 250361
         }
       ]
     },
