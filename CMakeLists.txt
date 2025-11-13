@@ -152,6 +152,22 @@ if(NT_ENABLE_WEBGPU)
     )
     if(TARGET webgpu)
         target_include_directories(webgpu SYSTEM INTERFACE "${_nt_webgpu_headers_include_root}")
+
+        # The emdawn port already injects the required Closure extern via
+        # settings.CLOSURE_ARGS during its linker_setup hook. Remove the duplicate
+        # manual flag from the INTERFACE_LINK_OPTIONS contributed by the bundled
+        # CMake target so we do not pass the same extern twice.
+        get_target_property(_nt_webgpu_link_opts webgpu INTERFACE_LINK_OPTIONS)
+        if(_nt_webgpu_link_opts AND NOT _nt_webgpu_link_opts STREQUAL "NOTFOUND")
+            set(_nt_filtered_webgpu_link_opts "")
+            foreach(_nt_link_opt IN LISTS _nt_webgpu_link_opts)
+                if(_nt_link_opt MATCHES [[--closure-args=--externs=.*webgpu-externs\.js$]])
+                    continue()
+                endif()
+                list(APPEND _nt_filtered_webgpu_link_opts "${_nt_link_opt}")
+            endforeach()
+            set_property(TARGET webgpu PROPERTY INTERFACE_LINK_OPTIONS "${_nt_filtered_webgpu_link_opts}")
+        endif()
     endif()
 else()
     message(STATUS "WebGPU integration disabled (set NT_ENABLE_WEBGPU=ON to fetch Dawn on Windows).")

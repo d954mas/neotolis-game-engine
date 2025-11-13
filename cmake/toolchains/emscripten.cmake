@@ -106,7 +106,11 @@ endif()
 set(CMAKE_C_FLAGS_RELEASE   "${_NT_RELEASE_C_FLAGS}" CACHE STRING "" FORCE)
 set(CMAKE_CXX_FLAGS_RELEASE "${_NT_RELEASE_CXX_FLAGS}" CACHE STRING "" FORCE)
 
-set(_NT_RELEASE_LINK_FLAGS "-sASSERTIONS=0 -sERROR_ON_UNDEFINED_SYMBOLS=1 -sSTRICT=1")
+# Strict mode strips legacy settings such as USE_WEBGPU, which the emdawn
+# WebGPU port still probes during linker setup. Keep it disabled for now to
+# avoid AttributeError: no such setting: 'USE_WEBGPU' when building release
+# wasm targets with WebGPU enabled.
+set(_NT_RELEASE_LINK_FLAGS "-sASSERTIONS=0 -sERROR_ON_UNDEFINED_SYMBOLS=1")
 if(_NT_SOURCE_MAP_FLAGS)
     string(APPEND _NT_RELEASE_LINK_FLAGS " ${_NT_SOURCE_MAP_FLAGS}")
 endif()
