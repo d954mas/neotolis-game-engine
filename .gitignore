@@ -11,6 +11,7 @@ web/portal/reports/size/*
 !web/portal/reports/size/.gitkeep
 web/portal/manifest.json
 web/portal/portal-deploy-manifest.json
+/\.deps/
 /bin/
 /obj/
 /CMakeFiles/

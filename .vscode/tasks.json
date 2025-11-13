@@ -8,7 +8,8 @@
             "args": [
                 "--preset",
                 "web-debug",
-                "-DNT_PROJECT_SANDBOX=ON"
+                "-DNT_PROJECT_SANDBOX=ON",
+                "-DNT_ENABLE_WEBGPU=ON"
             ],
             "group": "build",
             "problemMatcher": []
@@ -20,7 +21,8 @@
             "args": [
                 "--preset",
                 "web-release",
-                "-DNT_PROJECT_SANDBOX=ON"
+                "-DNT_PROJECT_SANDBOX=ON",
+                "-DNT_ENABLE_WEBGPU=ON"
             ],
             "group": "build",
             "problemMatcher": []
@@ -162,7 +164,8 @@
             "args": [
                 "--preset",
                 "win-debug",
-                "-DNT_PROJECT_SANDBOX=ON"
+                "-DNT_PROJECT_SANDBOX=ON",
+                "-DNT_ENABLE_WEBGPU=ON"
             ],
             "group": "build",
             "problemMatcher": []
@@ -174,7 +177,8 @@
             "args": [
                 "--preset",
                 "win-release",
-                "-DNT_PROJECT_SANDBOX=ON"
+                "-DNT_PROJECT_SANDBOX=ON",
+                "-DNT_ENABLE_WEBGPU=ON"
             ],
             "group": "build",
             "problemMatcher": []

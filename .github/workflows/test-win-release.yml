@@ -23,7 +23,7 @@ jobs:
         run: ctest --preset win-release-tests --output-on-failure
       - name: Configure sandbox preset
         shell: pwsh
-        run: cmake --preset win-release -DNT_PROJECT_SANDBOX=ON
+        run: cmake --preset win-release -DNT_PROJECT_SANDBOX=ON -DNT_ENABLE_WEBGPU=ON
       - name: Build sandbox preset
         shell: pwsh
         run: cmake --build --preset win-release

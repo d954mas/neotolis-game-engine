@@ -7,6 +7,9 @@ if(NOT NT_ENGINE_SOURCES)
 endif()
 
 target_sources(test_engine_lifecycle PRIVATE ${NT_ENGINE_SOURCES})
+if(NT_ENGINE_VENDOR_SHIMS)
+    nt_disable_warnings_for_sources(test_engine_lifecycle ${NT_ENGINE_VENDOR_SHIMS})
+endif()
 
 target_include_directories(test_engine_lifecycle
     PRIVATE
@@ -32,6 +35,9 @@ add_executable(test_feature_sample
 )
 
 target_sources(test_feature_sample PRIVATE ${NT_ENGINE_SOURCES})
+if(NT_ENGINE_VENDOR_SHIMS)
+    nt_disable_warnings_for_sources(test_feature_sample ${NT_ENGINE_VENDOR_SHIMS})
+endif()
 
 target_include_directories(test_feature_sample
     PRIVATE

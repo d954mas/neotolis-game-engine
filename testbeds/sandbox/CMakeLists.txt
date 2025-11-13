@@ -53,6 +53,9 @@ target_sources(nt_sandbox
     PRIVATE
         ${NT_ENGINE_SOURCES}
 )
+if(NT_ENGINE_VENDOR_SHIMS)
+    nt_disable_warnings_for_sources(nt_sandbox ${NT_ENGINE_VENDOR_SHIMS})
+endif()
 
 target_include_directories(nt_sandbox
     PRIVATE
@@ -80,6 +83,12 @@ if(_nt_sandbox_use_emscripten_glfw)
     target_link_libraries(nt_sandbox PRIVATE html5 GL)
 else()
     target_link_libraries(nt_sandbox PRIVATE glfw)
+    if(TARGET webgpu)
+        target_link_libraries(nt_sandbox PRIVATE webgpu)
+        if(COMMAND target_copy_webgpu_binaries)
+            target_copy_webgpu_binaries(nt_sandbox)
+        endif()
+    endif()
 endif()
 
 # Export packaged artifacts for downstream consumers
