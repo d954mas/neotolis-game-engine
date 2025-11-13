@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-11-13T12:16:33.564819+00:00",
+  "generated_at": "2025-11-13T13:02:16.363956+00:00",
   "folder": "sandbox/windows/debug",
   "report_path": "sandbox/windows/debug/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:690753b73b99493cc5ab346541a137ddaa8e0e9f",
-      "git_sha": "690753b73b99493cc5ab346541a137ddaa8e0e9f",
-      "git_message": "fix wasm release",
+      "id": "head:master:956ec7bc1f91d685d1e50240299cdcdf779c82e7",
+      "git_sha": "956ec7bc1f91d685d1e50240299cdcdf779c82e7",
+      "git_message": "Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine",
       "branch": "master",
-      "subject": "fix wasm release",
-      "date": "2025-11-13T12:16:33.564819+00:00",
-      "label": "HEAD-master-fix wasm release-690753b",
+      "subject": "Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine",
+      "date": "2025-11-13T13:02:16.363956+00:00",
+      "label": "HEAD-master-Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine-956ec7b",
       "artifacts": [
         {
           "file_name": "engine.exe",
