@@ -51,6 +51,15 @@ function(nt_configure_packaged_output)
                 "${_nt_windows_binary}"
             COMMENT "Packaging Windows executable for ${_nt_target} -> ${_nt_windows_binary}"
         )
+        if(DEFINED WEBGPU_RUNTIME_LIB AND EXISTS "${WEBGPU_RUNTIME_LIB}")
+            get_filename_component(_nt_webgpu_runtime_name "${WEBGPU_RUNTIME_LIB}" NAME)
+            add_custom_command(TARGET ${_nt_target} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "${WEBGPU_RUNTIME_LIB}"
+                    "${_nt_binary_dir}/${_nt_webgpu_runtime_name}"
+                COMMENT "Packaging WebGPU runtime dependency '${_nt_webgpu_runtime_name}' for ${_nt_target}"
+            )
+        endif()
     elseif(CMAKE_TARGET_PLATFORM STREQUAL "wasm")
         set(_nt_wasm_glue "$<TARGET_FILE_DIR:${_nt_target}>/${_nt_output_name}.js")
         set(_nt_wasm_file "$<TARGET_FILE_DIR:${_nt_target}>/${_nt_output_name}.wasm")
