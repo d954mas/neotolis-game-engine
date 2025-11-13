@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-11-12T19:36:06.693133+00:00",
+  "generated_at": "2025-11-12T19:48:51.812216+00:00",
   "folder": "sandbox/windows/release",
   "report_path": "sandbox/windows/release/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:c5f1e36256413e026c2f115366007cebb9be3a25",
-      "git_sha": "c5f1e36256413e026c2f115366007cebb9be3a25",
-      "git_message": "Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine",
+      "id": "head:master:c00efc1a018625002878d691deff89d16d01e81e",
+      "git_sha": "c00efc1a018625002878d691deff89d16d01e81e",
+      "git_message": "fix gl header",
       "branch": "master",
-      "subject": "Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine",
-      "date": "2025-11-12T19:36:06.693133+00:00",
-      "label": "HEAD-master-Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine-c5f1e36",
+      "subject": "fix gl header",
+      "date": "2025-11-12T19:48:51.812216+00:00",
+      "label": "HEAD-master-fix gl header-c00efc1",
       "artifacts": [
         {
           "file_name": "engine.exe",
