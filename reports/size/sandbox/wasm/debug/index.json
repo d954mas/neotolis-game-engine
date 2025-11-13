@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-11-13T13:23:46.377429+00:00",
+  "generated_at": "2025-11-13T13:47:15.027736+00:00",
   "folder": "sandbox/wasm/debug",
   "report_path": "sandbox/wasm/debug/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:9dd6f7d6437fdf1b2f06c907c3c11056d9410ed8",
-      "git_sha": "9dd6f7d6437fdf1b2f06c907c3c11056d9410ed8",
-      "git_message": "fix update loop",
+      "id": "head:master:84f5a4368dde712db7e57ed80a4defcfb2a907a9",
+      "git_sha": "84f5a4368dde712db7e57ed80a4defcfb2a907a9",
+      "git_message": "fixed ci tests",
       "branch": "master",
-      "subject": "fix update loop",
-      "date": "2025-11-13T13:23:46.377429+00:00",
-      "label": "HEAD-master-fix update loop-9dd6f7d",
+      "subject": "fixed ci tests",
+      "date": "2025-11-13T13:47:15.027736+00:00",
+      "label": "HEAD-master-fixed ci tests-84f5a43",
       "artifacts": [
         {
           "file_name": "index.html",
