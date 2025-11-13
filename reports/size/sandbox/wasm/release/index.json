@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-11-13T13:47:15.195558+00:00",
+  "generated_at": "2025-11-13T14:31:30.320834+00:00",
   "folder": "sandbox/wasm/release",
   "report_path": "sandbox/wasm/release/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:84f5a4368dde712db7e57ed80a4defcfb2a907a9",
-      "git_sha": "84f5a4368dde712db7e57ed80a4defcfb2a907a9",
-      "git_message": "fixed ci tests",
+      "id": "head:master:3c599f1e1f191b578a62dd6ea398e4e7e812b71f",
+      "git_sha": "3c599f1e1f191b578a62dd6ea398e4e7e812b71f",
+      "git_message": "Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine",
       "branch": "master",
-      "subject": "fixed ci tests",
-      "date": "2025-11-13T13:47:15.195558+00:00",
-      "label": "HEAD-master-fixed ci tests-84f5a43",
+      "subject": "Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine",
+      "date": "2025-11-13T14:31:30.320834+00:00",
+      "label": "HEAD-master-Merge branch 'master' of https://github.com/d954mas/neotolis-game-engine-3c599f1",
       "artifacts": [
         {
           "file_name": "index.html",
@@ -19,11 +19,11 @@
         },
         {
           "file_name": "nt_sandbox.js",
-          "size_bytes": 26684
+          "size_bytes": 27286
         },
         {
           "file_name": "nt_sandbox.wasm",
-          "size_bytes": 128086
+          "size_bytes": 119911
         }
       ]
     },
