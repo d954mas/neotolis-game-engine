@@ -79,7 +79,7 @@ if(_nt_sandbox_use_emscripten_glfw)
     # Trim the contrib.glfw3 port by disabling joystick polling and multi-window support.
     target_link_options(nt_sandbox PUBLIC
         "--use-port=contrib.glfw3:disableJoystick=true:disableMultiWindow=true"
-        "-sUSE_WEBGPU"   # Handle WebGPU symbols
+        "--use-port=emdawnwebgpu"   # Handle WebGPU symbols
         "-sASYNCIFY"     # Required by WebGPU-C++
     )
     # WebGL/HTML5 glue provides the emscripten_webgl_* symbols required by the GLFW port
