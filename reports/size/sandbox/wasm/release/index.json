@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-11-12T19:48:51.488800+00:00",
+  "generated_at": "2025-11-13T12:16:33.393637+00:00",
   "folder": "sandbox/wasm/release",
   "report_path": "sandbox/wasm/release/report.txt",
   "commits": [
     {
       "kind": "head",
-      "id": "head:master:c00efc1a018625002878d691deff89d16d01e81e",
-      "git_sha": "c00efc1a018625002878d691deff89d16d01e81e",
-      "git_message": "fix gl header",
+      "id": "head:master:690753b73b99493cc5ab346541a137ddaa8e0e9f",
+      "git_sha": "690753b73b99493cc5ab346541a137ddaa8e0e9f",
+      "git_message": "fix wasm release",
       "branch": "master",
-      "subject": "fix gl header",
-      "date": "2025-11-12T19:48:51.488800+00:00",
-      "label": "HEAD-master-fix gl header-c00efc1",
+      "subject": "fix wasm release",
+      "date": "2025-11-13T12:16:33.393637+00:00",
+      "label": "HEAD-master-fix wasm release-690753b",
       "artifacts": [
         {
           "file_name": "index.html",
@@ -19,11 +19,11 @@
         },
         {
           "file_name": "nt_sandbox.js",
-          "size_bytes": 20138
+          "size_bytes": 25758
         },
         {
           "file_name": "nt_sandbox.wasm",
-          "size_bytes": 59753
+          "size_bytes": 128007
         }
       ]
     },

@@ -1,6 +1,7 @@
 git_sha,git_message,file_name,size_bytes
-c00efc1a018625002878d691deff89d16d01e81e,master,HEAD,
-,,engine.exe,207872
+690753b73b99493cc5ab346541a137ddaa8e0e9f,master,HEAD,
+,,engine.exe,211456
+,,webgpu_dawn.dll,9171968
 08cf815bfec3c5eac68f696f6dd777d504f6f8ea,master,BRANCH,
 ,,engine.exe,9728
 3876a4cccdd02a2b4d7a3952de7cc4e37396f960,003-add-size-reports,BRANCH,
