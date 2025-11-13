@@ -12,7 +12,8 @@
         "windows.h": "c",
         "assert.h": "c",
         "glfw3webgpu.h": "c",
-        "glfw3.h": "c"
+        "glfw3.h": "c",
+        "xiosbase": "c"
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "C_Cpp.default.intelliSenseMode": "windows-clang-x64",

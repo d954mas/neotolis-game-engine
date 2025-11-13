@@ -7,6 +7,62 @@
 
 #include "engine/render/glfw3webgpu.h"
 #include <webgpu/webgpu.h>
+#ifdef __EMSCRIPTEN__
+#include <emscripten/html5.h>
+#endif
+
+typedef struct SandboxApp {
+    GLFWwindow* window;
+    WGPUInstance instance;
+    WGPUSurface surface;
+    int cleaned_up;
+} SandboxApp;
+
+static SandboxApp g_sandbox_app;
+
+static void sandbox_cleanup(SandboxApp* app) {
+    if (!app || app->cleaned_up) {
+        return;
+    }
+
+    if (app->surface) {
+        wgpuSurfaceRelease(app->surface);
+        app->surface = NULL;
+    }
+    if (app->instance) {
+        wgpuInstanceRelease(app->instance);
+        app->instance = NULL;
+    }
+    if (app->window) {
+        glfwDestroyWindow(app->window);
+        app->window = NULL;
+    }
+
+    glfwTerminate();
+    nt_engine_shutdown();
+    app->cleaned_up = 1;
+    puts("Sandbox lifecycle complete");
+}
+
+static void sandbox_update(void* user_data) {
+    SandboxApp* app = (SandboxApp*)user_data;
+    if (!app || app->cleaned_up) {
+#ifdef __EMSCRIPTEN__
+        emscripten_cancel_main_loop();
+#endif
+        return;
+    }
+
+    if (!app->window || glfwWindowShouldClose(app->window)) {
+        sandbox_cleanup(app);
+#ifdef __EMSCRIPTEN__
+        emscripten_cancel_main_loop();
+#endif
+        return;
+    }
+
+    glfwPollEvents();
+}
 
 int main(void) {
     if (nt_engine_init() != NT_RESULT_OK) {
@@ -41,23 +97,24 @@ int main(void) {
         return 1;
     }
 
-    WGPUSurface  surface = glfwCreateWindowWGPUSurface(instance, window);
+    WGPUSurface surface = glfwCreateWindowWGPUSurface(instance, window);
     printf("WebGPU surface = %p\n", (void*)surface);
 
-    while (!glfwWindowShouldClose(window)) {
-        glfwPollEvents();
-    }
+    g_sandbox_app.window = window;
+    g_sandbox_app.instance = instance;
+    g_sandbox_app.surface = surface;
+    g_sandbox_app.cleaned_up = 0;
 
-    if (surface) {
-        wgpuSurfaceRelease(surface);
-    }
-    if (instance) {
-        wgpuInstanceRelease(instance);
-    }
-
-    glfwDestroyWindow(window);
-    glfwTerminate();
-    nt_engine_shutdown();
-    printf("Sandbox lifecycle complete\n");
+#ifdef __EMSCRIPTEN__
+    emscripten_set_main_loop_arg(sandbox_update, &g_sandbox_app, 0, true);
     return 0;
+#else
+    while (!glfwWindowShouldClose(window)) {
+        sandbox_update(&g_sandbox_app);
+    }
+
+    sandbox_cleanup(&g_sandbox_app);
+
+    return 0;
+#endif
 }
