@@ -76,6 +76,7 @@
         "WEB_SOURCE_MAP_BASE": "http://localhost:8000/",
         "NT_ENABLE_TESTS": true,
         "NT_PROJECT_SANDBOX": false,
+        "NT_ENABLE_WEBGPU": true,
         "NT_FAILFAST_SANITIZER": true
       }
     },
@@ -88,6 +89,7 @@
         "WEB_SOURCE_MAP_BASE": "http://localhost:8001/",
         "NT_ENABLE_TESTS": true,
         "NT_PROJECT_SANDBOX": false,
+        "NT_ENABLE_WEBGPU": true,
         "NT_FAILFAST_SANITIZER": false
       }
     },

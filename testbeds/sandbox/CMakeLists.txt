@@ -3,7 +3,6 @@ project(nt_sandbox LANGUAGES C)
 include(FetchContent)
 
 option(NT_SANDBOX_ENABLE_SIZE_REPORT "Generate size report for the sandbox target" OFF)
-option(NT_SANDBOX_ENABLE_GLFW_SMOKE "Run a glfwInit/glfwTerminate smoke test" OFF)
 
 set(_nt_sandbox_use_emscripten_glfw OFF)
 if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
